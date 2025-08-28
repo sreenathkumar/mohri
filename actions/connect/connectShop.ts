@@ -16,7 +16,6 @@ const connectShop = async (initialState: any, formData: FormData) => {
     }
 
     if (platform === 'shopify') {
-        console.log("Initiating Shopify OAuth flow for URL:", url);
         const shopifyUrl = new URL('/api/connect/shopify/auth', `https://${process.env.SHOPIFY_HOST}`);
         const parsedUrl = new URL(url);
         const shopDomain = parsedUrl.hostname;
@@ -25,11 +24,6 @@ const connectShop = async (initialState: any, formData: FormData) => {
         // Redirect the user to the Shopify OAuth URL
         redirect(shopifyUrl.toString());
     }
-
-    // Here you would typically add logic to save the shop details to your database
-    // For example:
-    // await Shop.create({ url, platform, user: userId });
-
     return { success: true, message: "Shop connected successfully." };
 }
 

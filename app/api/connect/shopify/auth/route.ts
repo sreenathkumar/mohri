@@ -18,8 +18,6 @@ export async function GET(req: NextRequest) {
             rawResponse: new Response(),
         });
 
-        console.log('Redirecting to Shopify OAuth URL:', response);
-
         return response
     } catch (error) {
         console.error('Error during Shopify authentication:', error);

@@ -7,7 +7,6 @@ import { NextRequest } from "next/server";
 
 
 export async function GET(req: NextRequest) {
-    console.log('connection with shopfiy initialized');
     try {
         //get the access token and save it to the database
         const { session } = await shopify.auth.callback({
@@ -19,8 +18,6 @@ export async function GET(req: NextRequest) {
             return new Response('No session found', { status: 400 });
         }
 
-        console.log('Shopify session established for shop:', session);
-
         const userSession = await auth()
 
         await dbConnect();
@@ -30,8 +27,6 @@ export async function GET(req: NextRequest) {
             { user: userSession?.user?.id, accessToken: session.accessToken },
             { upsert: true }
         );
-
-        console.log('call back req: ', req.url);
 
         return Response.redirect(new URL("/stores", `http://localhost:3000`), 302);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
