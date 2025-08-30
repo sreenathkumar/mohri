@@ -1,6 +1,6 @@
 //import '@shopify/shopify-api/adapters/web-api';
-import { auth } from "@/auth";
 import dbConnect from "@/dbConnect";
+import { AuthNonce } from "@/models/authNonce";
 import Shop from "@/models/shopModel";
 import shopify from "@/shopify.config";
 import { NextRequest } from "next/server";
@@ -8,6 +8,13 @@ import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
     try {
+        //get the nonce from the cookie
+        const nonce = req.nextUrl.searchParams.get('state')
+
+        if (!nonce) {
+            return new Response('Missing nonce cookie', { status: 400 });
+        }
+
         //get the access token and save it to the database
         const { session } = await shopify.auth.callback({
             rawRequest: req,
@@ -18,13 +25,33 @@ export async function GET(req: NextRequest) {
             return new Response('No session found', { status: 400 });
         }
 
-        const userSession = await auth()
+        //register webhooks after getting the access token
+        const response = await shopify.webhooks.register({
+            session,
+        });
+
+        if (!response['PRODUCTS_CREATE'][0]?.success) {
+            console.log(
+                `Failed to register PRODUCTS_CREATE webhook: ${JSON.stringify(response['PRODUCTS_CREATE'][0]?.result)}`,
+            );
+        }
 
         await dbConnect();
+        //find the nonce in the database and get the user id
+        const authNonce = await AuthNonce.findOne({
+            nonce: nonce
+        })
+
+        if (!authNonce) {
+            return new Response('Invalid nonce', { status: 400 });
+        }
+
+        const userId = authNonce.userId;
+
         //save the token to the database
         await Shop.findOneAndUpdate(
             { url: session.shop },
-            { user: userSession?.user?.id, accessToken: session.accessToken },
+            { user: userId, accessToken: session.accessToken },
             { upsert: true }
         );
 
