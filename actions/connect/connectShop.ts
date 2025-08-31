@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from "@/auth";
+import Shop from "@/models/shopModel";
 import { redirect } from "next/navigation";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,6 +22,10 @@ const connectShop = async (initialState: any, formData: FormData) => {
         return {
             success: false,
             message: "All parameters are required to connect a shop.",
+            errors: {
+                url: !url ? "Shop URL is required." : undefined,
+                platform: !platform ? "Shop platform is required." : undefined
+            }
         }
     }
 
@@ -32,10 +37,26 @@ const connectShop = async (initialState: any, formData: FormData) => {
         shopifyUrl.searchParams.append('shop', shopDomain); //pass shop url
         shopifyUrl.searchParams.append('uid', userId) //pass shop owner id
 
+        //check if the shop is already connected
+        const isConnected = await Shop.findOne({
+            url: shopDomain,
+        });
+
+        if (isConnected) {
+            return {
+                success: false,
+                message: "Shop is already connected.",
+                errors: {
+                    url: "Shop is already connected.",
+                    platform: `This ${platform} store is already connected.`
+                }
+            }
+        }
+
         // Redirect the user to the Shopify OAuth URL
         redirect(shopifyUrl.toString());
     }
-    return { success: true, message: "Shop connected successfully." };
+    return { success: true, message: "Shop connected successfully.", };
 }
 
 export default connectShop

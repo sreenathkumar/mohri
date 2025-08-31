@@ -1,8 +1,14 @@
 import getShops from "@/actions/connect/getStores";
-import AddStoreFormHeader from "./components/add-store-form-header";
-import ConnectStoreForm from "./components/connect-store-form";
-import ConnectedStores from "./components/connected-stores";
 import { auth } from "@/auth";
+import { Store } from "lucide-react";
+import AddStoreBtn from "./components/connect-btn";
+import ConnectedStores from "./components/connected-stores";
+
+export interface StoreTypes {
+    url: string;
+    platform: string;
+    name?: string;
+}
 
 async function StoresPage() {
     const session = await auth();
@@ -11,17 +17,22 @@ async function StoresPage() {
     }
 
     const userId = session.user?.id;
-
-    const connectedStores = await getShops(userId);
+    const stores: StoreTypes[] = await getShops(userId);
 
     return (
-        <div className="flex items-center justify-center my-auto p-4">
+        <div className="p-4 flex flex-col grow-1">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold">Connected Stores</h1>
+                <AddStoreBtn />
+            </div>
             {
-                connectedStores.length > 0
-                    ? <ConnectedStores />
-                    : <div className="w-full max-w-md space-y-8 p-6 rounded-lg border">
-                        <AddStoreFormHeader />
-                        <ConnectStoreForm />
+                stores.length > 0
+                    ? <ConnectedStores stores={stores} />
+                    : <div className="text-center py-12 text-background my-auto">
+                        <Store className="h-12 w-12 text-foreground mx-auto mb-4" />
+                        <h3 className="text-lg text-muted-foreground font-medium mb-2">No stores connected</h3>
+                        <p className="text-muted-foreground mb-4">Connect your first store to get started</p>
+                        <AddStoreBtn />
                     </div>
             }
         </div>

@@ -7,8 +7,12 @@ import { cn } from "@/lib/utils"
 import { Button } from "@components/shadcn/button"
 import { Link } from "lucide-react"
 import { useActionState } from "react"
+interface ErrorType {
+  url?: string;
+  platform?: string;
+}
 
-const initialState: { success?: boolean, message: string } = { message: '' }
+const initialState: { success?: boolean, message: string, errors?: ErrorType } = { message: '', errors: {} }
 
 function ConnectStoreForm() {
   const [state, formAction, pending] = useActionState(connectShop, initialState)
@@ -51,6 +55,9 @@ function ConnectStoreForm() {
           </label>
         </div>
       </div>
+      {state?.errors?.platform && (
+        <p className="text-sm text-red-500">{state.errors.platform}</p>
+      )}
     </div>
 
     <div className="space-y-2">
@@ -66,6 +73,9 @@ function ConnectStoreForm() {
           required
         />
       </div>
+      {state?.errors?.url && (
+        <p className="text-sm text-red-500">{state.errors.url}</p>
+      )}
     </div>
 
     <Button type="submit" className="w-full" size="lg" disabled={pending}>
