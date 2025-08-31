@@ -49,11 +49,12 @@ export async function GET(req: NextRequest) {
         const userId = authNonce.userId;
 
         //save the token to the database
-        await Shop.findOneAndUpdate(
-            { url: session.shop },
-            { user: userId, accessToken: session.accessToken },
-            { upsert: true }
-        );
+        await Shop.create({
+            url: session.shop,
+            accessToken: session.accessToken,
+            user: userId,
+            platform: 'shopify'
+        });
 
         return Response.redirect(new URL("/stores", `http://localhost:3000`), 302);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
