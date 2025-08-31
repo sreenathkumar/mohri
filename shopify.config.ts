@@ -1,5 +1,7 @@
-import { DeliveryMethod, LATEST_API_VERSION, shopifyApi } from "@shopify/shopify-api";
+import { DeliveryMethod, LATEST_API_VERSION, shopifyApi, } from "@shopify/shopify-api";
 import '@shopify/shopify-api/adapters/web-api';
+import crypto from "crypto";
+import { NextRequest } from "next/server";
 
 const shopify = shopifyApi({
     apiKey: process.env.SHOPIFY_CLIENT_ID!,
@@ -18,6 +20,29 @@ shopify.webhooks.addHandlers({
             callbackUrl: '/api/webhook/shopify',
         }
     ],
+    APP_UNINSTALLED: [{
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: '/api/connect/shopify/uninstall',
+    }]
 });
+
+//verify the webhook request
+export async function verifyWebhook(req: NextRequest) {
+    const hmac = req.headers.get("x-shopify-hmac-sha256") || "";
+
+    if (!hmac) {
+        return false;
+    }
+
+    const body = await req.text();
+
+    //compute the HMAC
+    const digest = crypto
+        .createHmac("sha256", process.env.SHOPIFY_CLIENT_SECRET!)
+        .update(body, "utf8")
+        .digest("base64");
+
+    return crypto.timingSafeEqual(Buffer.from(digest, 'base64'), Buffer.from(hmac, 'base64'));
+}
 
 export default shopify;
