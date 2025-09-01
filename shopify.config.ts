@@ -14,12 +14,26 @@ const shopify = shopifyApi({
 
 //webhook handlers
 shopify.webhooks.addHandlers({
-    PRODUCTS_CREATE: [
-        {
-            deliveryMethod: DeliveryMethod.Http,
-            callbackUrl: '/api/webhook/shopify',
-        }
-    ],
+    PRODUCTS_CREATE: [{
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: '/api/webhook/shopify',
+    }],
+    ORDERS_CREATE: [{
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: '/api/webhook/shopify',
+    }],
+    ORDERS_PAID: [{
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: '/api/webhook/shopify',
+    }],
+    ORDERS_DELETE: [{
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: '/api/webhook/shopify',
+    }],
+    ORDERS_CANCELLED: [{
+        deliveryMethod: DeliveryMethod.Http,
+        callbackUrl: '/api/webhook/shopify',
+    }],
     APP_UNINSTALLED: [{
         deliveryMethod: DeliveryMethod.Http,
         callbackUrl: '/api/connect/shopify/uninstall',
