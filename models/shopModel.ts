@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const ShopSchema = new mongoose.Schema({
+    name: {
+        type: String,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

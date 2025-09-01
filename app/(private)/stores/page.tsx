@@ -1,8 +1,8 @@
-import getShops from "@/actions/connect/getStores";
 import { auth } from "@/auth";
 import { Store } from "lucide-react";
 import AddStoreBtn from "./components/connect-btn";
 import ConnectedStores from "./components/connected-stores";
+import { getShops } from "@/actions/shopActions";
 
 export interface StoreTypes {
     url: string;
