@@ -2,6 +2,7 @@
 
 import dbConnect from "@/dbConnect";
 import Shop from "@/models/shopModel";
+import { revalidatePath } from "next/cache";
 
 interface UpdateData {
     name?: string;
@@ -56,5 +57,30 @@ export async function getShops(user: string) {
     } catch (error: any) {
         console.error("Error fetching shops:", error.message);
         return [];
+    }
+}
+
+export async function deleteShop(domain: string) {
+    if (!domain) {
+        return { success: false, message: "Domain is required to delete the shop." };
+    }
+
+    try {
+        await dbConnect();
+
+        const result = await Shop.findOneAndDelete({ url: domain });
+
+        if (!result) {
+            return { success: false, message: "Delete Shop failed. No shop found with the provided domain." };
+        }
+
+        revalidatePath('/stores');
+
+        return { success: true, message: "Shop deleted successfully." };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error deleting shop:", error.message);
+        return { success: false, message: error.message };
     }
 }
