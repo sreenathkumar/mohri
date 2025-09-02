@@ -127,3 +127,26 @@ export function isSameArray(a: Array<string | number>, b: Array<string | number>
     const sortedB = [...b].sort();
     return sortedA.every((val, index) => val === sortedB[index]);
 }
+
+/**
+ * Extracts a cookie value from a raw `Set-Cookie` header string.
+ *
+ * @param cookiesHeader - The full Set-Cookie header string (may include multiple cookies).
+ * @param key - The name of the cookie you want to extract.
+ * @returns The cookie value if found, otherwise undefined.
+ */
+export function getCookieValue(cookiesHeader: Headers, key: string): string | undefined {
+    // Split by comma to handle multiple cookies in one header
+    const rawCookies = cookiesHeader.get('Set-Cookie')?.split(",") || [];
+
+    for (const rawCookie of rawCookies) {
+        const parts = rawCookie.trim().split(";");
+        const [cookieKey, cookieValue] = parts[0].split("=", 2);
+
+        if (cookieKey === key) {
+            return cookieValue;
+        }
+    }
+
+    return undefined;
+}
