@@ -4,12 +4,10 @@ import { verifyWebhook } from "@/shopify.config";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
-    console.log("Shopify app uninstalled webhook received");
-
     //check if the request is verified
-    const isVerified = await verifyWebhook(request);
+    const { valid, domain } = await verifyWebhook(request);
 
-    if (!isVerified) {
+    if (!valid) {
         return new Response("Unauthorized. HMAC don't match.", { status: 401 });
     }
     //connect to the database
@@ -17,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     //delete the shop from the database
     const result = await Shop.deleteOne({
-        url: request.headers.get("x-shopify-shop-domain"),
+        url: domain,
     })
 
     if (result.deletedCount === 0) {

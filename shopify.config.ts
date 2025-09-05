@@ -43,9 +43,12 @@ shopify.webhooks.addHandlers({
 //verify the webhook request
 export async function verifyWebhook(req: NextRequest) {
     const hmac = req.headers.get("x-shopify-hmac-sha256") || "";
+    const domain = req.headers.get("x-shopify-shop-domain");
+    const topic = req.headers.get("x-shopify-topic");
+    let valid = false;
 
     if (!hmac) {
-        return false;
+        return { valid, topic, domain };
     }
 
     const body = await req.text();
@@ -56,7 +59,9 @@ export async function verifyWebhook(req: NextRequest) {
         .update(body, "utf8")
         .digest("base64");
 
-    return crypto.timingSafeEqual(Buffer.from(digest, 'base64'), Buffer.from(hmac, 'base64'));
+    valid = crypto.timingSafeEqual(Buffer.from(digest, 'base64'), Buffer.from(hmac, 'base64'));
+
+    return { valid, topic, domain };
 }
 
 export default shopify;
