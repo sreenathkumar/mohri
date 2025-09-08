@@ -39,7 +39,7 @@ const connectShop = async (initialState: any, formData: FormData) => {
 
         //check if the shop is already connected
         const isConnected = await Shop.findOne({
-            url: shopDomain,
+            domain: shopDomain,
         });
 
         if (isConnected) {

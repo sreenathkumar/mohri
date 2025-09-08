@@ -19,7 +19,7 @@ export async function updateShop(domain: string, data: UpdateData) {
         await dbConnect();
 
         //find the shop by domain and update the name
-        const result = await Shop.findOneAndUpdate({ url: domain }, { $set: data });
+        const result = await Shop.findOneAndUpdate({ domain }, { $set: data });
 
         if (!result) {
             return { success: false, message: "Update Shop failed. No shop found with the provided domain." };
@@ -68,7 +68,7 @@ export async function deleteShop(domain: string) {
     try {
         await dbConnect();
 
-        const result = await Shop.findOneAndDelete({ url: domain });
+        const result = await Shop.findOneAndDelete({ domain });
 
         if (!result) {
             return { success: false, message: "Delete Shop failed. No shop found with the provided domain." };

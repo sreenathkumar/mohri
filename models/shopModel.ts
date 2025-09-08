@@ -14,7 +14,7 @@ const ShopSchema = new mongoose.Schema({
         enum: ['woocommerce', 'shopify'],
         required: true
     },
-    url: {
+    domain: {
         type: String,
         required: true,
         unique: true
