@@ -1,6 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
 const orderSchema = new mongoose.Schema({
+    user_id: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    shop: {
+        type: String,
+        required: true,
+    },
     order_id: {
         type: Number,
         required: true,
@@ -14,15 +23,7 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
     address: {
-        type: {
-            block: String || undefined,
-            street: String || undefined,
-            house: String || undefined,
-            jaddah: String || undefined,
-            floorApt: String || undefined
-        },
-        required: true,
-        _id: false
+        type: String,
     },
     phone: {
         type: String,
@@ -50,6 +51,8 @@ const orderSchema = new mongoose.Schema({
         ref: "User",
         default: null
     },
+    latitude: { type: Number, default: null },
+    longitude: { type: Number, default: null },
     date_delivered: { type: Date, default: null },
     date_created_gmt: { type: Date, required: true },
     date_modified_gmt: { type: Date, required: true },
