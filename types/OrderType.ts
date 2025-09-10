@@ -2,13 +2,7 @@ export interface OrderType {
     order_id: number,
     name: string,
     city: string,
-    address: {
-        block?: string
-        street?: string
-        house?: string
-        jaddah?: string
-        floor_apt?: string
-    },
+    address: string,
     phone: string,
     amount: string,
     status: string,
@@ -35,4 +29,20 @@ export interface OrderLocationType {
         lat: number;
         lon: number;
     } | null;
+}
+
+export interface OrderInfoType {
+    order_id: number;
+    name: string;
+    address: string;
+    city: string;
+    country: string;
+    phone: string;
+    amount: string;
+    payment?: string;
+    latitude?: number;
+    longitude?: number;
+    country_code?: string;
+    date_created_gmt: string;
+    date_modified_gmt: string;
 }

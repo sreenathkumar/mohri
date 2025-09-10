@@ -1,3 +1,4 @@
+import { OrderInfoType } from "@/types/OrderType";
 import { type ClassValue, clsx } from "clsx"
 import mongoose from "mongoose";
 import { twMerge } from "tailwind-merge"
@@ -149,4 +150,36 @@ export function getCookieValue(cookiesHeader: Headers, key: string): string | un
     }
 
     return undefined;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function normalizeShopifyResponse(data: any): OrderInfoType | null {
+    if (!data) return null;
+
+    const {
+        id,
+        total_price,
+        payment_gateway_names,
+        shipping_address,
+        billing_address,
+    } = data;
+
+    // prefer shipping address, fallback to billing address
+    const address = shipping_address || billing_address || {};
+
+    return {
+        order_id: id,
+        name: address.name || '',
+        address: address.address1 || '',
+        city: address.city || '',
+        country: address.country || '',
+        phone: address.phone || '',
+        amount: total_price || '',
+        payment: payment_gateway_names?.[0] || undefined,
+        country_code: address.country_code || '',
+        latitude: address.latitude || undefined,
+        longitude: address.longitude || undefined,
+        date_created_gmt: data.created_at || null,
+        date_modified_gmt: data.updated_at || null
+    };
 }

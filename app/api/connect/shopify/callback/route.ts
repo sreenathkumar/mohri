@@ -30,10 +30,8 @@ export async function GET(req: NextRequest) {
             session,
         });
 
-        if (!response['PRODUCTS_CREATE'][0]?.success) {
-            console.log(
-                `Failed to register PRODUCTS_CREATE webhook: ${JSON.stringify(response['PRODUCTS_CREATE'][0]?.result)}`,
-            );
+        if (!response) {
+            return new Response('Webhook registration failed.')
         }
 
         await dbConnect();
