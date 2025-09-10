@@ -5,7 +5,7 @@ import ConnectedStores from "./components/connected-stores";
 import { getShops } from "@/actions/shopActions";
 
 export interface StoreTypes {
-    url: string;
+    domain: string;
     platform: string;
     name?: string;
 }
