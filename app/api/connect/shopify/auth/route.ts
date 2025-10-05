@@ -6,10 +6,10 @@ import shopify from "@/shopify.config";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-    // Ensure the shop parameter is present
     const shop = req.nextUrl.searchParams.get('shop');
     const uid = req.nextUrl.searchParams.get('uid');
 
+    // Ensure the shop parameter is present
     if (!shop || !uid) {
         return new Response('Missing shop/uid parameter', { status: 400 });
     }

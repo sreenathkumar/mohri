@@ -1,8 +1,8 @@
 import { Badge } from "@/components/shadcn/badge"
 import { TableCell, TableRow } from "@/components/shadcn/table"
 import { OrderType } from "@/types/OrderType"
-import OrderCheckbox from "./OrderCheckbox"
 import Image from "next/image"
+import OrderCheckbox from "./OrderCheckbox"
 
 function OrderRowItem({ order, children }: { order: OrderType, children: React.ReactNode }) {
 
@@ -14,7 +14,8 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
             <TableCell className="font-medium">{order.order_id}</TableCell>
             <TableCell>{order.name}</TableCell>
             <TableCell>{order.city}</TableCell>
-            <TableAddressCell address={order.address} />
+            {/* <TableAddressCell address={order.address} /> */}
+            <TableCell>{order.address}</TableCell>
             <TableCell>{order.phone}</TableCell>
             <TableCell>{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
             <TableCell>{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
@@ -41,43 +42,43 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
 }
 
 
-function TableAddressCell({
-    address,
-}: {
-    address: {
-        block?: string;
-        street?: string;
-        house?: string;
-        jaddah?: string;
-        floorApt?: string;
-    };
-}) {
-    // Create an array of address parts that will be joined into a single string
-    const addressParts = [
-        address.block && <><strong>Block:</strong> {address.block}</>,
-        address.street && <><strong>Street:</strong> {address.street}</>,
-        address.house && <><strong>House:</strong> {address.house}</>,
-        address.jaddah && <><strong>Jaddah:</strong> {address.jaddah}</>,
-        address.floorApt && <><strong>Floor/Apt:</strong> {address.floorApt}</>,
-    ]
-        .filter(Boolean)
+// function TableAddressCell({
+//     address,
+// }: {
+//     address: {
+//         block?: string;
+//         street?: string;
+//         house?: string;
+//         jaddah?: string;
+//         floorApt?: string;
+//     };
+// }) {
+//     // Create an array of address parts that will be joined into a single string
+//     const addressParts = [
+//         address.block && <><strong>Block:</strong> {address.block}</>,
+//         address.street && <><strong>Street:</strong> {address.street}</>,
+//         address.house && <><strong>House:</strong> {address.house}</>,
+//         address.jaddah && <><strong>Jaddah:</strong> {address.jaddah}</>,
+//         address.floorApt && <><strong>Floor/Apt:</strong> {address.floorApt}</>,
+//     ]
+//         .filter(Boolean)
 
-    return (
-        <TableCell>
-            {/* Conditionally render the address string as a single paragraph */}
-            {addressParts.length > 0 ? <p>{
-                <>
-                    <>{address.block && <><strong>Block:</strong> {`${address.block}`}</>}</>
-                    <>{address.street && <>, <strong>Street:</strong> {`${address.street}`}</>}</>
-                    <>{address.house && <>, <strong>House:</strong> {`${address.house}`}</>}</>
-                    <>{address.jaddah && <>, <strong>Jaddah:</strong> {`${address.jaddah}`}</>}</>
-                    <>{address.floorApt && <>, <strong>Floor/Apt:</strong> {`${address.floorApt}`}</>}</>
-                </>}
-            </p>
-                : <p>No address available</p>}
-        </TableCell>
-    );
-}
+//     return (
+//         <TableCell>
+//             {/* Conditionally render the address string as a single paragraph */}
+//             {addressParts.length > 0 ? <p>{
+//                 <>
+//                     <>{address.block && <><strong>Block:</strong> {`${address.block}`}</>}</>
+//                     <>{address.street && <>, <strong>Street:</strong> {`${address.street}`}</>}</>
+//                     <>{address.house && <>, <strong>House:</strong> {`${address.house}`}</>}</>
+//                     <>{address.jaddah && <>, <strong>Jaddah:</strong> {`${address.jaddah}`}</>}</>
+//                     <>{address.floorApt && <>, <strong>Floor/Apt:</strong> {`${address.floorApt}`}</>}</>
+//                 </>}
+//             </p>
+//                 : <p>No address available</p>}
+//         </TableCell>
+//     );
+// }
 
 //Show the assignee name and image in the table cell
 function TableAssigneeCell({ assignee }: { assignee: { id?: string, name?: string, image?: string } | null }) {

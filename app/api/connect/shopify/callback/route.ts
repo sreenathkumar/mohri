@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
             platform: 'shopify'
         });
 
-        return Response.redirect(new URL("/stores", `http://localhost:3000`), 302);
+        return Response.redirect(new URL("/stores", `https://${process.env.SHOPIFY_HOST}`), 302);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error('Error during Shopify callback processing:', error.message);

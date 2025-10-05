@@ -8,11 +8,11 @@ import { useState } from "react"
 function SearchMap() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would implement the actual search functionality
-    console.log("Searching for:", searchQuery)
-  }
+  // const handleSearch = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   // Here you would implement the actual search functionality
+  //   console.log("Searching for:", searchQuery)
+  // }
   return (
     <div className="flex gap-3 flex-1 z-20">
       <div className="relative flex-1 gap-3">

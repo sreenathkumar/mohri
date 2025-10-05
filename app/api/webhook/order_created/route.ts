@@ -1,12 +1,10 @@
 // function which push the new order data to the DB whenever new order is placed in woocommerce
 // also revalidate the path to show the updated data
 
-import getLocation from "@/actions/map/getLocation";
 import { prepareOrder } from "@/actions/woocommerce/wooConfig";
 import dbConnect from "@/dbConnect";
 import verifySignature from "@/lib/verifyWebhook";
 import { orderSchema } from "@/lib/zod";
-import Location from "@/models/locationModel";
 import Order from "@/models/orderModel";
 import { OrderType } from "@/types/OrderType";
 
@@ -58,52 +56,52 @@ export async function POST(request: Request) {
             const newOrder = new Order(order);
             await newOrder.save();
 
-            //extract the address and city from the order
-            const { address, city } = order;
+            // //extract the address and city from the order
+            // const { address, city } = order;
 
-            //check if the lat and lon are already present for this address
-            const existingCity = await Location.findOne({
-                city: city.toLocaleLowerCase()
-            });
+            // //check if the lat and lon are already present for this address
+            // const existingCity = await Location.findOne({
+            //     city: city.toLocaleLowerCase()
+            // });
 
-            //city exists but block does not exist
-            if (existingCity && !existingCity.blocks.has(`block_${address.block}`)) {
-                console.log(`block ${address.block} not exist in city ${city}.`);
+            // //city exists but block does not exist
+            // if (existingCity && !existingCity.blocks.has(`block_${address.block}`)) {
+            //     console.log(`block ${address.block} not exist in city ${city}.`);
 
-                //get the coordinates for the address
-                const coordinates = await getLocation({ city, block: address.block });
+            //     //get the coordinates for the address
+            //     const coordinates = await getLocation({ city, block: address.block });
 
-                // Set the coordinates if available
-                if (coordinates?.lat && coordinates?.lon) {
-                    //add the new block with coordinates to the existing city
-                    existingCity.blocks.set(`block_${address.block}`, {
-                        lat: coordinates.lat,
-                        lon: coordinates.lon,
-                    });
-                }
-            } else if (!existingCity) {
-                console.log(`City ${city} does not exist. Creating a new city.`);
+            //     // Set the coordinates if available
+            //     if (coordinates?.lat && coordinates?.lon) {
+            //         //add the new block with coordinates to the existing city
+            //         existingCity.blocks.set(`block_${address.block}`, {
+            //             lat: coordinates.lat,
+            //             lon: coordinates.lon,
+            //         });
+            //     }
+            // } else if (!existingCity) {
+            //     console.log(`City ${city} does not exist. Creating a new city.`);
 
-                //get the coordinates for the address
-                const coordinates = await getLocation({ city, block: address.block });
+            //     //get the coordinates for the address
+            //     const coordinates = await getLocation({ city, block: address.block });
 
-                if (coordinates?.lat && coordinates?.lon) {
-                    //create a new city document with the block and coordinates
-                    const newLocation = new Location({
-                        city: city.toLocaleLowerCase(),
-                        blocks: {
-                            [`block_${address.block}`]: {
-                                lat: coordinates.lat,
-                                lon: coordinates.lon,
-                            },
-                        },
-                    });
+            //     if (coordinates?.lat && coordinates?.lon) {
+            //         //create a new city document with the block and coordinates
+            //         const newLocation = new Location({
+            //             city: city.toLocaleLowerCase(),
+            //             blocks: {
+            //                 [`block_${address.block}`]: {
+            //                     lat: coordinates.lat,
+            //                     lon: coordinates.lon,
+            //                 },
+            //             },
+            //         });
 
-                    await newLocation.save();
-                } else {
-                    console.error('Coordinates not found for the new city:', city);
-                }
-            }
+            //         await newLocation.save();
+            //     } else {
+            //         console.error('Coordinates not found for the new city:', city);
+            //     }
+            // }
 
             // Notify clients about the new order
             await fetch(`${process.env.BASE_URL}/api/webhook/updates`, {
