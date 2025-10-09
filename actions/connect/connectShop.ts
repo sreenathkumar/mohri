@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from "@/auth";
+import dbConnect from "@/dbConnect";
 import Shop from "@/models/shopModel";
 import { redirect } from "next/navigation";
 
@@ -36,6 +37,9 @@ const connectShop = async (initialState: any, formData: FormData) => {
         const shopDomain = parsedUrl.hostname;
         shopifyUrl.searchParams.append('shop', shopDomain); //pass shop url
         shopifyUrl.searchParams.append('uid', userId) //pass shop owner id
+
+        //connect to db
+        await dbConnect()
 
         //check if the shop is already connected
         const isConnected = await Shop.findOne({
