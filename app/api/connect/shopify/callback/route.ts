@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
 
         //save the token to the database
         await Shop.create({
-            url: session.shop,
+            domain: session.shop,
             accessToken: session.accessToken,
             user: userId,
             platform: 'shopify'
