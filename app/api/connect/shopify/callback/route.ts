@@ -30,6 +30,10 @@ export async function GET(req: NextRequest) {
             session,
         });
 
+        console.log('Webhook registration response: ', response);
+
+        console.log(JSON.stringify(response));
+
         if (!response) {
             return new Response('Webhook registration failed.')
         }

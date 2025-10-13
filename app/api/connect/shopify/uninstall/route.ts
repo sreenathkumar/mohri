@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     //delete the shop from the database
     const result = await Shop.deleteOne({
-        url: domain,
+        domain,
     })
 
     if (result.deletedCount === 0) {
