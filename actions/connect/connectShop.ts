@@ -4,9 +4,10 @@ import { auth } from "@/auth";
 import dbConnect from "@/dbConnect";
 import Shop from "@/models/shopModel";
 import { redirect } from "next/navigation";
+import * as jose from 'jose';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const connectShop = async (initialState: any, formData: FormData) => {
+export async function connectShop (initialState: any, formData: FormData){
     const session = await auth();
 
     if (!session || !session.user) {
@@ -31,7 +32,7 @@ const connectShop = async (initialState: any, formData: FormData) => {
     }
 
     if (platform === 'shopify') {
-        const shopifyUrl = new URL('/api/connect/shopify/auth', `https://${process.env.SHOPIFY_HOST}`);
+        const shopifyUrl = new URL('/api/connect/shopify/auth', `https://${process.env.NEXT_PUBLIC_SHOPIFY_HOST}`);
 
         const parsedUrl = new URL(url);
         const shopDomain = parsedUrl.hostname;
@@ -50,10 +51,6 @@ const connectShop = async (initialState: any, formData: FormData) => {
             return {
                 success: false,
                 message: "Shop is already connected.",
-                errors: {
-                    url: "Shop is already connected.",
-                    platform: `This ${platform} store is already connected.`
-                }
             }
         }
 
@@ -63,4 +60,51 @@ const connectShop = async (initialState: any, formData: FormData) => {
     return { success: true, message: "Shop connected successfully.", };
 }
 
-export default connectShop
+export async function connectShopifyStore(token: string | null) {
+    if (!token) {
+        return {
+            success: false,
+            message: 'Token is required for validation.',
+        }
+    }
+
+    try {
+        const session = await auth();
+
+        if (!session || !session.user) {
+            redirect('/login');
+        }
+
+        const userId = session.user.id;
+        const secret = new TextEncoder().encode(process.env.SHOPIFY_CLIENT_SECRET);
+        const { payload } = await jose.jwtVerify(token, secret);
+
+        await dbConnect();
+
+        //create the shop DB entrry
+        const result = await Shop.create({
+            user: userId,
+            domain: payload.domain,
+            platform: payload.platform,
+
+        });
+
+        if (result) {
+            return {
+                success: true,
+                message: 'Store connected successfully'
+            }
+        }
+
+        return {
+            success: false,
+            message: 'Failed connecting store.',
+        }
+    } catch (error: any) {
+        console.log(error.message);
+        return {
+            success: false,
+            message: error.message,
+        }
+    }
+}
