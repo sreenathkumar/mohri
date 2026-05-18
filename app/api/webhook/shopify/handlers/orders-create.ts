@@ -1,41 +1,30 @@
 'use server'
 
-import dbConnect from "@/dbConnect";
-import { normalizeShopifyResponse } from "@/lib/utils";
 import Order from "@/models/orderModel";
 import Shop from "@/models/shopModel";
 import { revalidatePath } from "next/cache";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function handleOrderCreate(data: any, domain: string | null) {
+async function saveOrderToDB(data: any, domain: string | null) {
     if (!data) {
-        throw new Error("No data provided to handleOrderCreate");
+        throw new Error("No data provided to saveOrderToDB");
     }
 
     if (!domain) {
-        throw new Error("No domain provided to handleOrderCreate");
+        throw new Error("No domain provided to saveOrderToDB");
     }
 
-    //normalize the webhook response body to the required format
-    const normalData = normalizeShopifyResponse(data);
-
-    if (!normalData) {
-        throw new Error("Failed to normalize data in handleOrderCreate");
-    }
     try {
-
-        await dbConnect();
-
         //get the shop id and it's user
-        const shopInfo = await Shop.findOne({ domain, accessToken: { $exists: true } });
+        const shopInfo = await Shop.findOne({ domain});
 
         if (!shopInfo) {
-            throw new Error(`Shop with domain ${domain} is not found in handleOrderCreate`);
+            throw new Error(`Shop with domain ${domain} is not found in connected stores.`);
         }
 
         //save the order data in the database
         await Order.create({
-            ...normalData,
+            ...data,
             status: 'porcessing',
             asignee: null,
             shop: shopInfo.domain,
@@ -44,9 +33,9 @@ async function handleOrderCreate(data: any, domain: string | null) {
 
         revalidatePath('/orders')
     } catch (err) {
-        console.error("Error in handleOrderCreate:", err);
+        console.error("Error in saveOrderToDB:", err);
         throw err;
     }
 }
 
-export default handleOrderCreate;
+export default saveOrderToDB;

@@ -1,26 +1,25 @@
 import Shop from "@/models/shopModel";
 import { verifyWebhook } from "@/shopify.config";
 import { NextRequest } from "next/server";
-import handleOrderCreate from "./handlers/orders-create";
 import dbConnect from "@/dbConnect";
+import saveOrderToDB from "./handlers/orders-create";
 
 export async function POST(req: NextRequest) {
+    try {
     //verify the webhook
-    const { valid, topic, domain, data } = await verifyWebhook(req);
+    const { valid, topic, shop, data } = await verifyWebhook(req);
 
     if (!valid) {
         console.error('Invalid webhook call, not handling it');
         return new Response("Invalid webhook", { status: 400 });
     }
 
-    console.log(`Received valid webhook for topic: ${topic} from shop: ${domain}`);
-    try {
-        await dbConnect();
-        // check if the shop is registered in your database
-        const result = await Shop.findOne({ domain: domain, accessToken: { $exists: true } });
+         await dbConnect();
+         // check if the shop is registered in your database
+         const result = await Shop.findOne({ domain: shop});
 
         if (!result) {
-            console.error(`Shop: ${domain} is not connected.`);
+            console.error(`Shop: ${shop} is not connected.`);
             return new Response("Shop not found", { status: 404 });
         }
 
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest) {
         switch (topic) {
             case 'ORDERS_CREATE':
                 //call the order create handler
-                await handleOrderCreate(data, domain);
+                await saveOrderToDB(data, shop);
                 break;
             case 'ORDERS_PAID':
                 console.log('Order Paid:', data);
