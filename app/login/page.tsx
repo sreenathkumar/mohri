@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import LoginForm from "./components/LoginForm"
 
 function LoginPage() {
@@ -8,7 +9,9 @@ function LoginPage() {
                 <div className="text-center">
                     <h2 className="mt-6 text-3xl font-extrabold">Sign in to your account</h2>
                 </div>
+                <Suspense>
                 <LoginForm />
+                </Suspense>
             </div>
         </main>
     )
