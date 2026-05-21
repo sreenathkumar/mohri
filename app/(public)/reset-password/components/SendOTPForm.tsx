@@ -1,7 +1,7 @@
 'use client'
 
 import { sendOTP } from "@/actions/resetPassword"
-import SubmitBtn from "@/app/login/components/SubmitBtn"
+import SubmitBtn from "@/app/(public)/login/components/SubmitBtn"
 import { useActionState, useEffect } from "react"
 import DynamicAlert from "./DynamicAlert"
 import EmailInputField from "./EmailInputField"
