@@ -12,13 +12,11 @@ import {
     BadgeCheck,
     LogOut
 } from "lucide-react";
-import { useSidebar } from "../shadcn/sidebar";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-function UserMenu({ userName, userEmail, userImage }: { userName: string, userEmail: string, userImage: string | undefined }) {
-    const { isMobile } = useSidebar();
+function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: string, userEmail: string, userImage: string | undefined, isMobile?: boolean }) {
     const router = useRouter();
 
     const logout = async () => {
@@ -28,7 +26,6 @@ function UserMenu({ userName, userEmail, userImage }: { userName: string, userEm
         } catch (error) {
             console.log(error)
         }
-
     }
     return (
         <DropdownMenuContent
