@@ -1,14 +1,11 @@
 import PublicLayout from '@/components/ui/PublicLayout';
 
-interface PrivacyPolicyProps {
-    appName: string;
-    companyName: string;
-    contactEmail: string;
-    appUrl: string;
-    lastUpdated: string;
-}
+const appName = "Order Management"
+const companyName = 'Sreenath Kumar'
+const appUrl = 'sreenathkumar.vercel.app'
+const lastUpdated = '13-10-2025'
 
-function PrivacyPage({ appName = "Order Management", companyName = 'Sreenath Kumar', appUrl = 'sreenathkumar.vercel.app', lastUpdated = '13-10-2025' }: PrivacyPolicyProps) {
+async function PrivacyPage() {
     return (
         <PublicLayout>
             <main className="flex-1 flex items-center justify-center gap-4">
