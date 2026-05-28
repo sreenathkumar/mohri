@@ -42,13 +42,13 @@ function InfiniteTableContent({ orders, columns, totalPages, currentPage }: { or
             if (data) {
                 if (data.type === 'DELETE_ORDER') {
                     setInitialOrders(prev => {
-                        const exists = prev.some(item => item.order_id === data.order_id);
+                        const exists = prev.some(item => item.order_id === data.order.order_id);
 
                         if (!exists) {
                             return prev
                         }
 
-                        return prev.filter(item => item.order_id !== data.order_id)
+                        return prev.filter(item => item.order_id !== data.order.order_id)
                     }
                     )
                 } else {
