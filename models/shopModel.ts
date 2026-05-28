@@ -22,8 +22,8 @@ const ShopSchema = new mongoose.Schema({
     accessToken: {
         type: String,
         required: false
-    },
-});
+    }
+}, {timestamps:true});
 
 const Shop = mongoose.models.Shop || mongoose.model('Shop', ShopSchema);
 

@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
     //check if the request is verified
-    const { valid, domain } = await verifyWebhook(request);
+    const { valid, shop } = await verifyWebhook(request);
 
     if (!valid) {
         return new Response("Unauthorized. HMAC don't match.", { status: 401 });
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     //delete the shop from the database
     const result = await Shop.deleteOne({
-        domain,
+        shop,
     })
 
     if (result.deletedCount === 0) {

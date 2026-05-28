@@ -12,6 +12,7 @@ const orderSchema = new mongoose.Schema({
     },
     order_id: {
         type: Number,
+        unique: true,
         required: true,
     },
     name: {

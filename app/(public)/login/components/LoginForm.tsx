@@ -5,7 +5,7 @@ import { Input } from "@/components/shadcn/input"
 import FormField from '@/components/ui/CustomField'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import PasswordField from './PasswordField'
 import SubmitBtn from "./SubmitBtn"
@@ -13,6 +13,8 @@ import SubmitBtn from "./SubmitBtn"
 function LoginForm() {
     const router = useRouter();
     const [formState, setFormState] = useState<{ errors: { email?: string[], password?: string[] } | null, message: string | null }>({ errors: null, message: null });
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl');
 
     //============================
     // Login user
@@ -33,7 +35,7 @@ function LoginForm() {
                 return
             }
 
-            router.push('/dashboard');
+            router.push(callbackUrl? decodeURIComponent(callbackUrl) :'/dashboard');
             router.refresh();
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,4 +1,3 @@
-//import '@shopify/shopify-api/adapters/web-api';
 import dbConnect from "@/dbConnect";
 import { AuthNonce } from "@/models/authNonce";
 import Shop from "@/models/shopModel";
@@ -58,7 +57,7 @@ export async function GET(req: NextRequest) {
             platform: 'shopify'
         });
 
-        return Response.redirect(new URL("/stores", `https://${process.env.SHOPIFY_HOST}`), 302);
+        return Response.redirect(new URL("/stores", `https://${process.env.NEXT_PUBLIC_SHOPIFY_HOST}`), 302);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error('Error during Shopify callback processing:', error.message);

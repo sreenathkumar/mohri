@@ -10,11 +10,14 @@ const { auth } = NextAuth(authConfig);
 
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
+    const searchParams = req.nextUrl.search;
 
     const session = await auth();
 
     if (!session && !publicRoutes.some((route) => path.startsWith(route))) {
-        return NextResponse.redirect(new URL('/login', req.url));
+        const callbackUrl = encodeURIComponent(`${path}${searchParams}`);
+
+        return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url));
     }
 
     return NextResponse.next();
