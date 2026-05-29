@@ -1,8 +1,8 @@
 'use client'
 
 import { updateEmployee } from "@/actions/employee"
-import SubmitBtn from "@/app/login/components/SubmitBtn"
-import DynamicAlert from "@/app/reset-password/components/DynamicAlert"
+import SubmitBtn from "@/app/(public)/login/components/SubmitBtn"
+import DynamicAlert from "@/app/(public)/reset-password/components/DynamicAlert"
 import { Input } from "@/components/shadcn/input"
 import {
     Select,

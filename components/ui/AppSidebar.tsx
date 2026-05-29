@@ -4,9 +4,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail
+  SidebarRail,
 } from "@/components/shadcn/sidebar"
-import { HelpCircle, IdCard, LayoutDashboard, Package, Truck, Store } from 'lucide-react'
+import { HelpCircle, IdCard, LayoutDashboard, Package, Truck, Store, BookOpenText } from 'lucide-react'
 import MainNav from "./MainNav"
 import User from "./User"
 
@@ -16,6 +16,7 @@ const navItems = [
   { title: "Employees", url: "/employees", icon: IdCard, requires: ['admin', 'clerk'] },
   { title: "Orders", url: "/orders", icon: Package },
   { title: 'Track Delivery', url: '/track', icon: Truck },
+  { title: "Privacy Policy", url: "/privacy-policy", icon: BookOpenText },
   { title: "Help", url: "/help", icon: HelpCircle },
 ]
 

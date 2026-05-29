@@ -6,7 +6,7 @@ import FormField from "@/components/ui/CustomField";
 import { useActionState, useEffect } from "react";
 import DynamicAlert from "./DynamicAlert";
 import { useResetPasswordCtx } from "@/context/ResetPasswordCtx";
-import SubmitBtn from "@/app/login/components/SubmitBtn";
+import SubmitBtn from "@/app/(public)/login/components/SubmitBtn";
 
 interface Props {
     setStep: React.Dispatch<React.SetStateAction<string>>

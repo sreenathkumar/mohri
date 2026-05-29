@@ -7,7 +7,8 @@ import {
 import {
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem,
+    useSidebar
 } from "@/components/shadcn/sidebar";
 
 import UserMenu from "./UserMenu";
@@ -15,6 +16,7 @@ import { ChevronsUpDown } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 function User() {
+    const { isMobile } = useSidebar();
     const { data: session } = useSession();
     if (!session) return null;
 
@@ -43,7 +45,7 @@ function User() {
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
-                    <UserMenu userName={userName} userEmail={userEmail} userImage={userImage} />
+                    <UserMenu userName={userName} userEmail={userEmail} userImage={userImage} isMobile={isMobile} />
                 </DropdownMenu>
             </SidebarMenuItem>
         </SidebarMenu>
