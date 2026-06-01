@@ -6,17 +6,17 @@ import saveOrderToDB from "./handlers/orders-create";
 
 export async function POST(req: NextRequest) {
     try {
-    //verify the webhook
-    const { valid, topic, shop, data } = await verifyWebhook(req);
+        //verify the webhook
+        const { valid, topic, shop, data } = await verifyWebhook(req);
 
-    if (!valid) {
-        console.error('Invalid webhook call, not handling it');
-        return new Response("Invalid webhook", { status: 400 });
-    }
+        if (!valid) {
+            console.error('Invalid webhook call, not handling it');
+            return new Response("Invalid webhook", { status: 400 });
+        }
 
-         await dbConnect();
-         // check if the shop is registered in your database
-         const result = await Shop.findOne({ domain: shop});
+        await dbConnect();
+        // check if the shop is registered in your database
+        const result = await Shop.findOne({ domain: shop });
 
         if (!result) {
             console.error(`Shop: ${shop} is not connected.`);

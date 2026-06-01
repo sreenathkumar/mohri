@@ -19,7 +19,7 @@ async function OrdersTable({ query, sort }: { query: string | string[] | undefin
     const userId = session?.user?.id
     const role = session?.user?.role
 
-    const { orders, totalPages, currentPage }: { orders: OrderType[], totalPages: number, currentPage: number } = await getOrders({ query, userId, role, sort });
+    const { orders }: { orders: OrderType[], totalPages: number, currentPage: number } = await getOrders({ query, userId, role, sort });
 
     return (
         <>
@@ -28,7 +28,7 @@ async function OrdersTable({ query, sort }: { query: string | string[] | undefin
                     <TableHeader className="sticky top-0 z-10 bg-background shadow">
                         <TableHeadRowItem columns={tableColumns} orderIds={orders.map(order => order.order_id)} />
                     </TableHeader>
-                    <InfiniteTableContent columns={tableColumns.length} orders={orders} totalPages={totalPages} currentPage={currentPage} />
+                    <InfiniteTableContent columns={tableColumns.length} />
                 </Table>
             </div>
         </>
