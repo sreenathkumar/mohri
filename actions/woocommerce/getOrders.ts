@@ -31,21 +31,22 @@ const getOrders = async (params: SearchParams = {}) => {
     try {
         await dbConnect();
 
-        const searchCriteria = role === 'admin' || role === 'clerk' ? {} : { asignee: userId };
+        const searchCriteria = role === 'admin' || role === 'clerk' ? { user_id: userId } : { asignee: userId };
+
         const sortMap: Record<string, Record<string, SortOrder>> = {
             city_asc: { city: 1, date_created_gmt: -1 },
             city_desc: { city: -1, date_created_gmt: -1 },
         };
 
         const sortCriteria = sortMap[sorting] || { date_created_gmt: -1 };
-        // **🔹 Handle Filtering**
+
         if (searchQuery) {
             const filteredOrders = await getFilteredOrders({ query: searchQuery, sort: sortCriteria, skip, limit: LIMIT, userId, role, });
 
             return filteredOrders
         }
 
-        // **🔹 Fetch Orders & Total Count in Parallel**
+        //  Fetch Orders & Total Count in Parallel
         const [dbOrders, totalCount] = await Promise.all([
             Order.find(searchCriteria)
                 .select('-_id -__v -createdAt -updatedAt -date_created_gmt -date_modified_gmt')
@@ -58,7 +59,7 @@ const getOrders = async (params: SearchParams = {}) => {
             Order.countDocuments(searchCriteria),
         ]);
 
-        // **🔹 Format Orders**
+        // Format Orders for Frontend
         const orders = dbOrders.map((item) => ({
             order_id: item.order_id,
             name: item.name,

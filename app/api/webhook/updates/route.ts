@@ -1,46 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
+import getOrders from "@/actions/woocommerce/getOrders";
 
-const clients: Set<ReadableStreamDefaultController> = new Set()
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
 
-export async function GET() {
-    const stream = new ReadableStream({
-        start(controller) {
-            clients.add(controller)
+    const query = searchParams.get('query') || undefined;
+    const sort = searchParams.get('sort') || undefined;
+    const page = parseInt(searchParams.get('page') || '1', 10);
 
-            // Cleanup when the stream is canceled (client disconnects)
-            return () => {
-                clients.delete(controller);
-            };
-        },
+    try {
+        const data = await getOrders({ query, sort, page });
+        return NextResponse.json(data);
 
-        cancel() {
-            // Cleanup when the stream is canceled (client disconnects)
-            clients.forEach(client => clients.delete(client));
-        }
-    })
-
-    return new NextResponse(stream, {
-        headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-        },
-    })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+    } catch (error: any) {
+        return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+    }
 }
-
-export async function POST(request: Request) {
-    const data = await request.json();
-
-    clients.forEach((client) => {
-        try {
-            client.enqueue(`data: ${JSON.stringify(data)}\n\n`);
-        } catch (error) {
-            console.warn("Skipping closed SSE client:", error);
-            clients.delete(client);
-        }
-    })
-
-    return NextResponse.json({ success: true })
-}
-
