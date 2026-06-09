@@ -51,7 +51,14 @@ export async function getShops(user: string) {
             return [];
         }
 
-        return shops;
+        //format shops for removing unnecessary fields
+        const formattedShops = shops.map(shop=>({
+                domain: shop.domain,
+                platform: shop.platform,
+                name: shop.name  
+        }))
+
+        return formattedShops;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
