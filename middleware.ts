@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authConfig } from "./auth.config";
 
 //pulic routes
-const publicRoutes = ["/login", "/reset-password"];
+const publicRoutes = ["/login", "/reset-password",'/help', '/privacy-policy'];
 
 //auth object without the mongodb adapter
 const { auth } = NextAuth(authConfig);
