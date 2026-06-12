@@ -1,66 +1,66 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { StoreTypes } from '../page'
 import StoreCard from './store-card'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Store } from 'lucide-react';
 import AddStoreBtn from './connect-btn';
-import { connectShopifyStore } from '@/actions/connect/connectShop';
+import { confirmShopConnection } from '@/actions/connect/connectShop';
 import toast from 'react-hot-toast';
 
-const APP_URL = `https://${process.env.NEXT_PUBLIC_SHOPIFY_HOST}`;
 
 function ConnectedStores({ stores }: { stores: StoreTypes[] }) {
+  const router = useRouter();
+  const pathname = usePathname()
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const challenge = searchParams.get('code_challenge');
   const state = searchParams.get('state');
+  const shop = searchParams.get('shop');
+  const [isConnecting, setIsConnecting] = useState(!!shop && !!state && !!challenge)
 
-  useEffect(()=>{
-   
-    if(!window) return;
-   
-    window.opener?.postMessage({
-        type: 'CONFIRM_STATE',
-        state: state
-    }, APP_URL);
+  useEffect(() => {
+    let isMounted = true;
 
-    const handleMessage =(event:MessageEvent)=>{
-      if (event.origin !== APP_URL) return;
+    async function verifyParams() {
+      if (!shop || !state || !challenge) return;
 
-      if (event.data.type === 'STATE_CONFIRMED'){
-        connectShopifyStore(token).then((res)=>{
-          if(res.success){
-             window.opener?.postMessage({type: 'CONNECTION_SUCCEDED'}, APP_URL);
-             toast.success(res.message);
-          }else{
-            toast.error(res.message);
-          }
-        })
+      const { success, message } = await confirmShopConnection({ shop, state, challenge });
+
+      if (!isMounted) return;
+
+      if (success) {
+        toast.success(message);
+      } else {
+        toast.error(message);
       }
+      setIsConnecting(false);
+      router.replace(pathname)
     }
 
-    window.addEventListener('message', handleMessage);
-    
-    return()=>window.removeEventListener('message', handleMessage);
+    verifyParams();
+
+    return () => {
+      isMounted = false
+    }
   }, [])
-  
+
   return (
     <>
-    {
-      stores.length > 0 ?
-    
-    <div className="flex flex-col gap-4 mt-10">
-      {stores.map((store) => (
-        <StoreCard key={store.domain} name={store.name} url={store.domain} platform={store.platform} />
-      ))}
-    </div> : <div className="text-center py-12 text-background my-auto">
-                        <Store className="h-12 w-12 text-foreground mx-auto mb-4" />
-                        <h3 className="text-lg text-muted-foreground font-medium mb-2">No stores connected</h3>
-                        <p className="text-muted-foreground mb-4">Connect your first store to get started</p>
-                        <AddStoreBtn />
-                    </div>
-    }</>
+      {isConnecting ? <p>Loading screen</p> :
+        (stores.length > 0 ?
+          <div className="flex flex-col gap-4 mt-10">
+            {stores.map((store) => (
+              <StoreCard key={store.domain} name={store.name} url={store.domain} platform={store.platform} />
+            ))}
+          </div> : <div className="text-center py-12 text-background my-auto">
+            <Store className="h-12 w-12 text-foreground mx-auto mb-4" />
+            <h3 className="text-lg text-muted-foreground font-medium mb-2">No stores connected</h3>
+            <p className="text-muted-foreground mb-4">Connect your first store to get started</p>
+            <AddStoreBtn />
+          </div>)
+      }
+      </>
   )
 }
 

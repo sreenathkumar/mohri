@@ -2,6 +2,8 @@ import { auth } from "@/auth";
 import AddStoreBtn from "./components/connect-btn";
 import ConnectedStores from "./components/connected-stores";
 import { getShops } from "@/actions/shopActions";
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
 export interface StoreTypes {
     domain: string;
@@ -11,8 +13,9 @@ export interface StoreTypes {
 
 async function StoresPage() {
     const session = await auth();
+    
     if (!session) {
-        return <p>Getting user info failed.</p>
+        redirect('/login');
     }
 
     const userId = session.user?.id;
@@ -24,7 +27,9 @@ async function StoresPage() {
                 <h1 className="text-3xl font-bold">Connected Stores</h1>
                 <AddStoreBtn />
             </div>
+            <Suspense>
              <ConnectedStores stores={stores} />
+             </Suspense>
         </div>
     )
 }

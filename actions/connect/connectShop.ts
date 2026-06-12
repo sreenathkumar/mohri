@@ -5,6 +5,8 @@ import dbConnect from "@/dbConnect";
 import Shop from "@/models/shopModel";
 import { redirect } from "next/navigation";
 import * as jose from 'jose';
+import { createHmac, randomBytes } from "crypto";
+import AuthCode from "@/models/oauthCode";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function connectShop (initialState: any, formData: FormData){
@@ -60,51 +62,91 @@ export async function connectShop (initialState: any, formData: FormData){
     return { success: true, message: "Shop connected successfully.", };
 }
 
-export async function connectShopifyStore(token: string | null) {
-    if (!token) {
+interface ShopConnectionParams{
+    state: string,
+    challenge: string,
+    shop: string
+}
+export async function confirmShopConnection({state, challenge, shop}:ShopConnectionParams){
+    //if params is empty return nothing
+    if(!state || !challenge || !shop){
         return {
             success: false,
-            message: 'Token is required for validation.',
+            message: 'No params is provided'
         }
     }
 
     try {
         const session = await auth();
-
-        if (!session || !session.user) {
-            redirect('/login');
-        }
-
-        const userId = session.user.id;
-        const secret = new TextEncoder().encode(process.env.SHOPIFY_CLIENT_SECRET);
-        const { payload } = await jose.jwtVerify(token, secret);
-
-        await dbConnect();
-
-        //create the shop DB entrry
-        const result = await Shop.create({
-            user: userId,
-            domain: payload.domain,
-            platform: payload.platform,
-
-        });
-
-        if (result) {
+        
+        if(!session){
             return {
-                success: true,
-                message: 'Store connected successfully'
+                success: false,
+                message: 'Please login.'
             }
         }
 
-        return {
-            success: false,
-            message: 'Failed connecting store.',
+        //connect to db
+        await dbConnect();
+
+        //check if the shop is already connected or not.
+        const isConnected = await Shop.findOne({
+            domain: shop
+        }).catch(()=>null);
+
+        if (isConnected) {
+            return{
+                success: false,
+                message: 'The shop is already connected to an account.'
+            }
         }
-    } catch (error: any) {
-        console.log(error.message);
-        return {
+
+       const code = randomBytes(16).toString('hex');
+    
+    const result = await AuthCode.create({
+        code,
+        challenge,
+        shop
+    }).catch(()=>null); 
+
+    if (!result) {
+        return{
             success: false,
-            message: error.message,
+            message: 'Error in saving AuthCode'
         }
     }
+
+    //sign a request and send it to the platform's server.
+    const body = JSON.stringify({code, state, userId:session.user.id});
+    const timestamp = Date.now().toString();
+
+    const signature = createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET!).update(`${timestamp}.${body}`).digest('hex');
+
+    //send the request
+    const platformRes = await fetch(`https://${process.env.NEXT_PUBLIC_SHOPIFY_HOST}/api/connect/callback`,{
+        method: 'POST',
+        headers:{
+            'content-type': 'application/json',
+            'x-service-timestamp': timestamp,
+            'x-service-signature': signature
+        },
+        body
+    });
+
+    const resMessage = await platformRes.text();
+
+    return{
+        success: platformRes.ok,
+        message: resMessage
+    }
+
+    } catch (error:any) {
+        console.log('Error when confirming shop connection', error.message);
+        return {
+            success: false,
+            message: `Something goes wrong in connecting shop: ${error.message}`
+        }
+    }
+    
+
 }
