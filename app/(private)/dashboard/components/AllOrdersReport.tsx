@@ -5,7 +5,6 @@ import OrdersChart from "./OrdersChart"
 async function AllOrdersReport({ from, to }: { from?: string, to?: string }) {
     const report = await getOrdersReport({ from, to });
 
-    console.log('deliver report: ', report)
     return (
         <AnalyticsCard title="Total Orders" chartKey="delivery">
             {
