@@ -5,6 +5,7 @@ import Order from "@/models/orderModel";
 import getFilteredOrders from "./getFilteredOrders";
 import User from "@/models/userModel";
 import { SortOrder } from "mongoose";
+import { auth } from "@/auth";
 
 
 //limit the number of orders for the db query result
@@ -13,14 +14,25 @@ const LIMIT = Number(process.env.ORDER_QUERY_LIMIT) || 10
 interface SearchParams {
     query?: string | string[];
     page?: number;
-    userId?: string;
     role?: string;
     sort?: string | string[]
 }
 
 
 const getOrders = async (params: SearchParams = {}) => {
-    const { query = '', page = 1, userId, role, sort = '' } = params;
+    //check if user is authenticated and get the user id and role from the session
+    const session = await auth();
+
+    if (!session) {
+        console.log('User is not authenticated. Cannot fetch orders.');
+        return { orders: [], totalPages: 0, totalCount: 0, currentPage: 1 };
+    }
+    //logged in user details
+    const userId = session.user.id;
+    const role = session.user.role;
+
+    //parameters for pagination, search and sorting
+    const { query = '', page = 1, sort = '' } = params;
 
     // Calculate the number of documents to skip
     const skip = (page - 1) * LIMIT;
@@ -41,7 +53,7 @@ const getOrders = async (params: SearchParams = {}) => {
         const sortCriteria = sortMap[sorting] || { date_created_gmt: -1 };
 
         if (searchQuery) {
-            const filteredOrders = await getFilteredOrders({ query: searchQuery, sort: sortCriteria, skip, limit: LIMIT, userId, role, });
+            const filteredOrders = await getFilteredOrders({ query: searchQuery, sort: sortCriteria, skip, limit: LIMIT });
 
             return filteredOrders
         }
@@ -82,8 +94,10 @@ const getOrders = async (params: SearchParams = {}) => {
             totalCount,
             currentPage: page,
         };
-    } catch (error) {
-        console.log('Error in getOrders: ', error);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.log('Error in getOrders: ', error.message);
         return { orders: [], totalPages: 0, totalCount: 0, currentPage: page };
     }
 };

@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import dbConnect from "@/dbConnect";
 import Order from "@/models/orderModel";
 import { OrderType } from "@/types/OrderType";
@@ -9,27 +10,39 @@ interface SearchParams {
     query?: string | string[];
     skip?: number;
     limit?: number;
-    userId?: string;
-    role?: string;
     page?: number;
     sort?: Record<string, SortOrder>
 }
 
 async function getFilteredOrders(params: SearchParams) {
-    const { query = '', skip = 0, limit = 10, userId, role, page = 1, sort } = params;
+    //check if user is authenticated and get the user id and role from the session
+    const session = await auth();
+
+    if (!session) {
+        console.log('User is not authenticated. Cannot fetch orders.');
+        return { orders: [], totalPages: 0, totalCount: 0, currentPage: 1 };
+    }
+
+    const userId = session.user.id;
+    const role = session.user.role;
+
+    const { query = '', skip = 0, limit = 10, page = 1, sort } = params;
+    const numQuery = Number(query);
+    const isNumber = !isNaN(numQuery);
+    console.log('getFilteredOrders params:', { query, skip, limit, page, sort });
 
     try {
         await dbConnect();
 
         // Define search criteria
         const searchCriteria = {
-            ...(role === 'admin' || role === 'clerk' ? {} : { asignee: userId }),
-            $or: [
+            ...(role === 'admin' || role === 'clerk' ? { user_id: userId } : { asignee: userId }),
+            $and: [
                 { name: { $regex: query, $options: 'i' } },
-                { order_id: { $regex: query, $options: 'i' } },
                 { phone: { $regex: query, $options: 'i' } },
                 { city: { $regex: query, $options: 'i' } },
-                { asignee_name: { $regex: query, $options: 'i' } }
+                { asignee_name: { $regex: query, $options: 'i' } },
+                ...(isNumber ? [{ order_id: numQuery }] : [])
             ],
         };
 

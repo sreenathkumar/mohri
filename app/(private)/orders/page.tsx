@@ -7,8 +7,10 @@ import OrdersTable from "./components/OrdersTable"
 import SyncBtn from "./components/SyncBtn"
 import FilterBtn from "./components/FilterBtn"
 import CopyBtn from "./components/CopyBtn"
+import TableSkeleton from "@/components/ui/TableSkeleton"
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+const defaultTableColumns = ['Order Number', 'Name', 'City', 'Address', 'Phone Number', 'Payment', 'Amount', 'Status', 'Asignee', 'Actions'];
 
 
 async function OrdersPage({ searchParams }: { searchParams: SearchParams }) {
@@ -30,7 +32,7 @@ async function OrdersPage({ searchParams }: { searchParams: SearchParams }) {
                         </div>
                     </div>
                 </div>
-                <Suspense fallback={<div>Loading table data...</div>}>
+                <Suspense fallback={<TableSkeleton columns={defaultTableColumns} />}>
                     <OrdersTable query={query} sort={sort} />
                 </Suspense>
             </SelectedOrderProvider>
