@@ -25,7 +25,7 @@ export async function POST(request: Request) {
                 const res = await Order.deleteOne({ order_id: id });
 
                 if (res.deletedCount > 0) {
-                    await fetch(`${process.env.BASE_URL}/api/webhook/updates`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/updates`, {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ type: "DELETE_ORDER", order_id: id })
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
                 const res = await Order.updateOne({ order_id: id }, { status: "completed" });
 
                 if (res) {
-                    await fetch(`${process.env.BASE_URL}/api/webhook/updates`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/updates`, {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ type: "COMPLETE_ORDER", order_id: id })
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
                 const result = await Order.findOneAndUpdate({ order_id: id }, { ...rest });
 
                 if (result) {
-                    await fetch(`${process.env.BASE_URL}/api/webhook/updates`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/updates`, {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ type: "UPDATE_ORDER", data: result })

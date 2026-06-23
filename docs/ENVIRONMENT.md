@@ -10,7 +10,7 @@ Copy `.env.example` → `.env` and fill in the following variables:
 
 | Variable                | Description                                           | Example / Notes                                               |
 | ----------------------- | ----------------------------------------------------- | ------------------------------------------------------------- |
-| `BASE_URL`              | Base URL of your app                                  | `http://localhost:3000` or your production domain             |
+| `NEXT_PUBLIC_BASE_URL`  | Base URL of your app                                  | `http://localhost:3000` or your production domain             |
 | `DB_URI`                | MongoDB connection string                             | `mongodb+srv://username:password@cluster0.mongodb.net/dbname` |
 | `UPLOADTHING_TOKEN`     | Token for file upload service (UploadThing)           | Provided by UploadThing dashboard                             |
 | `AUTH_SECRET`           | Secret key for authentication/session encryption      | Random 32+ character string                                   |
@@ -30,7 +30,7 @@ Copy `.env.example` → `.env` and fill in the following variables:
 
 ## 🔹 Sample `.env` Template
 
-```BASE_URL = http://localhost:3000
+```NEXT_PUBLIC_BASE_URL = http://localhost:3000
 DB_URI = mongodb+srv://username:password@cluster0.mongodb.net/woo_order_management
 UPLOADTHING_TOKEN = your_uploadthing_token
 AUTH_SECRET = supersecretkey123456789

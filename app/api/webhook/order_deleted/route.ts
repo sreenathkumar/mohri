@@ -23,7 +23,7 @@ export async function POST(request: Request) {
                 const result = await Order.deleteOne({ order_id });
 
                 if (result.deletedCount > 0) {
-                    await fetch(`${process.env.BASE_URL}/api/webhook/updates`, {
+                    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/updates`, {
                         method: 'POST',
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ type: "DELETE_ORDER", order_id: order_id })

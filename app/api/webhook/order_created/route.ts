@@ -104,7 +104,7 @@ export async function POST(request: Request) {
             // }
 
             // Notify clients about the new order
-            await fetch(`${process.env.BASE_URL}/api/webhook/updates`, {
+            await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/webhook/updates`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ type: "NEW_ORDER", order }),
