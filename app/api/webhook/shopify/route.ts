@@ -2,7 +2,7 @@ import Shop from "@/models/shopModel";
 import { verifyWebhook } from "@/shopify.config";
 import { NextRequest } from "next/server";
 import dbConnect from "@/dbConnect";
-import saveOrderToDB from "./handlers/orders-create";
+import Order from "@/models/orderModel";
 
 export async function POST(req: NextRequest) {
     try {
@@ -16,9 +16,9 @@ export async function POST(req: NextRequest) {
 
         await dbConnect();
         // check if the shop is registered in your database
-        const result = await Shop.findOne({ domain: shop });
+        const existingShop = await Shop.findOne({ domain: shop });
 
-        if (!result) {
+        if (!existingShop) {
             console.error(`Shop: ${shop} is not connected.`);
             return new Response("Shop not found", { status: 404 });
         }
@@ -26,8 +26,20 @@ export async function POST(req: NextRequest) {
         //handle the webhook data based on the topic
         switch (topic) {
             case 'ORDERS_CREATE':
-                //call the order create handler
-                await saveOrderToDB(data, shop);
+                //save the order data in the database
+                try {
+                    await Order.create({
+                        ...data,
+                        status: 'porcessing',
+                        asignee: null,
+                        shop: existingShop.domain,
+                        shop_id: existingShop._id,
+                    });
+
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (error: any) {
+                    throw new Error(`Failed to save order. Reason: ${error.message}`);
+                }
                 break;
             case 'ORDERS_PAID':
                 console.log('Order Paid:', data);

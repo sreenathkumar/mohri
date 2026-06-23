@@ -1,8 +1,8 @@
 "use server";
 
-import { auth } from "@/auth";
-import dbConnect from "@/dbConnect";
+import { getServerSessionContext } from "@/lib/checkServerAuth";
 import Order from "@/models/orderModel";
+import Shop from "@/models/shopModel";
 import { OrderType } from "@/types/OrderType";
 import { SortOrder } from "mongoose";
 
@@ -15,36 +15,47 @@ interface SearchParams {
 }
 
 async function getFilteredOrders(params: SearchParams) {
-    //check if user is authenticated and get the user id and role from the session
-    const session = await auth();
-
-    if (!session) {
-        console.log('User is not authenticated. Cannot fetch orders.');
-        return { orders: [], totalPages: 0, totalCount: 0, currentPage: 1 };
-    }
-
-    const userId = session.user.id;
-    const role = session.user.role;
-
     const { query = '', skip = 0, limit = 10, page = 1, sort } = params;
     const numQuery = Number(query);
     const isNumber = !isNaN(numQuery);
-    console.log('getFilteredOrders params:', { query, skip, limit, page, sort });
 
     try {
-        await dbConnect();
+        const { merchantId, userId, role } = await getServerSessionContext();
+        let searchCriteria = undefined;
 
-        // Define search criteria
-        const searchCriteria = {
-            ...(role === 'admin' || role === 'clerk' ? { user_id: userId } : { asignee: userId }),
-            $and: [
-                { name: { $regex: query, $options: 'i' } },
-                { phone: { $regex: query, $options: 'i' } },
-                { city: { $regex: query, $options: 'i' } },
-                { asignee_name: { $regex: query, $options: 'i' } },
-                ...(isNumber ? [{ order_id: numQuery }] : [])
-            ],
-        };
+        if (role === 'driver') {
+            searchCriteria = {
+                asignee: userId,
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { phone: { $regex: query, $options: 'i' } },
+                    { city: { $regex: query, $options: 'i' } },
+                    { asignee_name: { $regex: query, $options: 'i' } },
+                    ...(isNumber ? [{ order_id: numQuery }] : [])
+                ],
+            };
+        } else {
+            //get all the connected shop ids
+            const connectedShops = await Shop.distinct('_id', { ownerId: merchantId });;
+
+            //prepare the search criteria to fetch orders for the connected shops
+            searchCriteria = {
+                shopId: { $in: connectedShops },
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { phone: { $regex: query, $options: 'i' } },
+                    { city: { $regex: query, $options: 'i' } },
+                    { asignee_name: { $regex: query, $options: 'i' } },
+                    ...(isNumber ? [{ order_id: numQuery }] : [])
+                ],
+            };
+        }
+
+        //check if the searchCriteria is empty, if yes then return empty orders
+        if (!searchCriteria) {
+            console.log('No search criteria found for the user. Returning empty orders.');
+            return { orders: [], totalPages: 0, totalCount: 0, currentPage: page };
+        }
 
         // Fetch filtered orders and total count in parallel
         const [ordersResult, totalCount] = await Promise.all([

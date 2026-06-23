@@ -4,7 +4,7 @@ const ShopSchema = new mongoose.Schema({
     name: {
         type: String,
     },
-    user: {
+    ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -19,11 +19,7 @@ const ShopSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    accessToken: {
-        type: String,
-        required: false
-    }
-}, {timestamps:true});
+}, { timestamps: true });
 
 const Shop = mongoose.models.Shop || mongoose.model('Shop', ShopSchema);
 

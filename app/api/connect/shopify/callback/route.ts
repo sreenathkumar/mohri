@@ -28,11 +28,6 @@ export async function GET(req: NextRequest) {
         const response = await shopify.webhooks.register({
             session,
         });
-
-        console.log('Webhook registration response: ', response);
-
-        console.log(JSON.stringify(response));
-
         if (!response) {
             return new Response('Webhook registration failed.')
         }
@@ -53,7 +48,7 @@ export async function GET(req: NextRequest) {
         await Shop.create({
             domain: session.shop,
             accessToken: session.accessToken,
-            user: userId,
+            ownerId: userId,
             platform: 'shopify'
         });
 

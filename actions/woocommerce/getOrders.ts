@@ -5,7 +5,8 @@ import Order from "@/models/orderModel";
 import getFilteredOrders from "./getFilteredOrders";
 import User from "@/models/userModel";
 import { SortOrder } from "mongoose";
-import { auth } from "@/auth";
+import { getServerSessionContext } from "@/lib/checkServerAuth";
+import Shop from "@/models/shopModel";
 
 
 //limit the number of orders for the db query result
@@ -20,17 +21,6 @@ interface SearchParams {
 
 
 const getOrders = async (params: SearchParams = {}) => {
-    //check if user is authenticated and get the user id and role from the session
-    const session = await auth();
-
-    if (!session) {
-        console.log('User is not authenticated. Cannot fetch orders.');
-        return { orders: [], totalPages: 0, totalCount: 0, currentPage: 1 };
-    }
-    //logged in user details
-    const userId = session.user.id;
-    const role = session.user.role;
-
     //parameters for pagination, search and sorting
     const { query = '', page = 1, sort = '' } = params;
 
@@ -40,10 +30,26 @@ const getOrders = async (params: SearchParams = {}) => {
     const searchQuery: string = Array.isArray(query) ? query.join(' ') : query;
     const sorting: string = Array.isArray(sort) ? sort.join(' ') : sort;
 
+    //check if user is authenticated and get the user id and role from the session
     try {
-        await dbConnect();
+        const { merchantId, userId, role } = await getServerSessionContext();
+        let searchCriteria = undefined;
 
-        const searchCriteria = role === 'admin' || role === 'clerk' ? { user_id: userId } : { asignee: userId };
+        if (role === 'driver') {
+            searchCriteria = { asignee: userId }
+        } else {
+            //get all the connected shop ids
+            const connectedShops = await Shop.distinct('_id', { ownerId: merchantId });;
+
+            //prepare the search criteria to fetch orders for the connected shops
+            searchCriteria = { shopId: { $in: connectedShops } }
+        }
+
+        //check if the searchCriteria is empty, if yes then return empty orders
+        if (!searchCriteria) {
+            console.log('No search criteria found for the user. Returning empty orders.');
+            return { orders: [], totalPages: 0, totalCount: 0, currentPage: page };
+        }
 
         const sortMap: Record<string, Record<string, SortOrder>> = {
             city_asc: { city: 1, date_created_gmt: -1 },

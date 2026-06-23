@@ -25,8 +25,22 @@ function OrdersTableContent({ columns, fallbackData }: { columns: number, fallba
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getKey = (pageIndex: number) => {
-        // Return structured API string layout for cache sorting
-        return `/api/webhook/updates?query=${encodeURIComponent(query)}&sort=${sort}&page=${pageIndex}`;
+        const cleanParams: Record<string, string> = {
+            page: pageIndex.toString()
+        };
+
+        if (query && query.trim() !== '') {
+            cleanParams.query = query;
+        }
+
+        if (sort && sort.trim() !== '') {
+            cleanParams.sort = sort;
+        }
+
+        // 2. Convert to a stable query string
+        const searchParams = new URLSearchParams(cleanParams);
+
+        return `/api/webhook/updates?${searchParams.toString()}`;
     };
 
     //Infinite Scroll Data Layer setup

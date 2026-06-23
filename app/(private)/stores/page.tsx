@@ -1,9 +1,10 @@
-import { auth } from "@/auth";
+
 import AddStoreBtn from "./components/connect-btn";
 import ConnectedStores from "./components/connected-stores";
 import { getShops } from "@/actions/shopActions";
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
+
+export const dynamic = 'force-dynamic';
 
 export interface StoreTypes {
     domain: string;
@@ -12,14 +13,7 @@ export interface StoreTypes {
 }
 
 async function StoresPage() {
-    const session = await auth();
-    
-    if (!session) {
-        redirect('/login');
-    }
-
-    const userId = session.user?.id;
-    const stores: StoreTypes[] = await getShops(userId);
+    const stores: StoreTypes[] = await getShops();
 
     return (
         <div className="p-4 flex flex-col grow-1">
@@ -28,8 +22,8 @@ async function StoresPage() {
                 <AddStoreBtn />
             </div>
             <Suspense>
-             <ConnectedStores stores={stores} />
-             </Suspense>
+                <ConnectedStores stores={stores} />
+            </Suspense>
         </div>
     )
 }
