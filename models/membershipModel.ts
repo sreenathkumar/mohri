@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 
 const MembershipSchema = new mongoose.Schema({
-    userId: {
+    user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    merchantId: {
+    merchant: {
         type: Schema.Types.ObjectId,
         ref: 'Shop',
         required: true
@@ -19,7 +19,7 @@ const MembershipSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // a user from having duplicate memberships in the same shop
-MembershipSchema.index({ userId: 1, shopId: 1 }, { unique: true });
+MembershipSchema.index({ user: 1 }, { unique: true });
 
 const Membership = mongoose.models.Membership || mongoose.model('Membership', MembershipSchema);
 

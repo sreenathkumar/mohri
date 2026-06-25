@@ -4,12 +4,11 @@ import { auth } from "@/auth";
 import dbConnect from "@/dbConnect";
 import Shop from "@/models/shopModel";
 import { redirect } from "next/navigation";
-import * as jose from 'jose';
 import { createHmac, randomBytes } from "crypto";
 import AuthCode from "@/models/oauthCode";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function connectShop (initialState: any, formData: FormData){
+export async function connectShop(initialState: any, formData: FormData) {
     const session = await auth();
 
     if (!session || !session.user) {
@@ -62,14 +61,14 @@ export async function connectShop (initialState: any, formData: FormData){
     return { success: true, message: "Shop connected successfully.", };
 }
 
-interface ShopConnectionParams{
+interface ShopConnectionParams {
     state: string,
     challenge: string,
     shop: string
 }
-export async function confirmShopConnection({state, challenge, shop}:ShopConnectionParams){
+export async function confirmShopConnection({ state, challenge, shop }: ShopConnectionParams) {
     //if params is empty return nothing
-    if(!state || !challenge || !shop){
+    if (!state || !challenge || !shop) {
         return {
             success: false,
             message: 'No params is provided'
@@ -78,8 +77,8 @@ export async function confirmShopConnection({state, challenge, shop}:ShopConnect
 
     try {
         const session = await auth();
-        
-        if(!session){
+
+        if (!session) {
             return {
                 success: false,
                 message: 'Please login.'
@@ -92,61 +91,62 @@ export async function confirmShopConnection({state, challenge, shop}:ShopConnect
         //check if the shop is already connected or not.
         const isConnected = await Shop.findOne({
             domain: shop
-        }).catch(()=>null);
+        }).catch(() => null);
 
         if (isConnected) {
-            return{
+            return {
                 success: false,
                 message: 'The shop is already connected to an account.'
             }
         }
 
-       const code = randomBytes(16).toString('hex');
-    
-    const result = await AuthCode.create({
-        code,
-        challenge,
-        shop
-    }).catch(()=>null); 
+        const code = randomBytes(16).toString('hex');
 
-    if (!result) {
-        return{
-            success: false,
-            message: 'Error in saving AuthCode'
+        const result = await AuthCode.create({
+            code,
+            challenge,
+            shop
+        }).catch(() => null);
+
+        if (!result) {
+            return {
+                success: false,
+                message: 'Error in saving AuthCode'
+            }
         }
-    }
 
-    //sign a request and send it to the platform's server.
-    const body = JSON.stringify({code, state, userId:session.user.id});
-    const timestamp = Date.now().toString();
+        //sign a request and send it to the platform's server.
+        const body = JSON.stringify({ code, state, userId: session.user.id });
+        const timestamp = Date.now().toString();
 
-    const signature = createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET!).update(`${timestamp}.${body}`).digest('hex');
+        const signature = createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET!).update(`${timestamp}.${body}`).digest('hex');
 
-    //send the request
-    const platformRes = await fetch(`https://${process.env.NEXT_PUBLIC_SHOPIFY_HOST}/api/connect/callback`,{
-        method: 'POST',
-        headers:{
-            'content-type': 'application/json',
-            'x-service-timestamp': timestamp,
-            'x-service-signature': signature
-        },
-        body
-    });
+        //send the request
+        const platformRes = await fetch(`https://${process.env.NEXT_PUBLIC_SHOPIFY_HOST}/api/connect/callback`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-service-timestamp': timestamp,
+                'x-service-signature': signature
+            },
+            body
+        });
 
-    const resMessage = await platformRes.text();
+        const resMessage = await platformRes.text();
 
-    return{
-        success: platformRes.ok,
-        message: resMessage
-    }
+        return {
+            success: platformRes.ok,
+            message: resMessage
+        }
 
-    } catch (error:any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
         console.log('Error when confirming shop connection', error.message);
         return {
             success: false,
             message: `Something goes wrong in connecting shop: ${error.message}`
         }
     }
-    
+
 
 }

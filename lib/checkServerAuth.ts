@@ -10,7 +10,7 @@ export interface ServerUserSession {
 
 interface MembershipData {
     userId: string;
-    merchantId: string;
+    merchant: string;
     role: 'clerk' | 'driver';
 }
 
@@ -75,14 +75,14 @@ export const getServerSessionContext = async (): Promise<ServerUserSession> => {
             };
         }
 
-        // 3. Check if the user is a Staff member (Clerk / Driver)
-        const membership = await Membership.findOne({ userId }).lean().catch(() => null) as MembershipData | null;
+        // Check if the user is a Staff member (Clerk / Driver)
+        const membership = await Membership.findOne({ user: userId }).lean().catch(() => null) as MembershipData | null;
 
         if (membership) {
             return {
                 userId,
                 role: membership.role, // 'clerk' or 'driver'
-                merchantId: membership.merchantId.toString() // The business context they work under
+                merchantId: membership.merchant.toString() // The business context they work under
             };
         }
 

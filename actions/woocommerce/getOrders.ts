@@ -39,7 +39,7 @@ const getOrders = async (params: SearchParams = {}) => {
             searchCriteria = { asignee: userId }
         } else {
             //get all the connected shop ids
-            const connectedShops = await Shop.distinct('_id', { ownerId: merchantId });;
+            const connectedShops = await Shop.distinct('_id', { owner: merchantId });;
 
             //prepare the search criteria to fetch orders for the connected shops
             searchCriteria = { shopId: { $in: connectedShops } }
