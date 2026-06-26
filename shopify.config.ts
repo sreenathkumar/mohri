@@ -2,7 +2,6 @@ import { DeliveryMethod, LATEST_API_VERSION, shopifyApi, } from "@shopify/shopif
 import '@shopify/shopify-api/adapters/web-api';
 import { NextRequest } from "next/server";
 import crypto from 'crypto'
-import { buffer } from "stream/consumers";
 
 const shopify = shopifyApi({
     apiKey: process.env.SHOPIFY_CLIENT_ID!,
@@ -45,15 +44,15 @@ shopify.webhooks.addHandlers({
 export async function verifyWebhook(req: NextRequest) {
     if (!process.env.SHOPIFY_WEBHOOK_SECRET) {
         console.log('not env var')
-        return {valid: false}
+        return { valid: false }
     }
 
     const signature = req.headers.get('X-Signature');
     const rawbody = await req.text();
 
-    if(!signature){
+    if (!signature) {
         console.log('no signature')
-        return {valid: false}
+        return { valid: false }
     }
     const expected = crypto.createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET).update(rawbody).digest('hex');
     const isValidSignature = crypto.timingSafeEqual(
@@ -61,18 +60,18 @@ export async function verifyWebhook(req: NextRequest) {
         Buffer.from(signature)
     );
 
-    if(!isValidSignature){
+    if (!isValidSignature) {
         console.log('not valid signature')
-        return {valid: false}
+        return { valid: false }
     }
 
     //extract the data 
-    const {topic, shop, payload} = JSON.parse(rawbody);
+    const { topic, shop, payload } = JSON.parse(rawbody);
 
-    return{
-        valid: true, 
-        topic, 
-        shop, 
+    return {
+        valid: true,
+        topic,
+        shop,
         data: payload
     }
 }
