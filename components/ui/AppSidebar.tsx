@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getServerSessionContext } from "@/lib/checkServerAuth"
 import {
   Sidebar,
   SidebarContent,
@@ -6,30 +6,30 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/shadcn/sidebar"
-import { HelpCircle, IdCard, LayoutDashboard, Package, Truck, Store, BookOpenText } from 'lucide-react'
+import { HelpCircle, IdCard, LayoutDashboard, Package, Truck, Store } from 'lucide-react'
 import MainNav from "./MainNav"
 import User from "./User"
+import { redirect } from "next/navigation"
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Stores", url: "/stores", icon: Store },
-  { title: "Employees", url: "/employees", icon: IdCard, requires: ['admin', 'clerk'] },
+  { title: "Stores", url: "/stores", icon: Store, requires: ['merchant', 'clerk'] },
+  { title: "Employees", url: "/employees", icon: IdCard, requires: ['merchant', 'clerk'] },
   { title: "Orders", url: "/orders", icon: Package },
   { title: 'Track Delivery', url: '/track', icon: Truck },
-  { title: "Privacy Policy", url: "/privacy-policy", icon: BookOpenText },
   { title: "Help", url: "/help", icon: HelpCircle },
 ]
 
 async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const session = await auth();
-  if (!session) {
-    return null;
+  const { role, userId } = await getServerSessionContext();
+
+  if (!role || !userId) {
+    redirect('/login') // Redirect to login if the user is not authenticated
   }
-  const user = session.user;
 
   const filteredNavItems = navItems.filter((item) => {
     // Include the item if no role is required, or if the user's role matches the required role
-    return !item.requires || item.requires.includes(user.role || 'guest');
+    return !item.requires || item.requires.includes(role || 'guest');
   });
 
   return (
@@ -41,7 +41,7 @@ async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <MainNav items={filteredNavItems} />
       </SidebarContent>
       <SidebarFooter>
-        {user && <User />}
+        {userId && <User />}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
