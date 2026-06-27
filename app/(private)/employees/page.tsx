@@ -1,16 +1,15 @@
 import { getAllEmployees } from "@/actions/employee"
 import EmployeeTableWrapper from "./components/EmployeeTableWrapper"
-import { auth } from "@/auth";
-import { notFound } from "next/navigation";
+import { getServerSessionContext } from "@/lib/checkServerAuth";
+import { redirect } from "next/navigation";
 
 
 async function EmployeesPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
 
-    const session = await auth();
-    if (session) {
-        if (session.user.role === 'driver') {
-            notFound()
-        }
+    const { role } = await getServerSessionContext()
+
+    if (role === 'driver') {
+        redirect('/dashboard');
     }
 
 
@@ -24,7 +23,6 @@ async function EmployeesPage({ searchParams }: { searchParams: Promise<{ [key: s
                 return employee
             }
         });
-
     }
 
     return (

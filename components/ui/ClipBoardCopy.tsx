@@ -7,10 +7,11 @@ import { Card, CardContent } from "@/components/shadcn/card"
 
 interface ClipboardCopyProps {
     content: string,
-    children: React.ReactNode
+    children: React.ReactNode,
+    className?: string
 }
 
-export function ClipboardCopy({ content, children }: ClipboardCopyProps) {
+export function ClipboardCopy({ content, children, className }: ClipboardCopyProps) {
     const [isCopied, setIsCopied] = useState(false)
 
     const copyToClipboard = async () => {
@@ -18,13 +19,14 @@ export function ClipboardCopy({ content, children }: ClipboardCopyProps) {
             await navigator.clipboard.writeText(content)
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 2000) // Reset after 2 seconds
-        } catch (err) {
-            console.error("Failed to copy text: ", err)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            console.error("Failed to copy text: ", err.message)
         }
     }
 
     return (
-        <Card className="w-full max-w-md">
+        <Card className={className}>
             <CardContent className="pt-6 p-0">
                 <div className="relative bg-background p-4 rounded-md cursor-pointer group max-h-[80vh] overflow-y-auto" onClick={copyToClipboard}>
                     <pre className="text-sm overflow-x-auto whitespace-pre-wrap break-words">{children}</pre>

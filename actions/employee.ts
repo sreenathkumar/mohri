@@ -1,8 +1,15 @@
 'use server'
 
+import crypto from "crypto";
 import dbConnect from "@/dbConnect";
 import User from "@/models/userModel";
+import TeamInvite from "@/models/teamInviteModel";
 import { z } from "zod";
+import { getServerSessionContext } from "@/lib/checkServerAuth";
+import Membership from "@/models/membershipModel";
+import { revalidatePath } from "next/cache";
+import registerUser from "@/actions/register";
+
 
 // Allowed email domains
 const allowedEmailDomains = ['gmail.com', 'yahoo.com', 'outlook.com'];
@@ -18,27 +25,197 @@ const formSchema = z.object({
     }, {
         message: 'Only Gmail, Yahoo, and Outlook emails are allowed.',
     }),
+    password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
     role: z.string({ message: "Role is required" })
-})
+});
+
+//check if the email already exists in the database
+export async function checkEmployeeEmail(email: string) {
+    try {
+        const { role } = await getServerSessionContext();
+
+        if (role !== 'merchant') {
+            throw new Error("Unauthorized: Only merchants can add employees.");
+        }
+
+        //query the database for the user with the given email
+        const user = await User.findOne({ email });
+
+        //check if it's already an employee 
+        if (user) {
+            const membership = await Membership.findOne({ user: user._id });
+
+            if (membership) {
+                return {
+                    exists: true,
+                    isEmployee: true,
+                    message: "User is already an employee",
+                }
+            } else {
+                return {
+                    exists: true,
+                    isEmployee: false,
+                    message: "User exists but is not an employee",
+                }
+            }
+        } else {
+            return {
+                exists: false,
+                message: "Email does not exist",
+            }
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.log('error in checking employee email: ', error?.message);
+        return {
+            status: 'error',
+            message: error.message,
+        }
+    }
+}
+
+//function to add an employee
+export async function addEmployee(preveState: unknown, data: FormData) {
+    try {
+        const { role, merchantId } = await getServerSessionContext();
+
+        if (role !== 'merchant') {
+            throw new Error("Unauthorized: Only merchants can add employees.");
+        }
+
+        const { name, email, password, role: staffRole } = Object.fromEntries(data);
+        const validatedFields = formSchema.safeParse({
+            name,
+            email,
+            password,
+            role: staffRole
+        });
+
+
+        // Return early if the form data is invalid
+        if (!validatedFields.success) {
+            return {
+                status: 'error',
+                message: "Invalid form data. Please check your inputs",
+                errors: validatedFields.error.flatten().fieldErrors,
+            }
+        }
+
+        //check if the user already exists
+        const user = await User.findOne({ email });
+
+        if (user) {
+            //create the membership document for the employee
+            await Membership.create({
+                user: user._id,
+                merchant: merchantId,
+                role: data.get('role') as string
+            });
+        } else {
+            const registerResult = await registerUser({ name: name as string, email: email as string, password: password as string });
+
+            if (registerResult.status === 'error') {
+                return {
+                    status: 'error',
+                    message: registerResult.message,
+                    errors: registerResult.errors,
+                }
+            }
+
+            //create the membership document for the employee
+            await Membership.create({
+                user: registerResult.userId,
+                merchant: merchantId,
+                role: data.get('role') as string
+            });
+        }
+
+        return {
+            status: 'success',
+            message: "Employee registered successfully.",
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.log('error in adding employee: ', error?.message);
+        return {
+            status: 'error',
+            message: error.message,
+        }
+    } finally {
+        // Revalidate the employees page to reflect the new employee
+        revalidatePath('/employees');
+    }
+}
+
+export async function inviteEmployee(preveState: unknown, data: FormData) {
+    if (!data.get('email') || !data.get('role')) {
+        return {
+            status: 'error',
+            message: "Email and role are required",
+        }
+    }
+
+    try {
+        const { role, merchantId } = await getServerSessionContext();
+
+        if (role !== 'merchant') {
+            throw new Error("Unauthorized: Only merchants can invite employees.");
+        }
+
+        const token = crypto.randomBytes(32).toString('hex');
+
+        //store the invitation token in the database with the email and role
+        await TeamInvite.findOneAndUpdate({ email: data.get('email') }, {
+            $set: {
+                token,
+                owner: merchantId,
+                role: data.get('role') as string
+            }
+        }, { upsert: true });
+
+        //send the invitation email to the employee with the token
+
+        return {
+            status: 'success',
+            link: `${process.env.NEXT_PUBLIC_BASE_URL}/invite?token=${token}`,
+            message: "Employee invited successfully. Please share the invitation link with the employee.",
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.log('error in inviting employee: ', error?.message);
+        return {
+            status: 'error',
+            message: error.message,
+        }
+    }
+}
 
 //function to get all employees
 export async function getAllEmployees() {
     try {
-        //connect to the database
-        await dbConnect();
+        const { role, merchantId } = await getServerSessionContext();
+
+        if (role !== 'merchant') {
+            throw new Error("Unauthorized: Only merchants can view employees.");
+        }
 
         //query the database for all employees
-        const employees = await User.find({}).select(['_id', 'name', 'email', 'role', 'image']).lean();
+        const memberships = await Membership.find({ merchant: merchantId }).select(['user', 'role'])
+            .populate('user', 'name email image')
+            .lean();
+
 
         //return the employees
-        if (employees && employees.length > 0) {
-            const transformedEmployees = employees.map((item) => {
+        if (memberships && memberships.length > 0) {
+            const transformedEmployees = memberships.map((item) => {
                 return {
-                    id: item._id?.toString() || item.email,
-                    name: item.name,
-                    email: item.email,
+                    id: item.user._id?.toString() || item.user.email,
+                    name: item.user.name,
+                    email: item.user.email,
                     role: item.role,
-                    image: item.image
+                    image: item.user.image
                 }
             });
 

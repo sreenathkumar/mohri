@@ -4,14 +4,13 @@ import { Button } from "@/components/shadcn/button"
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/shadcn/dialog"
 import { useState } from 'react'
 import AddEmployeeFrom from "./AddEmployeeForm"
-
-
 
 
 export default function AddEmployee() {
@@ -25,10 +24,15 @@ export default function AddEmployee() {
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
+                <DialogHeader className="mb-4">
                     <DialogTitle className="font-bold text-2xl">Add Employee</DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">
+                        Please use gmail, yahoo, or outlook email to add an employee.
+                    </DialogDescription>
                 </DialogHeader>
-                <AddEmployeeFrom />
+                <div className="w-full min-w-0 overflow-hidden">
+                    <AddEmployeeFrom />
+                </div>
             </DialogContent>
         </Dialog>
     )

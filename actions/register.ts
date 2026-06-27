@@ -3,7 +3,6 @@
 import dbConnect from "@/dbConnect";
 import { saltAndHashPassword } from "@/lib/password";
 import User from "@/models/userModel";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 // Allowed email domains
@@ -22,17 +21,16 @@ const formSchema = z.object({
     }, {
         message: 'Only Gmail, Yahoo, and Outlook emails are allowed.',
     }),
-    role: z.string({ message: "Role is required" })
 })
 
 //function to register a user
-const register = async (prevState: unknown, data: FormData) => {
-    const { name, email, password, role } = Object.fromEntries(data);
+const registerUser = async (data: { name: string, email: string, password: string }) => {
+    const { name, email, password } = data;
+
     const validatedFields = formSchema.safeParse({
         name,
         email,
         password,
-        role
     });
 
 
@@ -44,6 +42,7 @@ const register = async (prevState: unknown, data: FormData) => {
             errors: validatedFields.error.flatten().fieldErrors,
         }
     }
+
     try {
         //connect to the database
         await dbConnect();
@@ -64,13 +63,14 @@ const register = async (prevState: unknown, data: FormData) => {
         }
 
         const hashPassword = await saltAndHashPassword(password as string);
-        const newUser = new User({ name, email, password: hashPassword, role });
+        const newUser = new User({ name, email, password: hashPassword });
 
         await newUser.save();
 
         //send success message
         return {
             status: 'success',
+            userId: newUser._id.toString(),
             message: "Employee registered successfully.",
         }
 
@@ -81,9 +81,7 @@ const register = async (prevState: unknown, data: FormData) => {
             status: 'error',
             message: error.message,
         }
-    } finally {
-        revalidatePath('/employees')
     }
 }
 
-export default register;
+export default registerUser;
