@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import getOrders from "@/actions/woocommerce/getOrders";
+import { getOrders } from "@/actions/orders";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);

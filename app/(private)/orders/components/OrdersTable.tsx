@@ -1,4 +1,4 @@
-import getOrders from "@/actions/woocommerce/getOrders";
+import { getOrders } from "@/actions/orders";
 import { auth } from "@/auth";
 import { Table, TableHeader, } from "@/components/shadcn/table";
 import { OrderType } from "@/types/OrderType";

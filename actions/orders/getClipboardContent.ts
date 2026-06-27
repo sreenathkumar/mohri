@@ -14,7 +14,7 @@ interface OrderType {
     status: string;
 }
 
-async function getClipboardContent(selectedOrders: number[]) {
+export async function getClipboardContent(selectedOrders: number[]) {
     if (selectedOrders.length <= 0) {
         return null
     }
@@ -50,5 +50,3 @@ Status: ${order.status}
 
 `
 }
-
-export default getClipboardContent

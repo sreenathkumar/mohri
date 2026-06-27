@@ -6,10 +6,10 @@ import { useSelectedOrder } from "@/context/SelectedOrderCtx"
 import { useCallback, useEffect, useState } from "react"
 import OrderBadge from "./OrderBadge"
 import { AssigneeUpdateOptions, StatusUpdateOptions } from "./UpdateOptions"
-import updateOrders from "@/actions/woocommerce/updateOrders"
+import { updateOrders } from "@/actions/orders"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { getSingleOrder } from "@/actions/woocommerce/getOrders"
+import { getSingleOrder } from "@/actions/orders"
 
 //type for drivers object
 export interface DriversType {

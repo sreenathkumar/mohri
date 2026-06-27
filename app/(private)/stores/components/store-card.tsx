@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteShop, updateShop } from '@/actions/shopActions';
+import { deleteShop, updateShop } from '@/actions/shop';
 import { Button } from '@/components/shadcn/button';
 import { CheckCircle } from 'lucide-react';
 import React, { useState } from 'react';

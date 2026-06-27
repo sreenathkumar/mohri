@@ -1,6 +1,6 @@
 'use client'
 
-import { sendOTP, verifyOTP } from "@/actions/resetPassword";
+import { sendOTP, verifyOTP } from "@/actions/auth/resetPassword";
 import { useResetPasswordCtx } from "@/context/ResetPasswordCtx";
 import { useActionState, useEffect, useState } from "react";
 import DynamicAlert from "./DynamicAlert";

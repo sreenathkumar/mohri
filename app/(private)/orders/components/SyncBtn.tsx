@@ -1,6 +1,6 @@
 'use client'
 
-import syncWithWoo from "@/actions/woocommerce/syncWithWoo";
+import syncWithWoo from "@/actions/integration/syncWithWoo";
 import { Button } from "@/components/shadcn/button";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { CloudDownload } from "lucide-react";

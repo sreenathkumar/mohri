@@ -6,7 +6,7 @@ import StoreCard from './store-card'
 import { useEffect, useState } from 'react';
 import { Store } from 'lucide-react';
 import AddStoreBtn from './connect-btn';
-import { confirmShopConnection } from '@/actions/connect/connectShop';
+import { confirmShopConnection } from '@/actions/integration/connectShop';
 import toast from 'react-hot-toast';
 
 
@@ -60,7 +60,7 @@ function ConnectedStores({ stores }: { stores: StoreTypes[] }) {
             <AddStoreBtn />
           </div>)
       }
-      </>
+    </>
   )
 }
 

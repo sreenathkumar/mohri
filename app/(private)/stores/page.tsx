@@ -1,7 +1,7 @@
 import { getServerSessionContext } from "@/lib/checkServerAuth";
 import AddStoreBtn from "./components/connect-btn";
 import ConnectedStores from "./components/connected-stores";
-import { getShops } from "@/actions/shopActions";
+import { getShops } from "@/actions/shop";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 

@@ -1,6 +1,6 @@
 'use client'
 
-import getClipboardContent from '@/actions/getClipboardContent'
+import { getClipboardContent } from '@/actions/orders'
 import { Button } from '@/components/shadcn/button'
 import { ClipboardCopy } from '@/components/ui/ClipBoardCopy'
 import Modal from '@/components/ui/Modal'

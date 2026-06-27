@@ -1,6 +1,6 @@
 'use client'
 
-import { resetPassword } from "@/actions/resetPassword";
+import { resetPassword } from "@/actions/auth/resetPassword";
 import { Input } from "@/components/shadcn/input";
 import FormField from "@/components/ui/CustomField";
 import { useActionState, useEffect } from "react";

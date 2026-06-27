@@ -3,6 +3,7 @@ import EmployeeTableWrapper from "./components/EmployeeTableWrapper"
 import { getServerSessionContext } from "@/lib/checkServerAuth";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic'
 
 async function EmployeesPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
 

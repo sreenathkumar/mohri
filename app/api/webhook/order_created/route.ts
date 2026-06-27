@@ -1,7 +1,7 @@
 // function which push the new order data to the DB whenever new order is placed in woocommerce
 // also revalidate the path to show the updated data
 
-import { prepareOrder } from "@/actions/woocommerce/wooConfig";
+import { prepareOrder } from "@/actions/integration/wooConfig";
 import dbConnect from "@/dbConnect";
 import verifySignature from "@/lib/verifyWebhook";
 import { orderSchema } from "@/lib/zod";

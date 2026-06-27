@@ -5,7 +5,7 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import FacebookProvider from 'next-auth/providers/facebook'
 import GoogleProvider from 'next-auth/providers/google'
-import { verifyUser } from "./actions/verifyPassword"
+import { verifyUser } from "./actions/auth/verifyPassword"
 import { authConfig } from "./auth.config"
 
 

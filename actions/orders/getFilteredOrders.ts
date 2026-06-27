@@ -14,7 +14,7 @@ interface SearchParams {
     sort?: Record<string, SortOrder>
 }
 
-async function getFilteredOrders(params: SearchParams) {
+export async function getFilteredOrders(params: SearchParams) {
     const { query = '', skip = 0, limit = 10, page = 1, sort } = params;
     const numQuery = Number(query);
     const isNumber = !isNaN(numQuery);
@@ -109,4 +109,3 @@ async function getFilteredOrders(params: SearchParams) {
     }
 }
 
-export default getFilteredOrders;

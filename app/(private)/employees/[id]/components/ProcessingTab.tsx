@@ -1,4 +1,4 @@
-import getAssignedOrders from "@/actions/woocommerce/getAssignedOrders";
+import { getAssignedOrders } from "@/actions/orders";
 import { Badge } from "@/components/shadcn/badge";
 import { CardContent } from "@/components/shadcn/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/shadcn/table";

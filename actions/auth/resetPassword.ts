@@ -5,7 +5,7 @@ import { generateOTP } from "@/lib/utils";
 import OTP from "@/models/OTPModel";
 import User from "@/models/userModel";
 import { z } from "zod";
-import { sendOTPMail } from "./sendEmail";
+import { sendOTPMail } from "../sendEmail";
 import { saltAndHashPassword } from "@/lib/password";
 
 // Allowed email domains

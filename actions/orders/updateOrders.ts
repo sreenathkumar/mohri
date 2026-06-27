@@ -2,6 +2,7 @@
 
 import dbConnect from "@/dbConnect";
 import Order from "@/models/orderModel";
+import { revalidatePath } from "next/cache";
 
 interface UpdateOrdertype {
     assignee?: string,
@@ -10,7 +11,7 @@ interface UpdateOrdertype {
     order_ids: number[]
 }
 
-async function updateOrders({ assignee, assignee_name, status, order_ids }: UpdateOrdertype) {
+export async function updateOrders({ assignee, assignee_name, status, order_ids }: UpdateOrdertype) {
 
     if (!order_ids || order_ids.length === 0) return {
         status: 'error',
@@ -41,6 +42,7 @@ async function updateOrders({ assignee, assignee_name, status, order_ids }: Upda
             }
         }
 
+        revalidatePath('/orders');
         return {
             status: 'error',
             message: 'No orders updated'
@@ -56,5 +58,3 @@ async function updateOrders({ assignee, assignee_name, status, order_ids }: Upda
         }
     }
 }
-
-export default updateOrders

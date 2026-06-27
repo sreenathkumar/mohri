@@ -2,11 +2,11 @@
 
 import dbConnect from "@/dbConnect";
 import Order from "@/models/orderModel";
-import getFilteredOrders from "./getFilteredOrders";
 import User from "@/models/userModel";
 import { SortOrder } from "mongoose";
 import { getServerSessionContext } from "@/lib/checkServerAuth";
 import Shop from "@/models/shopModel";
+import { getFilteredOrders, } from "./getFilteredOrders";
 
 
 //limit the number of orders for the db query result
@@ -20,7 +20,7 @@ interface SearchParams {
 }
 
 
-const getOrders = async (params: SearchParams = {}) => {
+export async function getOrders(params: SearchParams = {}) {
     //parameters for pagination, search and sorting
     const { query = '', page = 1, sort = '' } = params;
 
@@ -110,7 +110,7 @@ const getOrders = async (params: SearchParams = {}) => {
 
 
 //return a single order data
-export const getSingleOrder = async (order_id: number) => {
+export async function getSingleOrder(order_id: number) {
     if (!order_id) {
         return null;
     }
@@ -135,6 +135,3 @@ export const getSingleOrder = async (order_id: number) => {
         return null;
     }
 }
-
-
-export default getOrders

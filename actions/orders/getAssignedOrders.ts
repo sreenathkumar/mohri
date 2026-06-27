@@ -75,4 +75,4 @@ const getAssignedOrders = unstable_cache(async ({ id, status }: { id: string, st
     }
 }, ['id', 'status'], { tags: ['assignedOrders'], revalidate: 3600 })
 
-export default getAssignedOrders
+export { getAssignedOrders }

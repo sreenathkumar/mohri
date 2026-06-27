@@ -1,4 +1,4 @@
-import { prepareOrder } from "@/actions/woocommerce/wooConfig";
+import { prepareOrder } from "@/actions/integration/wooConfig";
 import dbConnect from "@/dbConnect";
 import verifySignature from "@/lib/verifyWebhook";
 import Order from "@/models/orderModel";

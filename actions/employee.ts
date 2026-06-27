@@ -8,7 +8,7 @@ import { z } from "zod";
 import { getServerSessionContext } from "@/lib/checkServerAuth";
 import Membership from "@/models/membershipModel";
 import { revalidatePath } from "next/cache";
-import registerUser from "@/actions/register";
+import registerUser from "@/actions/auth/register";
 
 
 // Allowed email domains
