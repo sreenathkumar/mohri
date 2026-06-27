@@ -6,10 +6,9 @@ import { useSelectedOrder } from "@/context/SelectedOrderCtx"
 import { useCallback, useEffect, useState } from "react"
 import OrderBadge from "./OrderBadge"
 import { AssigneeUpdateOptions, StatusUpdateOptions } from "./UpdateOptions"
-import { updateOrders } from "@/actions/orders"
-import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-import { getSingleOrder } from "@/actions/orders"
+import { getSingleOrder, updateOrders } from "@/actions/orders"
+import { useSWRConfig } from "swr"
 
 //type for drivers object
 export interface DriversType {
@@ -45,7 +44,7 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
     const { selectedOrder, setSelectedOrder } = useSelectedOrder();
     const [singleOrder, setSingleOrder] = useState<SingleOrderType | null>(null);
     const [drivers, setDrivers] = useState<DriversType[]>([]);
-    const router = useRouter();
+    const { mutate } = useSWRConfig();
 
     const removeOrder = (orderId: number) => {
         setSelectedOrder(selectedOrder.filter(id => id !== orderId));
@@ -77,7 +76,11 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
 
                 if (res && res.status === 'success') {
                     setSelectedOrder([]);
-                    router.refresh();
+                    mutate(
+                        (key) => typeof key === 'string' && key.startsWith('/api/webhook/updates'),
+                        undefined,
+                        { revalidate: true }
+                    );
                     toast.success(res.message, { id: toastId });
                     closeModal();
                 } else {
