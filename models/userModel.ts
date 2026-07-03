@@ -25,11 +25,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    role: {
-        type: String,
-        default: "user"
-    },
-
     emailVerified: {
         type: Date,
         default: null,

@@ -18,7 +18,6 @@ async function verifyUser({ email, password }: { email: string, password: string
         if (res) {
             return {
                 id: user?._id.toString(),
-                role: user?.role,
                 email: user?.email,
                 name: user?.name,
                 image: user?.image,
@@ -35,6 +34,4 @@ async function verifyUser({ email, password }: { email: string, password: string
     }
 };
 
-export {
-    verifyUser
-}
+export { verifyUser }

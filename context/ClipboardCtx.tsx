@@ -1,5 +1,6 @@
 'use client'
 
+import { OrderStatus } from "@/types/OrderType";
 import { createContext, useContext, useState } from "react";
 
 // Define the type for the context value
@@ -11,7 +12,7 @@ interface ClipboardCtxType {
 
 interface ClipBoardContentType {
     text?: string,
-    status?: 'processing' | 'delivered',
+    status?: OrderStatus.PROCESSING | OrderStatus.DELIVERED,
     ids: number[]
 }
 

@@ -43,7 +43,7 @@ async function PublicHeader() {
                                     <AvatarFallback className="rounded-lg bg-background">{session?.user?.name[0]?.toLocaleUpperCase() || "U"}</AvatarFallback>
                                 </Avatar>
                             </DropdownMenuTrigger>
-                            <UserMenu userEmail={session.user.email} userImage={session.user.image} userName={session.user.name} isMobile={true} />
+                            <UserMenu userEmail={session.user.email} userImage={session.user.image} userName={session.user.name} isMobile={true} userRole={session.user.role} />
                         </DropdownMenu>
                     ) : (
                         <Button variant="ghost" size="sm" className="gap-2">

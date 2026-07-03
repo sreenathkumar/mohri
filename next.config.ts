@@ -14,15 +14,6 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '4mb',
     },
   },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/dashboard',
-        permanent: true,
-      },
-    ];
-  },
 };
 
 export default nextConfig;

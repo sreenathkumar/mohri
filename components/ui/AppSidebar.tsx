@@ -12,11 +12,11 @@ import User from "./User"
 import { redirect } from "next/navigation"
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Stores", url: "/stores", icon: Store, requires: ['merchant', 'clerk'] },
-  { title: "Employees", url: "/employees", icon: IdCard, requires: ['merchant', 'clerk'] },
-  { title: "Orders", url: "/orders", icon: Package },
-  { title: 'Track Delivery', url: '/track', icon: Truck },
+  { title: "Dashboard", url: "/merchant/dashboard", icon: LayoutDashboard },
+  { title: "Stores", url: "/merchant/stores", icon: Store, requires: ['merchant', 'clerk'] },
+  { title: "Employees", url: "/merchant/employees", icon: IdCard, requires: ['merchant'] },
+  { title: "Orders", url: "/merchant/orders", icon: Package },
+  { title: 'Track Delivery', url: '/merchant/track', icon: Truck },
   { title: "Help", url: "/help", icon: HelpCircle },
 ]
 

@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import dbConnect from "@/dbConnect";
 import Membership from "@/models/membershipModel";
 import Shop from "@/models/shopModel";
 
@@ -63,6 +64,8 @@ export const getServerSessionContext = async (): Promise<ServerUserSession> => {
 
         const userId = session.user.id;
 
+        await dbConnect(); // Ensure the database connection is established
+
         // Check if the user is a Merchant (Owner)
         // If they own at least one shop, their userId IS the merchantId workspace context.
         const ownedShop = await Shop.findOne({ ownerId: userId }).lean().catch(() => null) as ShopData | null;
@@ -97,15 +100,7 @@ export const getServerSessionContext = async (): Promise<ServerUserSession> => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         // Log the exact internal error securely in your server terminal for debugging
-        console.error("CRITICAL ERROR in requireSessionContext utility:", error);
-
-        // If the error was already a custom message we threw above, pass it along
-        if (error.message && error.message.includes("Unauthorized")) {
-            throw error;
-        }
-
-        // Mask messy database/network errors into a clean system message for the client
-        throw new Error("Internal Server Error: Failed to verify security permissions.");
-
+        console.log("CRITICAL ERROR in requireSessionContext utility:", error.message);
+        throw error;
     }
 };

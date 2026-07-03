@@ -18,7 +18,7 @@ function AppBreadcrumb() {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                    <Link href="/dashboard">
+                    <Link href="/merchant/dashboard">
                         <Home />
                     </Link>
                 </BreadcrumbItem>

@@ -7,6 +7,9 @@ import FacebookProvider from 'next-auth/providers/facebook'
 import GoogleProvider from 'next-auth/providers/google'
 import { verifyUser } from "./actions/auth/verifyPassword"
 import { authConfig } from "./auth.config"
+import dbConnect from "./dbConnect"
+import Shop from "./models/shopModel"
+import Membership from "./models/membershipModel"
 
 
 export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
@@ -53,17 +56,33 @@ export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
             }
             if (user) {
                 token.emailVerified = user.emailVerified || null;
-                token.role = user.role;
                 token.image = user.image;
                 token.id = user.id;
+
+                await dbConnect(); // Ensure the database connection is established
+
+                // Check if the user is a Merchant (Owner)
+                // If they own at least one shop, their userId IS the merchantId workspace context.
+                const ownedShop = await Shop.findOne({ ownerId: user.id }).lean().catch(() => null)
+
+                if (ownedShop) {
+                    token.role = 'merchant';
+                }
+
+                // Check if the user is a Staff member (Clerk / Driver)
+                const membership = await Membership.findOne({ user: user.id }).lean().catch(() => null) as { userId: string, role: 'merchant' | 'clerk' | 'driver', merchantId: string } | null;
+
+                if (membership) {
+                    token.role = membership.role;
+                }
             }
             return token
         },
         async session({ session, token }) {
             session.user.emailVerified = (token as { emailVerified?: Date | null }).emailVerified || null;
-            session.user.role = (token as { role?: string }).role || "user";
             session.user.image = (token as { image?: string }).image || '';
             session.user.id = (token as { id?: string }).id || '';
+            session.user.role = (token as { role?: 'merchant' | 'clerk' | 'driver' }).role || 'merchant';
             return session
         }
     }

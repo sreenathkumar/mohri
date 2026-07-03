@@ -9,6 +9,7 @@ import { getServerSessionContext } from "@/lib/checkServerAuth";
 import Membership from "@/models/membershipModel";
 import { revalidatePath } from "next/cache";
 import registerUser from "@/actions/auth/register";
+import { fetchDrivers, mutateEmployee } from "@/services/employee";
 
 
 // Allowed email domains
@@ -26,6 +27,19 @@ const formSchema = z.object({
         message: 'Only Gmail, Yahoo, and Outlook emails are allowed.',
     }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
+    role: z.string({ message: "Role is required" })
+});
+
+const updateFormSchema = z.object({
+    name: z.string({ message: "Name is required" }),
+    email: z.string().email().refine((email) => {
+        // Extract the domain from the email
+        const domain = email.split('@')[1];
+        // Check if the domain is in the allowed list
+        return allowedEmailDomains.includes(domain);
+    }, {
+        message: 'Only Gmail, Yahoo, and Outlook emails are allowed.',
+    }),
     role: z.string({ message: "Role is required" })
 });
 
@@ -234,7 +248,7 @@ export async function getAllEmployees() {
 //function to update an employee
 export async function updateEmployee(id: string, data: FormData) {
     const { name, email, role } = Object.fromEntries(data);
-    const validatedFields = formSchema.safeParse({
+    const validatedFields = updateFormSchema.safeParse({
         name,
         email,
         role
@@ -251,27 +265,12 @@ export async function updateEmployee(id: string, data: FormData) {
 
     try {
 
-        //connect to the database
-        await dbConnect();
+        await mutateEmployee({ id, data: { name: name as string, email: email as string, role: role as 'clerk' | 'driver' | 'merchant' } });
 
-        //query the database for the employee with the given id and update the employee
-        const employee = await User.findByIdAndUpdate(id, { name, email, role }, { new: true })
-
-        //return the employee
-        if (employee) {
-            return {
-                status: 'success',
-                message: 'Employee updated successfully',
-            }
-        }
-
+        revalidatePath('/merchant/employees');
         return {
-            status: 'error',
-            message: 'Employee not found',
-            errors: {
-                name: ['Employee not found'],
-                email: ['Employee not found']
-            }
+            status: 'success',
+            message: "Employee updated successfully.",
         }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -325,26 +324,18 @@ export async function deleteEmployees(ids: string[]) {
 //function get all the drivers
 export async function getAllDrivers() {
     try {
-        //connect to the database
-        await dbConnect();
+        const { role, merchantId } = await getServerSessionContext();
 
-        //query the database for all drivers
-        const drivers = await User.find({ role: 'driver' }).select(['_id', 'name', 'email', 'role', 'image']).lean();
-
-        //return the drivers
-        if (drivers && drivers.length > 0) {
-            const transformedDrivers = drivers.map((item) => {
-                return {
-                    id: item._id?.toString() || item.email,
-                    name: item.name,
-                    image: item.image
-                }
-            });
-
-            return transformedDrivers;
+        if (role === 'driver') {
+            throw new Error("Unauthorized: Drivers are not allowed to view this resources.");
         }
 
-        return [];
+        //fetch all the drivers from the database
+        const drivers = await fetchDrivers({ merchantId });
+
+        console.log('drivers in getAllDrivers: ', drivers);
+
+        return drivers;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

@@ -30,7 +30,6 @@ async function getUser({ userId }: { userId: string }) {
             image: user.image,
             address: user.address,
             phone: user.phone,
-            role: user.role,
         }
 
 

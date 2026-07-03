@@ -1,3 +1,4 @@
+import { OrderStatus } from "@/types/OrderType";
 import mongoose, { Schema } from "mongoose";
 
 const orderSchema = new mongoose.Schema({
@@ -40,8 +41,9 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
+        enum: Object.values(OrderStatus),
         required: true,
-        default: "processing"
+        default: OrderStatus.PROCESSING
     },
     asignee_name: {
         type: String,
@@ -52,6 +54,7 @@ const orderSchema = new mongoose.Schema({
         ref: "User",
         default: null
     },
+    assignedAt: { type: Date, default: null },
     latitude: { type: Number, default: null },
     longitude: { type: Number, default: null },
     date_delivered: { type: Date, default: null },

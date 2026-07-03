@@ -35,12 +35,12 @@ function LoginForm() {
                 return
             }
 
-            router.push(callbackUrl? decodeURIComponent(callbackUrl) :'/dashboard');
+            router.push(callbackUrl ? decodeURIComponent(callbackUrl) : '/merchant/dashboard');
             router.refresh();
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-            console.log('error: ', error);
+            console.log('error: ', error.message);
             setFormState({
                 errors: {
                     email: ['Unknown error'],

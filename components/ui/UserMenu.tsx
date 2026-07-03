@@ -8,15 +8,20 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator
 } from "@/components/shadcn/dropdown-menu";
-import {
-    BadgeCheck,
-    LogOut
-} from "lucide-react";
+import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: string, userEmail: string, userImage: string | undefined, isMobile?: boolean }) {
+interface UserMenuProps {
+    userName: string;
+    userEmail: string;
+    userImage: string | undefined;
+    isMobile?: boolean;
+    userRole?: string;
+}
+
+function UserMenu({ userName, userEmail, userImage, userRole, isMobile }: UserMenuProps) {
     const router = useRouter();
 
     const logout = async () => {
@@ -48,9 +53,15 @@ function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: stri
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-                <Link href="/profile">
+                <Link href={userRole === 'driver' ? '/driver/dashboard' : '/merchant/dashboard'}>
                     <DropdownMenuItem >
-                        <BadgeCheck />
+                        <LayoutDashboard />
+                        Dashboard
+                    </DropdownMenuItem>
+                </Link>
+                <Link href={userRole === 'driver' ? '/driver/profile' : '/merchant/profile'}>
+                    <DropdownMenuItem >
+                        <UserRound />
                         Account
                     </DropdownMenuItem>
                 </Link>

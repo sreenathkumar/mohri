@@ -46,3 +46,25 @@ export interface OrderInfoType {
     date_created_gmt: string;
     date_modified_gmt: string;
 }
+
+export enum OrderStatus {
+    PROCESSING = 'PROCESSING',
+    ASSIGNED = 'ASSIGNED',
+    OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
+    DELIVERED = 'DELIVERED',     // Cash collected by driver
+    RECONCILED = 'RECONCILED',   // Cash handed to merchant
+    FAILED = 'FAILED'
+}
+
+export interface DriverOrderType {
+    order_id: number;
+    name: string;
+    city: string;
+    address: string;
+    phone: string;
+    payment?: string;
+    amount: string;
+    status: OrderStatus;
+    assignedAt?: string;
+    date_delivered?: string;
+}
