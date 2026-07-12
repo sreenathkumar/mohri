@@ -43,7 +43,7 @@ async function DeliveredTab({ id }: { id: string }) {
                                     <TableCell className="font-medium">{order.order_id}</TableCell>
                                     <TableCell>
                                         <Badge
-                                            variant={order.status === OrderStatus.DELIVERED ? 'success' : 'warning'}
+                                            variant={order.status === OrderStatus.DELIVERED ? 'default' : 'destructive'}
                                             className={
                                                 order.status === OrderStatus.DELIVERED
                                                     ? 'bg-green-100 text-green-800 hover:bg-green-100'

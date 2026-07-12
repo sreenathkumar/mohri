@@ -1,6 +1,6 @@
 import { Badge } from "@/components/shadcn/badge"
 import { TableCell, TableRow } from "@/components/shadcn/table"
-import { OrderType } from "@/types/OrderType"
+import { OrderStatus, OrderType } from "@/types/OrderType"
 import Image from "next/image"
 import OrderCheckbox from "./OrderCheckbox"
 
@@ -21,9 +21,9 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
             <TableCell>{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
             <TableCell>
                 <Badge
-                    variant={order.status === 'completed' ? 'success' : 'warning'}
+                    variant={order.status === OrderStatus.DELIVERED ? 'default' : 'destructive'}
                     className={
-                        order.status === 'completed'
+                        order.status === OrderStatus.DELIVERED
                             ? 'bg-green-100 text-green-800 hover:bg-green-100'
                             : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
                     }

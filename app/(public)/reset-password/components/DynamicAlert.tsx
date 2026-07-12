@@ -11,7 +11,7 @@ function DynamicAlert({ state }: { state: Props | undefined }) {
     return (
         <>
             {state?.status && (
-                <Alert variant={state.status === 'success' ? 'success' : 'destructive'}>
+                <Alert variant={state.status === 'success' ? 'default' : 'destructive'}>
                     {state?.message && (
                         <AlertDescription>
                             {state.message}

@@ -9,6 +9,9 @@ function PublicFooter() {
                         <span className="text-sm text-muted-foreground">© 2025 <Link className="underline" href='sreenathkumar.vercel.app'>Sreenath Kumar</Link>. All rights reserved.</span>
                     </div>
                     <div className="flex items-center gap-6">
+                        <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                            Help
+                        </Link>
                         <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                             Privacy Policy
                         </Link>
