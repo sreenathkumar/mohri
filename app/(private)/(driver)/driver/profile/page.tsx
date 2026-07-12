@@ -18,8 +18,8 @@ export default function DriverProfilePage() {
         <div className="space-y-6 pb-6">
             {/* Profile Header */}
             <section className="px-4">
-                <div className="bg-gradient-to-br from-card to-card/80 border border-border/60 rounded-xl p-6 text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center mx-auto">
+                <div className="bg-linear-to-br from-card to-card/80 border border-border/60 rounded-xl p-6 text-center space-y-4">
+                    <div className="w-16 h-16 bg-linear-to-br from-primary to-primary/70 rounded-full flex items-center justify-center mx-auto">
                         <span className="text-3xl font-bold">AS</span>
                     </div>
                     <div>

@@ -20,7 +20,7 @@ function SearchMap() {
         <Input
           type="text"
           placeholder="Search locations..."
-          className="pl-8 bg-background/95 backdrop-blur-sm"
+          className="pl-8 bg-background/95 backdrop-blur-xs"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

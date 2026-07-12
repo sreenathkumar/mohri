@@ -26,7 +26,7 @@ async function OrdersPage({ searchParams }: { searchParams: SearchParams }) {
                     </div>
                     <div className="flex gap-2 items-center justify-between">
                         <CopyBtn />
-                        <div className="flex gap-2 items-center justify-between flex-grow">
+                        <div className="flex gap-2 items-center justify-between grow">
                             <FilterBtn />
                             <UpdateOrderBtn />
                         </div>

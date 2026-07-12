@@ -27,7 +27,7 @@ export default function BottomNav() {
                         <span className="text-sm">{item.icon}</span>
                         <span className="font-semibold">{item.label}</span>
                         {pathname.includes(item.id) && (
-                            <div className="absolute top-1 right-1 left-1 h-0.5 bg-gradient-to-r from-primary/0 via-primary to-primary/0 rounded-full"></div>
+                            <div className="absolute top-1 right-1 left-1 h-0.5 bg-linear-to-r from-primary/0 via-primary to-primary/0 rounded-full"></div>
                         )}
                     </Link>
                 ))}

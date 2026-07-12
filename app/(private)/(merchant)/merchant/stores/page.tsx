@@ -23,7 +23,7 @@ async function StoresPage() {
     const stores: StoreTypes[] = await getShops();
 
     return (
-        <div className="p-4 flex flex-col grow-1">
+        <div className="p-4 flex flex-col grow">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Connected Stores</h1>
                 <AddStoreBtn />

@@ -133,7 +133,7 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
         <div className="flex flex-col gap-6">
             <div className="relative flex flex-col">
                 <h3 className="text-lg font-medium">Selected Orders:</h3>
-                <div className="flex gap-2 border rounded p-4 flex-wrap">
+                <div className="flex gap-2 border rounded-sm p-4 flex-wrap">
                     {selectedOrder.length > 0 && selectedOrder.map(orderId => <OrderBadge key={orderId} onClose={() => removeOrder(orderId)}>{orderId} </OrderBadge>)
                     }
                 </div>

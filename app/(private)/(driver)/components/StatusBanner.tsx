@@ -1,7 +1,7 @@
 export default function StatusBanner({ deliveredToday, remaining }: { deliveredToday?: number, remaining?: number }) {
 
     return (
-        <div className="mx-4 mt-4 p-4 bg-gradient-to-r from-card to-card/50 border border-border/40 rounded-xl backdrop-blur-sm">
+        <div className="mx-4 mt-4 p-4 bg-linear-to-r from-card to-card/50 border border-border/40 rounded-xl backdrop-blur-xs">
             <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 flex items-center gap-3">
                     <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center">

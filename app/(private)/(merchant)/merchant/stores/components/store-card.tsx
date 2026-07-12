@@ -73,7 +73,7 @@ function ShopNameInput({ setShopName, setMode, url }: { setShopName: React.Dispa
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Enter shop name"
-        className="text-background border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="text-background border border-gray-300 rounded-sm px-2 py-1 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
       />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <Button

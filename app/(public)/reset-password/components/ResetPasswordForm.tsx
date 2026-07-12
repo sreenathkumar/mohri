@@ -40,7 +40,7 @@ function ResetPasswordForm() {
         step === 'password' && <NewPasswordForm setStep={setStep} />
       }
       {
-        step === 'done' && <h3 className="text-base text-center p-4 border text-green-500 border-green-500 rounded">Password reset successfully. Please <Link href="/login" className="text-blue-500">login</Link> with your new password.</h3>
+        step === 'done' && <h3 className="text-base text-center p-4 border text-green-500 border-green-500 rounded-sm">Password reset successfully. Please <Link href="/login" className="text-blue-500">login</Link> with your new password.</h3>
       }
     </ResetPasswordProvider>
   )

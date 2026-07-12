@@ -16,7 +16,7 @@ export default function SecondaryTaskCard({ id, customer, amount }: SecondaryTas
                 </div>
             </div>
             <div className="flex items-center gap-2 ml-2 whitespace-nowrap">
-                <p className="text-xs font-semibold text-secondary bg-secondary/10 px-2 py-1 rounded">{amount}</p>
+                <p className="text-xs font-semibold text-secondary bg-secondary/10 px-2 py-1 rounded-sm">{amount}</p>
                 <MakeCurrentBtn order_id={id} />
             </div>
         </div>

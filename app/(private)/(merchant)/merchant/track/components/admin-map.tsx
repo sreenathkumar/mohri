@@ -66,7 +66,7 @@ export default function AdminMap() {
 
     return (
         <div className="relative w-full h-[420px] z-10">
-            <div ref={mapContainerRef} className='z-0 h-full w-full rounded' />
+            <div ref={mapContainerRef} className='z-0 h-full w-full rounded-sm' />
         </div>
     );
 };

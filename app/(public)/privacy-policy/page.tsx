@@ -6,7 +6,7 @@ const lastUpdated = '13-10-2025'
 async function PrivacyPage() {
     return (
         <main className="flex-1 flex items-center justify-center gap-4">
-            <div className="container max-w-screen-xl px-4 py-16 md:py-24 md:px-8">
+            <div className="container max-w-(--breakpoint-xl) px-4 py-16 md:py-24 md:px-8">
                 <div>
                     <h1 className="text-3xl font-bold">{appName} — Privacy Policy</h1>
                     <p className="text-sm text-muted-foreground mt-1">

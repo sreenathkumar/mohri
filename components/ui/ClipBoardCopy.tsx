@@ -29,7 +29,7 @@ export function ClipboardCopy({ content, children, className }: ClipboardCopyPro
         <Card className={className}>
             <CardContent className="pt-6 p-0">
                 <div className="relative bg-background p-4 rounded-md cursor-pointer group max-h-[80vh] overflow-y-auto" onClick={copyToClipboard}>
-                    <pre className="text-sm overflow-x-auto whitespace-pre-wrap break-words">{children}</pre>
+                    <pre className="text-sm overflow-x-auto whitespace-pre-wrap wrap-break-word">{children}</pre>
                     <Button
                         variant="ghost"
                         size="icon"

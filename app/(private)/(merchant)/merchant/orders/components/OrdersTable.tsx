@@ -23,7 +23,7 @@ async function OrdersTable({ query, sort }: { query: string | string[] | undefin
         <div className="flex flex-col gap-4">
             <div className="border rounded-lg w-full overflow-x-auto">
                 <Table className="border-collapse">
-                    <TableHeader className="sticky top-0 z-10 bg-background shadow">
+                    <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
                         <TableHeadRowItem columns={tableColumns} orderIds={orders.map(order => order.order_id)} />
                     </TableHeader>
                     <OrdersTableContent columns={tableColumns.length} fallbackData={orders} />
