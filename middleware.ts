@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authConfig } from "./auth.config";
 
 //pulic routes
-const publicRoutes = ["/login", "/reset-password",'/help', '/privacy-policy'];
+const privateRoutes = ["/driver", "/merchant"];
 
 //auth object without the mongodb adapter
 const { auth } = NextAuth(authConfig);
@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
 
     const session = await auth();
 
-    if (!session && !publicRoutes.some((route) => path.startsWith(route))) {
+    if (!session && privateRoutes.some((route) => path.startsWith(route))) {
         const callbackUrl = encodeURIComponent(`${path}${searchParams}`);
 
         return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url));

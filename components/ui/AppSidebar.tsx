@@ -10,6 +10,8 @@ import { IdCard, LayoutDashboard, Package, Truck, Store } from 'lucide-react'
 import MainNav from "./MainNav"
 import User from "./User"
 import { redirect } from "next/navigation"
+import Image from "next/image"
+import AppIcon from "@/app/icon.svg"
 
 const navItems = [
   { title: "Dashboard", url: "/merchant/dashboard", icon: LayoutDashboard },
@@ -34,7 +36,14 @@ async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="py-6 border-b mb-6">
-        Logo
+        <Image
+          src={AppIcon}
+          alt="Company Logo"
+          width={48}
+          height={24}
+          className="object-contain"
+          priority
+        />
       </SidebarHeader>
       <SidebarContent>
         <MainNav items={filteredNavItems} />

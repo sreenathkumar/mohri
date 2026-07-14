@@ -4,6 +4,7 @@ import { User as UserIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '../shadcn/button';
+import Image from 'next/image';
 
 function PublicHeader() {
     const { data: session } = useSession();
@@ -16,9 +17,14 @@ function PublicHeader() {
             <div className="container flex h-14 max-w-(--breakpoint-2xl) items-center justify-between px-4 mx-auto">
 
                 <div className="flex items-center gap-8">
-                    <Link href="/" className="flex items-center gap-2">
-                        <span className="font-semibold text-lg">Order Management</span>
-                    </Link>
+                    <Image
+                        src="/logo-dark.svg"
+                        alt="Company Logo"
+                        width={240}
+                        height={56}
+                        className="object-contain"
+                        priority
+                    />
                 </div>
 
                 <div className="flex items-center gap-3">

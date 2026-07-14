@@ -43,39 +43,38 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Base application styling defaults to Dark Theme */
+
 :root {
   color-scheme: dark;
-  --background: #0f172a;          /* Canvas (60%) */
-  --foreground: #f8fafc;          /* High contrast text */
+  --background: #0f172a;          
+  --foreground: #f8fafc;          
   
-  --card: #1e293b;                /* Surfaces (30%) */
+  --card: #1e293b;                
   --card-foreground: #f8fafc;
   --popover: #1e293b;
   --popover-foreground: #f8fafc;
   
-  --primary: #ea580c;              /* Action/Intent (10%) */
+  --primary: #ea580c;              
   --primary-foreground: #ffffff;
   
-  /* Secondary tokens for subtle UI elements like tags or secondary buttons */
   --secondary: #1a2332;           
   --secondary-foreground: #cbd5e1;
   
   --muted: #334155;               
-  --muted-foreground: #94a3b8;    /* Softer sub-text */
+  --muted-foreground: #94a3b8;    
   
-  /* For elements requiring a temporary change in accent state */
+
   --accent: #1e293b;              
-  --accent-foreground: #ea580c;   /* Accents pull your primary color text */
+  --accent-foreground: #ea580c;   
   
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
-  --border: #334155;              /* Structural structural split */
+  --border: #334155;             
   --input: #1e293b;
-  --ring: #ea580c;                /* Standard focus rings match primary */
+  --ring: #ea580c;                
   
-  /* Core Chart mappings to stay unified with your orange base */
+
   --chart-1: #ea580c;
   --chart-2: #f97316;
   --chart-3: #fdba74;
@@ -84,7 +83,7 @@
   
   --radius: 0.625rem;
 
-  /* Sidebar configuration mirroring card surfaces safely */
+
   --sidebar: #1e293b;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #ea580c;
@@ -95,7 +94,7 @@
   --sidebar-ring: #ea580c;
 }
 
-/* Supports toggling via explicit class methods seamlessly */
+
 .dark {
   color-scheme: dark;
   --background: #0f172a;
