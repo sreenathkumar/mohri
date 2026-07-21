@@ -14,13 +14,13 @@ function EmployeeTableWrapper({ employees }: { employees: { id: string, name: st
 
     return (
         <div className="py-8">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 gap-4">
                 <SearchField className='w-80' />
                 <div className="flex gap-2 items-center">
                     {
                         selectedItems.length > 0 && (
                             <DeleteEmployee selectedItems={selectedItems} setSelectedItems={setSelectedItems} >
-                                <Button variant="outline" size="sm" className="bg-red-100 text-red-600">
+                                <Button variant="outline" size="sm" className="h-11 px-4 gap-2 rounded-xl bg-card border-border text-muted-foreground hover:text-foreground hover:bg-destructive hover:border-destructive">
                                     <Trash2 />
                                 </Button>
                             </DeleteEmployee>

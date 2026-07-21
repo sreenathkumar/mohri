@@ -1,20 +1,13 @@
-import { getAssignedOrderCoordinates } from "@/actions/map/getCoordinates";
-import Map from "./components/map"
-import MapSiderbar from "./components/map-sidebar"
-import SearchMap from "./components/search-map"
+import { getMarchantMapData } from "@/actions/mapActions";
 import { MapProvider } from "@/context/MapCtx";
+import Map from "./components/map";
 
 async function RealtimeLocationPage() {
-    //fetched assigned orders lat and lon
-    const location = await getAssignedOrderCoordinates();
+    const merchantMapData = await getMarchantMapData();
     return (
-        <div className="flex flex-col relative">
-            <MapProvider defaultLocation={location}>
-                <div className="flex gap-6 items-center py-6">
-                    <SearchMap />
-                    <MapSiderbar />
-                </div>
-                <Map />
+        <div className="w-full relative">
+            <MapProvider>
+                <Map orders={merchantMapData} />
             </MapProvider>
         </div>
     )

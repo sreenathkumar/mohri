@@ -16,7 +16,7 @@ function SelectAllCheckbox({ orders }: { orders: number[] }) {
     }
 
     return (
-        <Checkbox onCheckedChange={handleCheckboxChange} checked={selectedOrder.length === orders.length} />
+        <Checkbox onCheckedChange={handleCheckboxChange} checked={selectedOrder.length === orders.length} className='border-muted-foreground/30' />
     )
 }
 

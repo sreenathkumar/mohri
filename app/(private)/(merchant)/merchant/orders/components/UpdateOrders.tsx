@@ -41,7 +41,6 @@ interface SingleOrderType {
 const statuses = Object.values(OrderStatus)
 const prepaidOrderStatuses = ['Processing', 'Delivered'];
 
-console.log('statuses: ', Object.values(OrderStatus));
 
 function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_id?: number }) {
     const { selectedOrder, setSelectedOrder } = useSelectedOrder();

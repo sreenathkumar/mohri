@@ -19,11 +19,11 @@ function FilterBtn() {
     }
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 border h-9 px-3 rounded-md">
+            <DropdownMenuTrigger className="h-11 flex px-4 gap-2 items-center rounded-xl bg-card border-border text-muted-foreground hover:text-foreground">
                 <ListFilter className="h-4 w-4" />
                 Filters
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="rounded-xl bg-card border-border">
                 <DropdownMenuItem onClick={() => handleSortFilter('default')}>Default</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleSortFilter('city_asc')}>City (Asc) </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleSortFilter('city_desc')}>City (Desc)</DropdownMenuItem>

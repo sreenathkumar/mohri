@@ -17,11 +17,11 @@ const initialState: { success?: boolean, message: string, errors?: ErrorType } =
 function ConnectStoreForm() {
   const [state, formAction, pending] = useActionState(connectShop, initialState)
 
-  return <form className="space-y-6" action={formAction}>
-    <div className="space-y-3">
-      <Label>Shop Type</Label>
-      <div className="flex gap-4">
-        <div className="flex-1">
+  return <form className="flex flex-col gap-6 relative z-10" action={formAction}>
+    <div>
+      <Label className="text-xs font-bold tracking-wider text-muted-foreground mb-3">Shop Type</Label>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex">
           <input
             type="radio"
             id="woocommerce"
@@ -32,13 +32,13 @@ function ConnectStoreForm() {
           />
           <label
             htmlFor="woocommerce"
-            className={cn(`flex items-center justify-center px-4 h-10 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 peer-checked:text-background peer-checked:font-medium peer-checked:border-border peer-checked:bg-primary hover:border-accent-foreground/20
+            className={cn(`flex-1 text-center px-4 py-3 rounded-xl font-semibold transition-all duration-200 border capitalize text-sm cursor-pointer border-border text-muted-foreground hover:border-primary  hover:text-primary-foreground peer-checked:text-primary-foreground peer-checked:border-primary peer-checked:shadow-lg peer-checked:shadow-primary/15 peer-checked:bg-primary
             ${state?.success === false && "border-red-500 text-red-500 hover:border-red-400 hover:bg-red-500/10"}`)}
           >
             WooCommerce
           </label>
         </div>
-        <div className="flex-1">
+        <div className="flex">
           <input
             type="radio"
             id="shopify"
@@ -49,7 +49,7 @@ function ConnectStoreForm() {
           />
           <label
             htmlFor="shopify"
-            className={`flex items-center justify-center px-4 h-10 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 peer-checked:text-background peer-checked:font-medium peer-checked:border-border peer-checked:bg-primary hover:border-accent-foreground/20 ${state?.success === false && "border-red-500 text-red-500 hover:border-red-400 hover:bg-red-500/10"}`}
+            className={`flex-1 text-center px-4 py-3 rounded-xl font-semibold transition-all duration-200 border capitalize text-sm cursor-pointer border-border text-muted-foreground hover:border-primary  hover:text-primary-foreground peer-checked:text-primary-foreground peer-checked:border-primary peer-checked:shadow-lg peer-checked:shadow-primary/15 peer-checked:bg-primary ${state?.success === false && "border-red-500 text-red-500 hover:border-red-400 hover:bg-red-500/10"}`}
           >
             Shopify
           </label>
@@ -60,8 +60,8 @@ function ConnectStoreForm() {
       )}
     </div>
 
-    <div className="space-y-2">
-      <Label htmlFor="shop-url">Shop URL</Label>
+    <div>
+      <Label className="text-xs font-bold tracking-wider text-muted-foreground mb-3" htmlFor="shop-url">Shop URL</Label>
       <div className="relative">
         <Link className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -69,7 +69,7 @@ function ConnectStoreForm() {
           type="url"
           name="url"
           placeholder="https://your-shop.com"
-          className={`pl-10 ${state?.success === false && "border-red-500 text-red-500 placeholder:text-red-500 focus:border-red-400 focus:ring-red-400"}`}
+          className={`w-full pl-11 pr-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm ${state?.success === false && "border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-ring"}`}
           required
         />
       </div>
@@ -78,9 +78,12 @@ function ConnectStoreForm() {
       )}
     </div>
 
-    <Button type="submit" className="w-full" size="lg" disabled={pending}>
+    <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-6 rounded-xl shadow-lg shadow-primary/20 transition-all duration-300 cursor-pointer text-sm relative z-10" size="lg" disabled={pending}>
       Connect
     </Button>
+    <p className="text-[10px] text-muted-foreground text-center mt-6 uppercase tracking-widest font-semibold relative z-10">
+      Encrypted & Secure Connection
+    </p>
   </form>
 }
 

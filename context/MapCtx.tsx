@@ -1,11 +1,12 @@
 'use client'
 
-import { OrderLocationType } from "@/types/OrderType";
 import { createContext, useContext, useState } from "react";
 
 interface MapContextType {
-    locations: OrderLocationType[];
-    setLocations: React.Dispatch<React.SetStateAction<OrderLocationType[]>>;
+    selectedOrderId: string | null;
+    setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;
+    mapRef: maplibregl.Map | null;
+    setMapRef: React.Dispatch<React.SetStateAction<maplibregl.Map | null>>;
 }
 
 const MapCtx = createContext<MapContextType | null>(null);
@@ -20,10 +21,11 @@ export function useMapContext() {
     return context;
 }
 
-export function MapProvider({ children, defaultLocation }: { children: React.ReactNode, defaultLocation?: OrderLocationType[] }) {
-    const [locations, setLocations] = useState<OrderLocationType[]>(defaultLocation || []);
+export function MapProvider({ children, }: { children: React.ReactNode }) {
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const [mapRef, setMapRef] = useState<maplibregl.Map | null>(null);
 
-    return <MapCtx.Provider value={{ locations, setLocations }}>
+    return <MapCtx.Provider value={{ selectedOrderId, setSelectedOrderId, mapRef, setMapRef }}>
         {children}
     </MapCtx.Provider>
 }

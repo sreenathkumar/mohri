@@ -19,14 +19,15 @@ export default function AddEmployee() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm">
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-5 py-5 rounded-xl shadow-lg shadow-primary/15 transition-all duration-200 cursor-pointer flex items-center gap-2 text-sm self-start sm:self-auto">
                     Add Employee
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader className="mb-4">
-                    <DialogTitle className="font-bold text-2xl">Add Employee</DialogTitle>
-                    <DialogDescription className="text-sm text-muted-foreground">
+            <DialogContent className="sm:max-w-md p-8 sm:p-10 rounded-3xl border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-2xl bg-white/70 dark:bg-card/40 shadow-2xl overflow-hidden gap-0">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
+                <DialogHeader className="mb-8 relative z-10 text-center">
+                    <DialogTitle className="text-2xl font-extrabold text-foreground tracking-tight text-center">Add Employee</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-sm text-center leading-relaxed">
                         Please use gmail, yahoo, or outlook email to add an employee.
                     </DialogDescription>
                 </DialogHeader>

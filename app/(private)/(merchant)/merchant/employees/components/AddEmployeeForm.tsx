@@ -64,17 +64,17 @@ function AddEmployeeFrom() {
 
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-6">
             {(addEmployeeState || inviteEmployeeState) && <DynamicAlert state={addEmployeeState || inviteEmployeeState} />}
-            <FormField label="Employee email" htmlFor="init-name" error={addEmployeeState.errors?.email}>
+            <FormField label="Employee email" htmlFor="init-email" error={addEmployeeState.errors?.email}>
                 <Input
-                    id="email"
                     name="init-email"
                     type="email"
-                    placeholder="Enter employee email"
+                    placeholder="jhondoe@gmail.com"
                     required
                     value={email}
                     onChange={handleEmailChange}
+                    className="w-full px-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
                 />
             </FormField>
 
@@ -101,14 +101,14 @@ function AddEmployeeFrom() {
 
                     </div>
                 }
-                <Button type="submit" className="w-full bg-card-foreground text-card" disabled={inviteEmployeeState.status === 'success'}>
+                <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-6 rounded-xl shadow-lg shadow-primary/20 transition-all duration-300 cursor-pointer text-sm relative z-10" disabled={inviteEmployeeState.status === 'success'}>
                     Invite
                 </Button>
             </form>}
-            {emailStatus === 'new' && <form action={addEmployeeAction}>
+            {emailStatus === 'new' && <form action={addEmployeeAction} className="flex flex-col gap-6">
                 <Input type="hidden" name="email" value={email} />
                 <FormField label="Name" htmlFor="name" error={addEmployeeState.errors?.name}>
-                    <Input id="name" name="name" required />
+                    <Input id="name" name="name" required className="w-full px-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" />
                 </FormField>
                 <FormField label="Password" htmlFor="password" error={addEmployeeState.errors?.password}>
                     <PasswordField />

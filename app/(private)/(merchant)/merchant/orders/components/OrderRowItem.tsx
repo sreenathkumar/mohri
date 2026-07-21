@@ -7,32 +7,28 @@ import OrderCheckbox from "./OrderCheckbox"
 function OrderRowItem({ order, children }: { order: OrderType, children: React.ReactNode }) {
 
     return (
-        <TableRow>
-            <TableCell>
+        <TableRow className="border-b border-border/60 hover:bg-muted/10 transition-colors group">
+            <TableCell className="px-6 py-4 text-muted-foreground">
                 <OrderCheckbox id={order.order_id} />
             </TableCell>
-            <TableCell className="font-medium">{order.order_id}</TableCell>
-            <TableCell>{order.name}</TableCell>
-            <TableCell>{order.city}</TableCell>
+            <TableCell className="font-medium px-6 py-4 text-muted-foreground">{order.order_id}</TableCell>
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.name}</TableCell>
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.city}</TableCell>
             {/* <TableAddressCell address={order.address} /> */}
-            <TableCell>{order.address}</TableCell>
-            <TableCell>{order.phone}</TableCell>
-            <TableCell>{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
-            <TableCell>{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.address}</TableCell>
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.phone}</TableCell>
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
+            <TableCell className="px-6 py-4 text-foreground">{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
             <TableCell>
                 <Badge
-                    variant={order.status === OrderStatus.DELIVERED ? 'default' : 'destructive'}
-                    className={
-                        order.status === OrderStatus.DELIVERED
-                            ? 'bg-green-100 text-green-800 hover:bg-green-100'
-                            : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                    }
+                    variant={order.status === OrderStatus.DELIVERED ? 'default' : 'secondary'}
+
                 >
                     {order.status}
                 </Badge>
             </TableCell>
             <TableAssigneeCell assignee={order.asignee} />
-            <TableCell className="text-right">
+            <TableCell className="text-right px-6 py-4 text-muted-foreground">
                 <div className="flex justify-end gap-4">
                     {children}
                 </div>
@@ -83,7 +79,7 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
 //Show the assignee name and image in the table cell
 function TableAssigneeCell({ assignee }: { assignee: { id?: string, name?: string, image?: string } | null }) {
     return (
-        <TableCell>
+        <TableCell className="px-6 py-4 text-muted-foreground">
             {(assignee?.name && assignee.image) ?
                 <div className="flex items-center gap-3 w-full">
                     <Image src={assignee.image} alt={assignee.name || 'assignee_image'} width={32} height={32} className="w-8 h-8 rounded-full" />

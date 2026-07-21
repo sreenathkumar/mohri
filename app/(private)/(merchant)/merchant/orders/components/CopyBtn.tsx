@@ -32,7 +32,7 @@ function CopyBtn() {
     return (
         <>
             {selectedOrder?.length > 0 &&
-                <Button variant='outline' size='sm' onClick={openCopyModal}>
+                <Button variant='outline' size='sm' onClick={openCopyModal} className='h-11 px-4 gap-2 rounded-xl bg-card border-border text-muted-foreground hover:text-foreground'>
                     <ClipboardList />
                 </Button>}
             <Modal isOpen={isOpen} onClose={openCopyModal} title='Copy orders data to clipboard'>

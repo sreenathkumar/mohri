@@ -16,11 +16,11 @@ type Props = {
     setSelectedItems: (items: string[]) => void
 }
 
-const roleColors: { [key: string]: string } = {
-    "user": "bg-red-100 text-red-600",
-    'clerk': 'bg-blue-100 text-blue-600',
-    'driver': 'bg-yellow-100 text-yellow-600',
-    'admin': 'bg-green-100 text-green-600'
+const roleColors: Record<string, string> = {
+    admin: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-500/20",
+    clerk: "bg-blue-500/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border-blue-500/20",
+    driver: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20",
+    user: "bg-violet-500/10 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300 border-violet-500/20"
 }
 
 export default function EmployeeTable({ employees, selectedItems, setSelectedItems }: Props) {
@@ -28,9 +28,9 @@ export default function EmployeeTable({ employees, selectedItems, setSelectedIte
     return (
         <div className="border rounded-lg">
             <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-12">
+                <TableHeader className="bg-muted/30">
+                    <TableRow className="border-b border-border">
+                        <TableHead className="px-6 py-4 font-semibold text-foreground">
                             <Checkbox
                                 checked={selectedItems.length === employees.length}
                                 onCheckedChange={(checked) => {
@@ -40,18 +40,19 @@ export default function EmployeeTable({ employees, selectedItems, setSelectedIte
                                         setSelectedItems([])
                                     }
                                 }}
+                                className='border-muted-foreground/30'
                             />
                         </TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="px-6 py-4 font-semibold text-foreground">Name</TableHead>
+                        <TableHead className="px-6 py-4 font-semibold text-foreground">Email</TableHead>
+                        <TableHead className="px-6 py-4 font-semibold text-foreground">Role</TableHead>
+                        <TableHead className="px-6 py-4 font-semibold text-foreground">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {employees.length > 0 ? employees.map((employee) => (
-                        <TableRow key={employee.id}>
-                            <TableCell>
+                        <TableRow key={employee.id} className="border-b border-border/60 hover:bg-muted/10 transition-colors group">
+                            <TableCell className="px-6 py-4 font-medium">
                                 <Checkbox
                                     checked={selectedItems.includes(employee.id)}
                                     onCheckedChange={(checked) => {
@@ -61,31 +62,32 @@ export default function EmployeeTable({ employees, selectedItems, setSelectedIte
                                             setSelectedItems(selectedItems.filter(id => id !== employee.id))
                                         }
                                     }}
+                                    className='border-muted-foreground/30'
                                 />
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="px-6 py-4 text-muted-foreground font-medium">
                                 <Link className="hover:underline" href={`/merchant/employees/${employee.id}`}>{employee.name}</Link>
                             </TableCell>
-                            <TableCell>{employee.email}</TableCell>
-                            <TableCell>
+                            <TableCell className="px-6 py-4 text-muted-foreground font-medium">{employee.email}</TableCell>
+                            <TableCell className="px-6 py-4 text-muted-foreground font-medium">
                                 <Badge
-                                    className={roleColors[employee.role] || 'bg-gray-100 text-gray-600'}
+                                    className={roleColors[employee.role] || 'bg-foreground text-background'}
                                 >
                                     {employee.role}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="px-6 py-4 text-muted-foreground font-medium">
                                 <div className="flex justify-end gap-4">
                                     <UpdateEmployee data={employee} />
                                     <DeleteEmployee selectedItems={[employee.id]} setSelectedItems={setSelectedItems}>
-                                        <Button variant="ghost" size="icon">
+                                        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
                                             <Trash />
                                         </Button>
                                     </DeleteEmployee>
                                 </div>
                             </TableCell>
                         </TableRow>
-                    )) : <TableRow><TableCell colSpan={5} className="text-center">No employees found</TableCell></TableRow>}
+                    )) : <TableRow><TableCell colSpan={5} className="px-6 py-4 font-medium text-center">No employees found</TableCell></TableRow>}
                 </TableBody>
             </Table>
         </div>

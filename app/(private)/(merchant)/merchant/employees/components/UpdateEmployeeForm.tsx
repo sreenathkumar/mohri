@@ -59,10 +59,10 @@ function UpdateEmployeeForm({ data }: { data: { id: string, name: string, email:
             {state && <DynamicAlert state={state} />}
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 <FormField label="Name" htmlFor="name" error={state.errors?.name}>
-                    <Input id="name" name="name" required defaultValue={data.name} />
+                    <Input id="name" name="name" required defaultValue={data.name} className="w-full px-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" />
                 </FormField>
                 <FormField label="Email" htmlFor="email" error={state.errors?.email}>
-                    <Input id="email" name="email" type="email" required defaultValue={data.email} />
+                    <Input id="email" name="email" type="email" required defaultValue={data.email} className="w-full px-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" />
                 </FormField>
                 <div className="mb-6">
                     <Select name="role" required defaultValue={data.role} >

@@ -28,9 +28,11 @@ function SyncBtn() {
         router.refresh();
     }
     return (
-        <ConfirmationDialog open={modalOpen} onOpenChange={handleModal} trigger={<Button variant="outline" size="sm">
-            <CloudDownload className="h-4 w-4" />
-        </Button>} title="Sync orders with Woocommerce" description="Are you sure? It can remove the current orders and it's data." onConfirm={handleClick} />
+        <ConfirmationDialog open={modalOpen} onOpenChange={handleModal} trigger={
+            <Button variant="outline" size="sm" className='h-11 px-4 gap-2 rounded-xl bg-card border-border text-muted-foreground hover:text-foreground'>
+                <CloudDownload className="h-4 w-4" />
+            </Button>
+        } title="Sync orders with Woocommerce" description="Are you sure? It can remove the current orders and it's data." onConfirm={handleClick} />
     )
 }
 

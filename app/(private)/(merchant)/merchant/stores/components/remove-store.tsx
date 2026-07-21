@@ -10,7 +10,7 @@ function RemoveStoreBtn({ onConfirm }: { onConfirm: () => void }) {
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant='link' size='sm' className='text-muted-foreground text-sm underline hover:text-forground hover:font-bold'>Remove</Button>
+                <Button variant='link' size='sm' className='text-destructive/80 hover:text-destructive font-bold text-xs underline decoration-dotted underline-offset-4 transition-colors cursor-pointer px-0'>Remove</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

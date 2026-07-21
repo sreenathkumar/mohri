@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Label } from "../shadcn/label";
 
 interface FormFieldProps {
     label?: string;
@@ -13,11 +14,11 @@ const FormField = ({ label, htmlFor, children, error }: FormFieldProps) => {
     const id = htmlFor || getChildId(children);
 
     return (
-        <div className="self-stretch mb-6">
+        <div className="self-stretch">
             {label && (
-                <label htmlFor={id} className="mb-2 block text-neutral-200 text-sm leading-3 tracking-wider">
+                <Label htmlFor={id} className="text-xs font-bold tracking-wider text-muted-foreground mb-3">
                     {label}
-                </label>
+                </Label>
             )}
             {children}
             {

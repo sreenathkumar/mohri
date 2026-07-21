@@ -49,6 +49,7 @@ export interface OrderInfoType {
 
 export enum OrderStatus {
     PROCESSING = 'PROCESSING',
+    CANCELLED = 'CANCELLED',
     ASSIGNED = 'ASSIGNED',
     OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
     DELIVERED = 'DELIVERED',     // Cash collected by driver
@@ -67,4 +68,17 @@ export interface DriverOrderType {
     status: OrderStatus;
     assignedAt?: string;
     date_delivered?: string;
+}
+
+export interface MapPageOrderType {
+    id: string;
+    status: OrderStatus.ASSIGNED | OrderStatus.OUT_FOR_DELIVERY | OrderStatus.PROCESSING;
+    latitude: number;
+    longitude: number;
+    name: string;
+    address: string;
+    assignee: {
+        id: string;
+        name: string;
+    }
 }

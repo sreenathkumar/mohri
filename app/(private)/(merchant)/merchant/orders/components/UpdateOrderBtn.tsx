@@ -21,7 +21,11 @@ function UpdateOrderBtn() {
     return (
         <Dialog open={isOpen} onOpenChange={closeModal}>
             <DialogTrigger asChild>
-                <Button size="sm" disabled={selectedOrder?.length === 0}>
+                <Button
+                    size="sm"
+                    className='bg-primary hover:bg-primary/90 text-primary-foreground h-11 px-5 rounded-xl shadow-lg shadow-primary/10 transition-all duration-300 gap-2'
+                    disabled={selectedOrder?.length === 0}
+                >
                     Update Order
                 </Button>
             </DialogTrigger>

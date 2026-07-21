@@ -14,7 +14,7 @@ function OrderCheckbox({ id }: { id: number }) {
         }
     }
     return (
-        <Checkbox onCheckedChange={handleCheckboxChange} checked={selectedOrder.includes(id)} />
+        <Checkbox onCheckedChange={handleCheckboxChange} checked={selectedOrder.includes(id)} className="border-muted-foreground/30" />
     )
 }
 

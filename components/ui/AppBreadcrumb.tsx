@@ -17,19 +17,19 @@ function AppBreadcrumb() {
     return (
         <Breadcrumb>
             <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbItem className={pathArray.length === 1 ? 'hidden' : 'block'}>
                     <Link href="/merchant/dashboard">
-                        <Home />
+                        <Home className="text-muted-foreground w-4 h-4 md:w-6 md:h-6" />
                     </Link>
                 </BreadcrumbItem>
                 {
-                    pathArray.map((path) => {
+                    pathArray.map((path, index) => {
                         if (path === '') return null;
                         return (
                             <React.Fragment key={path}>
-                                <BreadcrumbSeparator className="hidden md:block" />
-                                <BreadcrumbItem>
-                                    <Link href={`/${path}`}>{capitalize(path)}</Link>
+                                <BreadcrumbSeparator className={pathArray.length === 1 ? 'hidden' : 'block'} />
+                                <BreadcrumbItem className={index === pathArray.length - 1 ? 'text-primary' : ''}>
+                                    <Link href={`/${path}`} >{capitalize(path)}</Link>
                                 </BreadcrumbItem>
                             </React.Fragment>
                         )
