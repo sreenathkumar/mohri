@@ -5,6 +5,7 @@ import { Button } from '@/components/shadcn/button';
 import { CheckCircle2 } from 'lucide-react';
 import React, { useState } from 'react';
 import RemoveStoreBtn from './remove-store';
+import { Input } from '@/components/shadcn/input';
 
 function StoreCard({ name, url, platform }: { name?: string, url: string, platform: string }) {
   const [shopName, setShopName] = useState(name || 'Shop Name');
@@ -23,12 +24,12 @@ function StoreCard({ name, url, platform }: { name?: string, url: string, platfo
       <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/30 rounded-2xl transition-colors duration-300 pointer-events-none z-10"></div>
       <div className="relative bg-card border border-border rounded-2xl p-6 sm:p-8 transition-colors duration-300">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between sm:flex-row-reverse gap-6">
-          <div className="shrink-0 self-start sm:self-auto">
+          <div className="absolute top-2 right-2 shrink-0 self-start sm:self-auto md:relative md:top-0 md:left-0" >
             <span className="py-1.5 px-4 ml-auto text-xs rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-100/50 dark:bg-white/[0.04] text-muted-foreground font-bold shadow-sm select-none tracking-wide">
               {platform}
             </span>
           </div>
-          <div className="flex items-start gap-5 flex-1">
+          <div className="flex items-start gap-5 flex-1 mt-3 md:mt-0">
             <div className="flex-shrink-0">
               <div className="w-12 h-12 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
@@ -72,8 +73,8 @@ function ShopNameInput({ setShopName, setMode, url }: { setShopName: React.Dispa
     }
   }
   return (
-    <div className="flex items-center gap-2">
-      <input
+    <div className="flex flex-col items-start gap-2 md:flex-row md:items-center">
+      <Input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
