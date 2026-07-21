@@ -22,9 +22,9 @@ function PcMapSidebarContent({ orders, pointOutOrder, selectedOrder }: PcMapSide
         <>
             <Button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className={`absolute left-6 top-24 z-40 p-3 bg-primary hover:bg-primary/90 text-white rounded-full shadow-xl transition-all duration-300 ${sidebarOpen ? 'opacity-0 pointer-events-none' : ''}`}
+                className={`absolute left-6 top-6 z-40 p-3 bg-primary hover:bg-primary/90 text-white rounded-full shadow-xl transition-all duration-300 h-12 w-12 ${sidebarOpen ? 'opacity-0 pointer-events-none' : ''}`}
             >
-                <MapPin className="w-5 h-5" />
+                <MapPin className="size-6" />
             </Button>
             <div className={`absolute left-6 top-24 bottom-6 z-30 transition-all duration-300 ${sidebarOpen ? 'w-95' : 'w-0 opacity-0 pointer-events-none'}`}>
                 <div className="h-full bg-card/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
