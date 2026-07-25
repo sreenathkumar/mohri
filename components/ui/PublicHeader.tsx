@@ -1,16 +1,16 @@
 'use client';
 
 import { User as UserIcon } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '../shadcn/button';
 import Image from 'next/image';
+import { useSession } from '@/lib/auth-client';
 
 function PublicHeader() {
-    const { data: session } = useSession();
+    const { data } = useSession();
 
-    const isLoggedIn = !!session?.user;
-    const userRole = session?.user?.role;
+    const isLoggedIn = !!data?.session
+    const dashboardLink = data?.session?.role === 'driver' ? '/driver/dashboard' : '/merchant/dashboard';
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-muted bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
@@ -56,9 +56,9 @@ function PublicHeader() {
                         Contact
                     </Link>
 
-                    {isLoggedIn && userRole ? (
+                    {isLoggedIn ? (
                         <Button size="sm" variant='outline' className="gap-2 rounded-full">
-                            <Link href={userRole === 'driver' ? '/driver/dashboard' : '/merchant/dashboard'} className="flex items-center gap-2">
+                            <Link href={dashboardLink} className="flex items-center gap-2">
                                 Dashboard
                             </Link>
                         </Button>

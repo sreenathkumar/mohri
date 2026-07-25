@@ -6,10 +6,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    password: {
-        type: String,
-        required: true,
-    },
     name: {
         type: String,
         required: true,
@@ -26,8 +22,8 @@ const userSchema = new mongoose.Schema({
         default: ""
     },
     emailVerified: {
-        type: Date,
-        default: null,
+        type: Boolean,
+        default: false,
     },
 });
 

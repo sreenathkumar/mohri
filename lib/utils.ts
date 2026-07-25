@@ -7,6 +7,26 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
+export function generateOrgSlug(name: string, userId: string): string {
+    if (!name) {
+        return `org-${userId.slice(0, 8)}`;
+    }
+
+    // Convert to lowercase
+    let slug = name.toLowerCase();
+
+    // Replace spaces and special characters with hyphens
+    slug = slug.replace(/[^a-z0-9]+/g, "-");
+
+    // Remove leading and trailing hyphens
+    slug = slug.replace(/^-+|-+$/g, "");
+
+    // Append a unique identifier (first 8 characters of userId)
+    slug += `-${userId.slice(0, 8)}`;
+
+    return slug;
+}
+
 //generate OTP verfication
 export function generateOTP(length = 6) {
     const digits = '0123456789';
