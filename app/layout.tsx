@@ -1,6 +1,5 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
 
@@ -31,9 +30,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-primary`}
       >
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        {children}
         <Toaster />
       </body>
     </html>

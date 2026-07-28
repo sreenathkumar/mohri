@@ -4,13 +4,14 @@ import { User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../shadcn/button';
 import Image from 'next/image';
-import { useSession } from '@/lib/auth-client';
+import { signOut, useSession } from '@/lib/auth-client';
 
 function PublicHeader() {
     const { data } = useSession();
     console.log('PublicHeader session:', data?.session);
     const isLoggedIn = !!data?.session
-    const dashboardLink = data?.session?.role === 'driver' ? '/driver/dashboard' : '/merchant/dashboard';
+    const userRole = data?.session?.role;
+    const dashboardLink = userRole === 'driver' ? '/driver/dashboard' : '/dashboard';
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-muted bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
@@ -57,13 +58,34 @@ function PublicHeader() {
                     </Link>
 
                     {isLoggedIn ? (
-                        <Button size="sm" variant='outline' className="gap-2 rounded-full">
-                            <Link href={dashboardLink} className="flex items-center gap-2">
-                                Dashboard
-                            </Link>
-                        </Button>
+                        userRole === 'user' ? (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 rounded-full cursor-pointer"
+                                onClick={() => signOut()}
+                            >
+                                Sign Out
+                            </Button>
+                        ) : (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 rounded-full"
+                                asChild
+                            >
+                                <Link href={dashboardLink} className="flex items-center gap-2">
+                                    Dashboard
+                                </Link>
+                            </Button>
+                        )
                     ) : (
-                        <Button variant="ghost" size="sm" className="gap-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-2"
+                            asChild
+                        >
                             <Link href="/login" className="flex items-center gap-2">
                                 <UserIcon className="h-4 w-4" />
                                 Login

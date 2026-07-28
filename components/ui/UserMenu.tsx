@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 interface UserMenuProps {
     userName: string;
     userEmail: string;
-    userImage: string | undefined;
+    userImage: string | undefined | null;
     isMobile?: boolean;
     userRole?: string;
 }
@@ -42,7 +42,7 @@ function UserMenu({ userName, userEmail, userImage, userRole, isMobile }: UserMe
             <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={userImage} alt={userName} />
+                        {userImage && <AvatarImage src={userImage} alt={userName} />}
                         <AvatarFallback className="rounded-lg bg-background">{userName[0].toLocaleUpperCase() || "U"}</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">

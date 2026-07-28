@@ -1,7 +1,7 @@
+import { getServerSession } from "@/lib/auth";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import ResendBtn from "./components/resend-btn";
-import { auth } from "@/lib/auth";
 
 interface PageProps {
     searchParams: Promise<{
@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 async function VerifyEmail({ searchParams }: PageProps) {
-    const session = await auth.api.getSession();
+    const session = await getServerSession()
     console.log("VerifyEmail session:", session);
     const { error } = await searchParams;
 

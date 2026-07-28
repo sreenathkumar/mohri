@@ -19,7 +19,7 @@ function LoginForm() {
                 email: formdata.get('email') as string,
                 password: formdata.get('password') as string,
                 rememberMe: true,
-                callbackURL: redirectUrl || '/',
+                callbackURL: redirectUrl || '/continue',
             });
 
             if (error) {

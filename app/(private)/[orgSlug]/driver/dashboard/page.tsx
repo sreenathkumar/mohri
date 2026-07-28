@@ -1,9 +1,9 @@
-import StatusBanner from "../../components/StatusBanner"
-import TabControl from "../../components/Tabs";
-import TaskCard from "../../components/TaskCard";
-import SecondaryTaskCard from "../../components/SecondaryTaskCard";
 import { getDriverTasks } from "@/actions/driverActions";
 import { OrderStatus } from "@/types/OrderType";
+import SecondaryTaskCard from "../components/SecondaryTaskCard";
+import StatusBanner from "../components/StatusBanner";
+import TabControl from "../components/Tabs";
+import TaskCard from "../components/TaskCard";
 
 interface DriverDashPageProps {
     searchParams: Promise<{ [task: string]: 'active' | 'issues' }>;

@@ -29,7 +29,7 @@ function RegisterForm() {
             email,
             password,
             name,
-            callbackURL: "/dashboard",
+            callbackURL: "/continue",
         });
 
         if (authError) {

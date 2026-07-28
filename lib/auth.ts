@@ -4,6 +4,8 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
 import { ac, user, driver, manager, owner } from "./permissions";
 import { sendVerificationEmail } from "@/services/email.service";
+import { headers } from "next/headers";
+import { cache } from "react";
 
 export const prisma = new PrismaClient();
 
@@ -72,5 +74,19 @@ export const auth = betterAuth({
         expiresIn: 60
     }
 });
+
+export const getServerSession = cache(async () => {
+    const session = auth.api.getSession({
+        headers: await headers()
+    });
+    return session;
+});
+
+export const getOrgSlug = cache(async (userId: string) => {
+    const org = await auth.api.getFullOrganization({
+        headers: await headers(),
+    });
+    return org?.slug;
+})
 
 export type Role = 'owner' | 'manager' | 'driver' | 'user';
