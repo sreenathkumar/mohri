@@ -35,7 +35,7 @@ function PublicFooter() {
                             <h3 className="font-semibold text-foreground mb-4">Product</h3>
                             <ul className="space-y-2">
                                 <li>
-                                    <Link href="#features" className="text-muted-foreground hover:text-primary transition text-sm">
+                                    <Link href="/#features" className="text-muted-foreground hover:text-primary transition text-sm">
                                         Features
                                     </Link>
                                 </li>

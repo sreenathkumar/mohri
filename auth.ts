@@ -51,8 +51,10 @@ export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
 
     callbacks: {
         async jwt({ token, user, trigger, session }) {
-            if (trigger === 'update') {
-                return { ...token, ...session.user }
+            if (trigger === 'update' && session?.user?.emailVerified) {
+                token.emailVerified = new Date(session.user.emailVerified);
+
+                return token
             }
             if (user) {
                 token.emailVerified = user.emailVerified || null;
@@ -79,7 +81,8 @@ export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
             return token
         },
         async session({ session, token }) {
-            session.user.emailVerified = (token as { emailVerified?: Date | null }).emailVerified || null;
+            const rawVerified = token.emailVerified;
+            session.user.emailVerified = rawVerified ? new Date(rawVerified as string | Date) : null;
             session.user.image = (token as { image?: string }).image || '';
             session.user.id = (token as { id?: string }).id || '';
             session.user.role = (token as { role?: 'merchant' | 'clerk' | 'driver' }).role || 'merchant';

@@ -5,15 +5,13 @@ import { Input } from "@/components/shadcn/input";
 import { Label } from "@/components/shadcn/label";
 import FormField from "@/components/ui/CustomField";
 import { organization, signUp } from "@/lib/auth-client";
+import { generateOrgSlug } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
 import PasswordField from "../../login/components/PasswordField";
-import { generateOrgSlug } from "@/lib/utils";
 
 function RegisterForm() {
-    const router = useRouter();
 
     const handleSignup = async (formData: FormData) => {
         const name = (formData.get('name') as string)?.trim();
@@ -55,8 +53,7 @@ function RegisterForm() {
             return;
         }
 
-        // Navigate to dashboard or verify-email page
-        router.push("/verify-email");
+        toast.success("Account created successfully! Please check your email to verify your account.");
     };
 
 

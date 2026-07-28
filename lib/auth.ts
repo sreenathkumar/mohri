@@ -1,36 +1,54 @@
 import { betterAuth } from "better-auth";
 import { organization } from "better-auth/plugins";
-import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { MongoClient, ObjectId } from "mongodb";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { PrismaClient } from "@prisma/client";
+import { ac, user, driver, manager, owner } from "./permissions";
+import { sendVerificationEmail } from "@/services/email.service";
 
-const client = new MongoClient(process.env.DB_URI || "",);
-const db = client.db();
+export const prisma = new PrismaClient();
 
 export const auth = betterAuth({
-    database: mongodbAdapter(db, { client }),
-    user: { modelName: "users" },
+    database: prismaAdapter(prisma, { provider: "mongodb" }),
     plugins: [
-        organization(),
+        organization({
+            ac: ac,
+            roles: {
+                owner,
+                manager,
+                driver,
+                user
+            }
+        }),
     ],
     session: {
         additionalFields: {
-            activeOrganizationId: { type: "string", required: false },
-            role: { type: "string", required: false },
+            activeOrganizationId: { type: "string", default: null, },
+            role: {
+                type: "string",
+                default: 'user',
+                input: false
+            },
         },
+        cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60,
+            strategy: 'compact'
+        }
     },
     databaseHooks: {
         session: {
             create: {
                 //set the role and organizationId in the session when logged in/session is created
                 before: async (session) => {
-                    const membership = await db.collection("member").findOne({
-                        userId: new ObjectId(session.userId),
+                    const membership = await prisma.member.findFirst({
+                        where: {
+                            userId: session.userId,
+                        },
                     });
-
                     return {
                         data: {
                             ...session,
-                            role: membership ? membership.role : null,
+                            role: membership?.role || 'user',
                             activeOrganizationId: membership?.organizationId ? membership.organizationId.toString() : null,
                         },
                     };
@@ -39,5 +57,20 @@ export const auth = betterAuth({
         },
     },
     emailAndPassword: { enabled: true, },
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }) => {
+            const customUrl = new URL(url);
+            customUrl.searchParams.set("callbackURL", "/email-verified");
+
+            void sendVerificationEmail({
+                to: user.email,
+                verificationLink: customUrl.toString(),
+                userName: user.name || 'there'
+            });
+        },
+        sendOnSignUp: true,
+        expiresIn: 60
+    }
 });
 
+export type Role = 'owner' | 'manager' | 'driver' | 'user';

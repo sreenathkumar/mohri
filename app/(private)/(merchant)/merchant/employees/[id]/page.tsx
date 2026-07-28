@@ -19,16 +19,11 @@ async function EmployeePage({ params }: Props) {
     const { id } = await params;
     const { role, userId } = await getServerSessionContext();
 
-
-    if (!role) {
-        redirect('/login');
-    }
-
-    if (role !== 'merchant') {
-        notFound();
-    }
-
     if (userId === id) {
+        if (role === 'driver') {
+            redirect('/driver/profile');
+        }
+
         redirect('/merchant/profile');
     }
 

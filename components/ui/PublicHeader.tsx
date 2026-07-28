@@ -8,7 +8,7 @@ import { useSession } from '@/lib/auth-client';
 
 function PublicHeader() {
     const { data } = useSession();
-
+    console.log('PublicHeader session:', data?.session);
     const isLoggedIn = !!data?.session
     const dashboardLink = data?.session?.role === 'driver' ? '/driver/dashboard' : '/merchant/dashboard';
 
