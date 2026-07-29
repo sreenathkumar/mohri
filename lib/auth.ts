@@ -1,13 +1,12 @@
+import { sendVerificationEmail } from "@/services/emailService";
 import { betterAuth } from "better-auth";
-import { organization } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@prisma/client";
-import { ac, user, driver, manager, owner } from "./permissions";
-import { sendVerificationEmail } from "@/services/email.service";
+import { organization } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { cache } from "react";
+import { ac, driver, manager, owner, user } from "./permissions";
+import prisma from "./prisma";
 
-export const prisma = new PrismaClient();
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "mongodb" }),
