@@ -1,0 +1,255 @@
+import { OrderStatus, Prisma, prisma } from "@/lib/prisma";
+//import { OrderStatus, Prisma } from "@prisma/client";
+
+const LIMIT = Number(process.env.ORDER_QUERY_LIMIT) || 10;
+
+export interface OrdersFilterParams {
+    userId: string;
+    role: string;
+    organizationId: string;
+    query?: string;
+    page?: number;
+    sort?: string;
+}
+
+export interface SharableOrderData {
+    order_id: number;
+    name: string;
+    city: string;
+    address: string | null;
+    phone: string;
+    payment: string;
+    amount: string;
+    status: OrderStatus;
+}
+
+export interface UpdateOrdersParams {
+    assigneeId?: string | null;
+    assigneeName?: string;
+    status?: OrderStatus;
+    orderIds: number[];
+    organizationId: string;
+}
+
+/**
+ * Fetch paginated orders with search, sorting, and tenant isolation
+ */
+export async function getOrders({
+    userId,
+    role,
+    organizationId,
+    query = "",
+    page = 1,
+    sort = "",
+}: OrdersFilterParams) {
+    const skip = (page - 1) * LIMIT;
+    const searchQuery = query.trim();
+
+    // Build Tenant & Role Scoped Where Clause
+    const where: Prisma.OrderWhereInput = {
+        organizationId,
+        ...(role === "driver" && { assigneeId: userId }),
+    };
+
+    //Add Search Filter
+    if (searchQuery) {
+        const numQuery = Number(searchQuery);
+        const isNumeric = !isNaN(numQuery) && searchQuery !== "";
+
+        where.OR = [
+            { name: { contains: searchQuery, mode: "insensitive" } },
+            { phone: { contains: searchQuery, mode: "insensitive" } },
+            { city: { contains: searchQuery, mode: "insensitive" } },
+            { assignee_name: { contains: searchQuery, mode: "insensitive" } },
+            ...(isNumeric ? [{ order_id: numQuery }] : []),
+        ];
+    }
+
+    // Sorting Strategy
+    let orderBy: Prisma.OrderOrderByWithRelationInput = { date_created_gmt: "asc" };
+    if (sort === "city_asc") orderBy = { city: "asc" };
+    if (sort === "city_desc") orderBy = { city: "desc" };
+
+    // Execute Queries
+    const [orders, totalCount] = await Promise.all([
+        prisma.order.findMany({
+            where,
+            orderBy,
+            skip,
+            take: LIMIT,
+            select: role === "driver"
+                ? {
+                    order_id: true,
+                    payment: true,
+                    amount: true,
+                    status: true,
+                    date_delivered: true,
+                }
+                : {
+                    order_id: true,
+                    name: true,
+                    city: true,
+                    address: true,
+                    phone: true,
+                    payment: true,
+                    amount: true,
+                    status: true,
+                    date_delivered: true,
+                    assignee: {
+                        select: {
+                            id: true,
+                            name: true,
+                            image: true,
+                        },
+                    },
+                },
+        }),
+        prisma.order.count({ where }),
+    ]);
+
+    return {
+        orders,
+        totalPages: Math.ceil(totalCount / LIMIT),
+        totalCount,
+        currentPage: page,
+    };
+}
+
+/**
+ * Fetch a single order by order_id
+ */
+export async function getSingleOrder(orderId: number, organizationId: string) {
+    if (!orderId || !organizationId) return null;
+
+    const order = await prisma.order.findFirst({
+        where: {
+            order_id: orderId,
+            organizationId,
+        },
+        select: {
+            order_id: true,
+            payment: true,
+            status: true,
+            assignee: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                },
+            },
+        },
+    });
+
+    if (!order) return null;
+
+    return order;
+}
+
+/**
+ * Fetch selected orders formatted for Clipboard export
+ */
+export async function getClipboardContent(selectedOrders: number[], organizationId: string) {
+    if (!selectedOrders || selectedOrders.length === 0 || !organizationId) return null;
+
+    const orders = await prisma.order.findMany({
+        where: {
+            organizationId,
+            order_id: { in: selectedOrders },
+        },
+        select: {
+            order_id: true,
+            name: true,
+            city: true,
+            address: true,
+            phone: true,
+            payment: true,
+            amount: true,
+            status: true,
+        },
+    });
+
+    if (orders.length === 0) return null;
+
+    return orders.map((order) => formatOrderText(order)).join("\n\n");
+}
+
+/**
+ * Bulk update order status, assignees, and timestamps
+ */
+export async function bulkUpdateOrders({
+    assigneeId,
+    assigneeName,
+    status,
+    orderIds,
+    organizationId,
+}: UpdateOrdersParams) {
+    if (!orderIds || orderIds.length === 0 || !organizationId) return null;
+
+    const isUnassigning = assigneeId === "none" || !assigneeId;
+
+    const updateData = {
+        assigneeId: isUnassigning ? null : assigneeId,
+        assignee_name: isUnassigning ? "" : assigneeName ?? "",
+        ...(status && { status }),
+        assignedAt: !isUnassigning ? new Date() : null,
+        ...(status === OrderStatus.DELIVERED ? { date_delivered: new Date() } : { date_delivered: null }),
+    };
+
+    const result = await prisma.order.updateMany({
+        where: {
+            organizationId,
+            order_id: { in: orderIds },
+        },
+        data: updateData,
+    });
+
+    return result.count > 0 ? result : null;
+}
+
+/**
+ * Fetch orders assigned to a specific driver/employee
+ */
+export async function getEmployeeOrders(
+    userId: string,
+    status: OrderStatus,
+    organizationId: string
+) {
+    if (!userId || !organizationId) return [];
+
+    return await prisma.order.findMany({
+        where: {
+            organizationId,
+            assigneeId: userId,
+            status,
+        },
+        select: {
+            order_id: true,
+            name: true,
+            city: true,
+            address: true,
+            phone: true,
+            payment: true,
+            amount: true,
+            status: true,
+            assignedAt: true,
+            date_delivered: true,
+        },
+    });
+}
+
+/**
+ * Format order details into shareable text
+ */
+function formatOrderText(order: SharableOrderData): string {
+    const isPaid = order.payment.toLowerCase() === "hesabe";
+    return [
+        `Order Number: #${order.order_id}`,
+        `Name: ${order.name}`,
+        `City: ${order.city}`,
+        `Address: ${order.address ?? "N/A"}`,
+        `Phone: ${order.phone}`,
+        `Payment: ${isPaid ? "PAID" : "Cash On Delivery"}`,
+        `Amount: ${isPaid ? "N/A" : order.amount}`,
+        `Status: ${order.status}`,
+    ].join("\n");
+}

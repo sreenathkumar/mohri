@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "mongodb"
   url      = env("DB_URI")
@@ -9,9 +8,9 @@ generator client {
 }
 
 model User {
-  id            String       @id @map("_id")
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  email         String
+  email         String       @unique
   emailVerified Boolean      @default(false)
   image         String?
   createdAt     DateTime     @default(now())
@@ -21,20 +20,22 @@ model User {
   members       Member[]
   invitations   Invitation[]
 
-  @@unique([email])
+  assignedOrders Order[] @relation("AssigneeOrders")
+
   @@map("user")
 }
 
 model Session {
-  id                   String   @id @map("_id")
-  expiresAt            DateTime
-  token                String
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  ipAddress            String?
-  userAgent            String?
-  userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  expiresAt DateTime
+  token     String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId               String  @db.ObjectId
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   activeOrganizationId String?
   role                 String?
 
@@ -44,10 +45,10 @@ model Session {
 }
 
 model Account {
-  id                    String    @id @map("_id")
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
   accountId             String
   providerId            String
-  userId                String
+  userId                String    @db.ObjectId
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
@@ -64,7 +65,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id @map("_id")
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
   value      String
   expiresAt  DateTime
@@ -76,27 +77,30 @@ model Verification {
 }
 
 model Organization {
-  id          String       @id @map("_id")
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   slug        String
   logo        String?
-  createdAt   DateTime
+  createdAt   DateTime     @default(now())
   metadata    String?
   members     Member[]
   invitations Invitation[]
+  shops       Shop[]
+  orders      Order[]
 
-  @@unique([slug])
+@@unique([slug])
   @@map("organization")
 }
 
 model Member {
-  id             String       @id @map("_id")
-  organizationId String
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  organizationId String       @db.ObjectId
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       @default("member")
-  createdAt      DateTime
+
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("member")
+  createdAt DateTime @default(now())
 
   @@index([organizationId])
   @@index([userId])
@@ -104,18 +108,87 @@ model Member {
 }
 
 model Invitation {
-  id             String       @id @map("_id")
-  organizationId String
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  organizationId String       @db.ObjectId
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
   status         String       @default("pending")
   expiresAt      DateTime
   createdAt      DateTime     @default(now())
-  inviterId      String
-  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  inviterId String @db.ObjectId
+  user      User   @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+enum Platform {
+  woocommerce
+  shopify
+}
+
+model Shop {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String?
+  domain   String
+  platform Platform
+
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders         Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, domain])
+  @@map("shops")
+}
+
+enum OrderStatus {
+  PROCESSING
+  CANCELLED
+  ASSIGNED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  RECONCILED
+  FAILED
+}
+
+model Order {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  shopId     String @db.ObjectId
+  shop       Shop   @relation(fields: [shopId], references: [id])
+  shopDomain String @map("shop")
+
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  order_id Int         @unique
+  name     String
+  city     String
+  address  String?
+  phone    String
+  payment  String
+  amount   String
+  status   OrderStatus @default(PROCESSING)
+
+  assignee_name String  @default("")
+  assigneeId    String? @db.ObjectId
+  assignee      User?   @relation("AssigneeOrders", fields: [assigneeId], references: [id])
+
+  assignedAt        DateTime?
+  latitude          Float?
+  longitude         Float?
+  date_delivered    DateTime?
+  date_created_gmt  DateTime
+  date_modified_gmt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("order")
 }
