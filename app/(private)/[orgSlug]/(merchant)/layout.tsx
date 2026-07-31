@@ -6,22 +6,12 @@ import {
 } from "@/components/shadcn/sidebar";
 import AppBreadcrumb from '@/components/ui/AppBreadcrumb';
 import AppSidebar from '@/components/ui/AppSidebar';
-import { getOrgSlug, getServerSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import React from 'react';
 import { Toaster } from "react-hot-toast";
 
 export const dynamic = 'force-dynamic';
 
 async function MerchantDashLayout({ children }: { children: React.ReactNode }) {
-    const session = await getServerSession();
-    const userRole = session?.session.role;
-
-    //if not a driver, redirect to continue and that will send to the right page
-    if (userRole === 'user') {
-        redirect('/')
-    }
-
     return (
         <SidebarProvider>
             <AppSidebar />

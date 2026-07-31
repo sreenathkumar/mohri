@@ -1,58 +1,56 @@
-import { auth, getServerSession } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { auth, getServerSession } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-
-async function ContinuePage({
+export default async function ContinuePage({
     searchParams,
 }: {
     searchParams: Promise<{ callbackURL?: string }>;
 }) {
-    console.log('continue page triggered')
-    const session = await getServerSession()
-    //if any callbackURL is provided, redirect to that URL
+    const session = await getServerSession();
     const { callbackURL } = await searchParams;
 
-
-    // No session at all → back to login, preserve intended destination
+    // Double check authentication status
     if (!session) {
-        const loginUrl = callbackURL
-            ? `/login?callbackURL=${encodeURIComponent(callbackURL)}`
-            : '/login';
-        redirect(loginUrl);
+        redirect("/login");
     }
 
-    // Email not verified yet
+    // Email Verification Check
     if (!session.user.emailVerified) {
-        redirect('/email-verified?error="NOT_VERIFIED"');
+        console.log("[Continue] User email unverified. Redirecting to /verify-email.");
+        redirect("/verify-email?error=NOT_VERIFIED");
     }
 
-    //if the userRole is user, redirect to the home page
-    if (session.session.role === 'user') {
-        redirect('/');
-    }
+    const reqHeaders = await headers();
 
+    // Fetch Active Organization details
     const org = await auth.api.getFullOrganization({
-        headers: await headers()
+        headers: reqHeaders,
     });
 
+    // No Active Org? -> Send directly to onboarding (no fallback org setting)
     if (!org) {
-        redirect('/noboarding');
+        console.log("[Continue] No active org found on session. Redirecting to /onboarding.");
+        redirect("/onboarding");
     }
 
-    // Respect an explicit deep link if present and it's within the user's own org
-    if (callbackURL && callbackURL.startsWith(`/${org?.slug}`)) {
+    // Deep Link Callback Check (Safe inside active org)
+    if (callbackURL && callbackURL.startsWith(`/${org.slug}`)) {
+        console.log(`[Continue] Redirecting to callback URL: ${callbackURL}`);
         redirect(callbackURL);
     }
 
-    // Default destination by role
-    if (session.session.role === 'driver') {
+    // Inspect user's role in THIS active organization
+    const currentMember = org.members?.find((m) => m.userId === session.user.id);
+    const orgRole = currentMember?.role;
+
+    // Dispatch based on Role
+    if (orgRole === "driver") {
+        console.log(`[Continue] Driver detected. Redirecting to /${org.slug}/driver/dashboard`);
         redirect(`/${org.slug}/driver/dashboard`);
     }
 
+    // Default redirect for Owners, Admins, and Staff
+    console.log(`[Continue] Merchant/Staff detected. Redirecting to /${org.slug}/dashboard- +`);
     redirect(`/${org.slug}/dashboard`);
-
 }
-
-
-export default ContinuePage;

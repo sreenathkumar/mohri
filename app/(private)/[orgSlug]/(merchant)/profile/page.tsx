@@ -1,24 +1,27 @@
-import { getUser } from '@/actions/user';
-import { auth } from '@/auth';
+import { getCurrentUser } from '@/actions/userActions';
 import { Card } from '@/components/shadcn/card';
-import { redirect } from 'next/navigation';
+import { UserProfileType } from '@/types/UserType';
 import ProfileInformation from './components/profile-info';
 import UserImage from './components/user-image';
-import { UserProfileType } from '@/types/UserType';
+
 
 async function ProfilePage() {
-    const session = await auth();
-    if (!session) redirect('/login');
-
-    const { email, name, id } = session?.user;
-
-    const user = await getUser({ userId: id }) as UserProfileType;
-
+    const user = await getCurrentUser();
     return (
         <Card className='flex gap-4 p-8 mt-8 mb-4 bg-transparent h-full overflow-y-auto'>
             <div className="flex gap-8 w-full">
-                <UserImage avatarUrl={user?.image} email={email} name={name} />
-                <ProfileInformation user={user} />
+                <UserImage avatarUrl={user?.image} email={user?.email} name={user?.name} />
+                <ProfileInformation user={
+                    ({
+                        id: user?.id,
+                        name: user?.name ?? undefined,
+                        address: user?.address ?? undefined,
+                        phone: user?.phone ?? undefined,
+                        image: user?.image ?? undefined,
+                        email: user?.email,
+                    } as UserProfileType)
+
+                } />
             </div>
         </Card>
     )

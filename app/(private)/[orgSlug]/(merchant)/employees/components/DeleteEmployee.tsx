@@ -1,6 +1,5 @@
 'use client'
 
-import { deleteEmployees } from "@/actions/employee";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/shadcn/alert-dialog'
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,12 +16,13 @@ function DeleteEmployee({ children, selectedItems, setSelectedItems }: Props) {
 
     //handle delete employee
     const handleDeleteEmployee = async () => {
-        const res = await deleteEmployees(selectedItems);
+        // const res = await deleteEmployees(selectedItems);
 
-        if (res?.status === 'success') {
-            setSelectedItems([]);
-            router.refresh();
-        }
+        // if (res?.status === 'success') {
+        //     setSelectedItems([]);
+        //     router.refresh();
+        // }
+        console.log("Deleting employees with IDs:", selectedItems);
     }
 
     return (

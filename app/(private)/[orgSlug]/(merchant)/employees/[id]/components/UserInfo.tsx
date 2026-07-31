@@ -3,8 +3,8 @@ import Image from "next/image";
 
 interface UserInfoType {
     name: string,
-    image: string,
-    address: string
+    image?: string,
+    address?: string
 }
 
 async function UserInfo({ user }: { user: UserInfoType | null }) {

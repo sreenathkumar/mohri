@@ -4,27 +4,32 @@ import { Input } from "@/components/shadcn/input"
 import FormField from '@/components/ui/CustomField'
 import { signIn } from "@/lib/auth-client"
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import PasswordField from './PasswordField'
 import SubmitBtn from "./SubmitBtn"
 import { toast } from "sonner"
 
 function LoginForm() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get('callbackUrl');
 
     const handleLogin = async (formdata: FormData) => {
         try {
-            const { error } = await signIn.email({
+            await signIn.email({
                 email: formdata.get('email') as string,
                 password: formdata.get('password') as string,
                 rememberMe: true,
                 callbackURL: redirectUrl || '/continue',
-            });
+            }, {
+                onError: (ctx) => {
+                    if (ctx.error.status === 403) {
+                        router.push('/email-verified?error=NOT_VERIFIED')
+                    }
 
-            if (error) {
-                toast.error(error.message || 'Something went wrong. Please try again later.');
-            }
+                    toast.error(ctx.error.message || 'Something went wrong in signing in. Please try again later.');
+                }
+            });
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             toast.error(err?.message || 'Something went wrong. Please try again later.');

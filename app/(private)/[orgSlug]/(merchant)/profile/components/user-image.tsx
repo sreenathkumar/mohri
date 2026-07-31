@@ -1,5 +1,5 @@
 'use client'
-import { updateProfilePhoto } from "@/actions/user";
+import { updateProfilePhoto } from "@/actions/userActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { Button } from "@/components/shadcn/button";
 import { Check, X } from "lucide-react";
@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-function UserImage({ avatarUrl, email, name }: { avatarUrl?: string, email?: string, name?: string }) {
+function UserImage({ avatarUrl, email, name }: { avatarUrl?: string | null, email?: string, name?: string }) {
     const [preview, setPreview] = useState<string | undefined>(undefined);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const router = useRouter();

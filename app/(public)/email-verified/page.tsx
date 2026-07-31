@@ -1,7 +1,8 @@
-import { getServerSession } from "@/lib/auth";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import ResendBtn from "./components/resend-btn";
+import { getServerSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 interface PageProps {
     searchParams: Promise<{
@@ -10,8 +11,14 @@ interface PageProps {
 }
 
 async function VerifyEmail({ searchParams }: PageProps) {
-    const session = await getServerSession()
-    console.log("VerifyEmail session:", session);
+    const session = await getServerSession();
+
+    if (session && session.user.emailVerified) {
+        console.log("[VerifyEmail] User email already verified. Redirecting to /continue.");
+        redirect("/continue");
+    }
+
+
     const { error } = await searchParams;
 
     if (error === "TOKEN_EXPIRED") {

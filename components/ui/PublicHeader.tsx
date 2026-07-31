@@ -8,7 +8,7 @@ import { signOut, useSession } from '@/lib/auth-client';
 
 function PublicHeader() {
     const { data } = useSession();
-    console.log('PublicHeader session:', data?.session);
+    console.log('PublicHeader session:', data);
     const isLoggedIn = !!data?.session
     const userRole = data?.session?.role;
     const dashboardLink = userRole === 'driver' ? '/driver/dashboard' : '/dashboard';
@@ -58,27 +58,17 @@ function PublicHeader() {
                     </Link>
 
                     {isLoggedIn ? (
-                        userRole === 'user' ? (
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="gap-2 rounded-full cursor-pointer"
-                                onClick={() => signOut()}
-                            >
-                                Sign Out
-                            </Button>
-                        ) : (
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="gap-2 rounded-full"
-                                asChild
-                            >
-                                <Link href={dashboardLink} className="flex items-center gap-2">
-                                    Dashboard
-                                </Link>
-                            </Button>
-                        )
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-2 rounded-full"
+                            asChild
+                        >
+                            <Link href='/continue' className="flex items-center gap-2">
+                                Dashboard
+                            </Link>
+                        </Button>
+
                     ) : (
                         <Button
                             variant="ghost"

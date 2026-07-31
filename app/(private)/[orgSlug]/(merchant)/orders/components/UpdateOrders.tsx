@@ -1,15 +1,15 @@
 'use client'
 
-import { getAllDrivers } from "@/actions/employee"
+import { getAllDrivers } from "@/actions/employeeActions"
 import { Button } from "@/components/shadcn/button"
 import { useSelectedOrder } from "@/context/SelectedOrderCtx"
 import { useCallback, useEffect, useState } from "react"
 import OrderBadge from "./OrderBadge"
 import { AssigneeUpdateOptions, StatusUpdateOptions } from "./UpdateOptions"
-import toast from "react-hot-toast"
-import { getSingleOrder, updateOrders } from "@/actions/orderAction"
+import { getSingleOrder, updateOrders } from "@/actions/orderActions"
 import { useSWRConfig } from "swr"
-import { OrderStatus } from "@/types/OrderType";
+import { OrderStatus } from "@prisma/client"
+import { toast } from "sonner"
 
 //type for drivers object
 export interface DriversType {
@@ -18,28 +18,17 @@ export interface DriversType {
     image?: string
 }
 
-//type for update orders form
-interface UpdateOrderType {
-    order_ids: number[],
-    assignee?: string,
-    assignee_name?: string
-    status?: string
-}
-
 //type for single order data
 interface SingleOrderType {
     order_id: number,
     payment: string,
     status: string,
-    asignee: {
+    assignee?: {
         id: string,
         name: string,
         image?: string
     }
 }
-
-const statuses = Object.values(OrderStatus)
-const prepaidOrderStatuses = ['Processing', 'Delivered'];
 
 
 function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_id?: number }) {
@@ -61,22 +50,20 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
         if (selectedOrder.length > 0) {
 
             const formData = new FormData(e.currentTarget);
-            const { assignee, status } = Object.fromEntries(formData);
-            const assigneeName = drivers.find(driver => driver.id === String(assignee))?.name;
+            const assigneeId = formData.get('assigneeId') as string;
+            const status = formData.get('status') as OrderStatus || undefined
+            const assigneeName = drivers.find(driver => driver.id === String(assigneeId))?.name;
 
-            //constract the update object
-            const updateObj: UpdateOrderType = { order_ids: selectedOrder };
-
-            if (assignee || status) {
-
-                if (assignee) updateObj.assignee = assignee.toString();
-                if (status) updateObj.status = status.toString();
-                if (assigneeName) updateObj.assignee_name = assigneeName
-
+            if (assigneeId || status) {
                 //update the orders
-                const res = await updateOrders(updateObj);
+                const res = await updateOrders({
+                    orderIds: selectedOrder,
+                    assigneeId: assigneeId === 'none' ? null : String(assigneeId),
+                    assigneeName: assigneeName || '',
+                    status: status
+                });
 
-                if (res && res.status === 'success') {
+                if (res && res.success) {
                     setSelectedOrder([]);
                     mutate(
                         (key) => typeof key === 'string' && key.startsWith('/api/webhook/updates'),
@@ -103,7 +90,11 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
         const res = await getAllDrivers();
 
         if (res && res.length > 0) {
-            setDrivers([...res]);
+            setDrivers(res.map(driver => ({
+                id: driver.id,
+                name: driver.name,
+                image: driver.image || undefined
+            })));
         }
     }
 
@@ -112,7 +103,16 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
         const res = await getSingleOrder(order_id!);
 
         if (res) {
-            setSingleOrder(res);
+            setSingleOrder({
+                order_id: res.order_id,
+                payment: res.payment,
+                status: res.status,
+                assignee: res.assignee ? {
+                    id: res.assignee.id,
+                    name: res.assignee.name,
+                    image: res.assignee.image || undefined
+                } : undefined
+            });
         }
 
     }, [order_id])
@@ -139,8 +139,7 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
             </div>
             <form className="space-y-6" onSubmit={handleUpdateStatus}>
                 <AssigneeUpdateOptions options={drivers} label="Assignee" id="assignee" placeholder="Select an assignee" />
-                <StatusUpdateOptions options={singleOrder?.payment === 'hesabe' ? prepaidOrderStatuses : statuses} label="Status" id="status" placeholder="Select a status" />
-
+                <StatusUpdateOptions label="Status" id="status" placeholder="Select a status" />
                 <Button type="submit">Update Orders</Button>
             </form>
         </div>

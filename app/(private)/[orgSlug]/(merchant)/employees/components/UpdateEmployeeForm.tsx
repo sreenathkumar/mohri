@@ -1,6 +1,6 @@
 'use client'
 
-import { updateEmployee } from "@/actions/employee"
+import { updateEmployeeRole } from "@/actions/employeeActions"
 import SubmitBtn from "@/app/(public)/login/components/SubmitBtn"
 import DynamicAlert from "@/app/(public)/reset-password/components/DynamicAlert"
 import { Input } from "@/components/shadcn/input"
@@ -42,7 +42,7 @@ function UpdateEmployeeForm({ data }: { data: { id: string, name: string, email:
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget);
-        const res = await updateEmployee(data.id, formData);
+        const res = await updateEmployeeRole({ id: data.id, newRole: formData.get("role") as string });
         setState(res);
 
 

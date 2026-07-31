@@ -1,6 +1,6 @@
 'use client'
 
-import { OrderStatus } from "@/types/OrderType";
+import { OrderStatus } from "@prisma/client";
 import { createContext, useContext, useState } from "react";
 
 // Define the type for the context value
@@ -12,7 +12,7 @@ interface ClipboardCtxType {
 
 interface ClipBoardContentType {
     text?: string,
-    status?: OrderStatus.PROCESSING | OrderStatus.DELIVERED,
+    status?: Extract<OrderStatus, 'PROCESSING' | 'DELIVERED'>,
     ids: number[]
 }
 

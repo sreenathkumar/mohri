@@ -1,10 +1,10 @@
-import { getEmployeeOrders } from "@/actions/orderAction";
+import { getEmployeeOrders } from "@/actions/orderActions";
 import { Badge } from "@/components/shadcn/badge";
 import { CardContent } from "@/components/shadcn/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/shadcn/table";
 import CheckAll from "./CheckAll";
 import SelectOrder from "./SelectOrder";
-import { OrderStatus } from "@/types/OrderType";
+import { OrderStatus } from "@prisma/client";
 
 //table columns for the processing orders table
 const tableColumns = ['Order Number', 'Name', 'City', 'Phone Number', 'Payment', 'Amount', 'Status'];

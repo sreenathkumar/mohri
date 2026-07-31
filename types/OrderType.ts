@@ -1,18 +1,7 @@
-export interface OrderType {
-    order_id: number,
-    name: string,
-    city: string,
-    address: string,
-    phone: string,
-    amount: string,
-    status: string,
-    payment?: string,
-    asignee: {
-        id?: string,
-        name?: string,
-        image?: string
-    } | null
-}
+import { getOrders } from "@/actions/orderActions";
+import { OrderStatus } from "@prisma/client";
+
+export type OrderType = Awaited<ReturnType<typeof getOrders>>['orders'][number]
 
 export interface OrderLocationType {
     order_id: number;
@@ -47,15 +36,15 @@ export interface OrderInfoType {
     date_modified_gmt: string;
 }
 
-export enum OrderStatus {
-    PROCESSING = 'PROCESSING',
-    CANCELLED = 'CANCELLED',
-    ASSIGNED = 'ASSIGNED',
-    OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
-    DELIVERED = 'DELIVERED',     // Cash collected by driver
-    RECONCILED = 'RECONCILED',   // Cash handed to merchant
-    FAILED = 'FAILED'
-}
+// export enum OrderStatus {
+//     PROCESSING = 'PROCESSING',
+//     CANCELLED = 'CANCELLED',
+//     ASSIGNED = 'ASSIGNED',
+//     OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
+//     DELIVERED = 'DELIVERED',     // Cash collected by driver
+//     RECONCILED = 'RECONCILED',   // Cash handed to merchant
+//     FAILED = 'FAILED'
+// }
 
 export interface DriverOrderType {
     order_id: number;
@@ -71,14 +60,14 @@ export interface DriverOrderType {
 }
 
 export interface MapPageOrderType {
-    id: string;
-    status: OrderStatus.ASSIGNED | OrderStatus.OUT_FOR_DELIVERY | OrderStatus.PROCESSING;
-    latitude: number;
-    longitude: number;
-    name: string;
-    address: string;
+    id: number;
+    status: Extract<OrderStatus, 'ASSIGNED' | 'OUT_FOR_DELIVERY' | 'PROCESSING' | 'CANCELED'>;
+    latitude: number | null;
+    longitude: number | null;
+    name: string | null;
+    address: string | null;
     assignee: {
         id: string;
         name: string;
-    }
+    } | null
 }

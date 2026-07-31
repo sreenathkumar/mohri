@@ -39,7 +39,10 @@ export async function fetchEmployees({ organizationId }: FetchDriversParams) {
         },
     });
 
-    return members.map((member) => member.user);
+    return members.map((member) => ({
+        role: member.role,
+        ...member.user
+    }));
 }
 
 /**

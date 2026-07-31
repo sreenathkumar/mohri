@@ -1,5 +1,5 @@
 'use client'
-import { addEmployee, checkEmployeeEmail, inviteEmployee } from "@/actions/employee"
+import { addEmployee, checkEmployeeEmail, inviteEmployee } from "@/actions/employeeActions"
 import PasswordField from "@/app/(public)/login/components/PasswordField"
 import SubmitBtn from "@/app/(public)/login/components/SubmitBtn"
 import DynamicAlert from "@/app/(public)/reset-password/components/DynamicAlert"

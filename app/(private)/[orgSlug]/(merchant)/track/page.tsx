@@ -1,13 +1,13 @@
-import { getMarchantMapData } from "@/actions/mapActions";
+import { getOwnerMapData } from "@/actions/mapActions";
 import { MapProvider } from "@/context/MapCtx";
 import Map from "./components/map";
 
 async function RealtimeLocationPage() {
-    const merchantMapData = await getMarchantMapData();
+    const ownerMapData = await getOwnerMapData();
     return (
         <div className="w-full relative">
             <MapProvider>
-                <Map orders={merchantMapData} />
+                <Map orders={ownerMapData} />
             </MapProvider>
         </div>
     )

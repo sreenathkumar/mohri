@@ -1,4 +1,3 @@
-import { getServerSessionContext } from "@/lib/checkServerAuth"
 import {
   Sidebar,
   SidebarContent,
@@ -12,17 +11,20 @@ import User from "./User"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import AppIcon from "@/app/icon.svg"
+import { getServerSession } from "@/lib/auth"
 
 const navItems = [
   { title: "Dashboard", url: "/merchant/dashboard", icon: LayoutDashboard },
-  { title: "Stores", url: "/merchant/stores", icon: Store, requires: ['merchant', 'clerk'] },
-  { title: "Employees", url: "/merchant/employees", icon: IdCard, requires: ['merchant'] },
+  { title: "Stores", url: "/merchant/stores", icon: Store, requires: ['owner', 'manager'] },
+  { title: "Employees", url: "/merchant/employees", icon: IdCard, requires: ['owner'] },
   { title: "Orders", url: "/merchant/orders", icon: Package },
   { title: 'Track Delivery', url: '/merchant/track', icon: Truck },
 ]
 
 async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { role, userId } = await getServerSessionContext();
+  const session = await getServerSession();
+  const role = session?.session.role;
+  const userId = session?.session.userId;
 
   if (!role || !userId) {
     redirect('/login') // Redirect to login if the user is not authenticated

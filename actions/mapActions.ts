@@ -2,7 +2,7 @@
 
 import { getRequiredSessionContext } from "@/lib/auth-context";
 import { FormState, updateOrderCoordinateSchema } from "@/lib/zod";
-import { updateOrderLocation, fetchMerchantMapData } from "@/services/mapService";
+import { fetchOwnerMapData, updateOrderLocation } from "@/services/mapService";
 import { MapPageOrderType } from "@/types/OrderType";
 import { revalidatePath } from "next/cache";
 
@@ -10,15 +10,34 @@ import { revalidatePath } from "next/cache";
  * Fetch merchant map data for the current session's organization
  * @returns orders data with longitude and latitude
  */
-export async function getMerchantMapData() {
+export async function getOwnerMapData() {
     try {
         const { organizationId } = await getRequiredSessionContext({
             allowedRoles: ['owner', 'manager']
         })
 
         // Fetch the merchant map data using the organizationId 
-        const merchantMapData = await fetchMerchantMapData({ organizationId });
-        return merchantMapData
+        const ownerMapData = await fetchOwnerMapData({ organizationId });
+
+        const allowedStatuses: MapPageOrderType['status'][] = ['PROCESSING', 'ASSIGNED', 'OUT_FOR_DELIVERY'];
+
+        const formattedData: MapPageOrderType[] = ownerMapData
+            .filter(order => allowedStatuses.includes(order.status as MapPageOrderType['status']))
+            .map(order => ({
+                id: order.order_id,
+                name: order.name,
+                city: order.city,
+                address: order.address,
+                status: order.status as MapPageOrderType['status'],
+                latitude: order.latitude,
+                longitude: order.longitude,
+                assignee: order.assignee ? {
+                    id: order.assignee.id,
+                    name: order.assignee.name
+                } : null
+            }));
+
+        return formattedData;
 
     } catch (error: any) {
         console.error('[getMerchantMapData] Error in getMerchantMapData: ', error.message);

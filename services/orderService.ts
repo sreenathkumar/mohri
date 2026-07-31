@@ -1,5 +1,5 @@
 import { OrderStatus, Prisma, prisma } from "@/lib/prisma";
-//import { OrderStatus, Prisma } from "@prisma/client";
+import { th } from "date-fns/locale";
 
 const LIMIT = Number(process.env.ORDER_QUERY_LIMIT) || 10;
 
@@ -34,7 +34,7 @@ export interface UpdateOrdersParams {
 /**
  * Fetch paginated orders with search, sorting, and tenant isolation
  */
-export async function getOrders({
+export async function fetchOrders({
     userId,
     role,
     organizationId,
@@ -118,8 +118,10 @@ export async function getOrders({
 /**
  * Fetch a single order by order_id
  */
-export async function getSingleOrder(orderId: number, organizationId: string) {
-    if (!orderId || !organizationId) return null;
+export async function fetchSingleOrder({ orderId, organizationId }: { orderId: number, organizationId: string }) {
+    if (!orderId || !organizationId) {
+        throw new Error('[fetchSingleOrder] Order ID and Organization ID are required to fetch the order.');
+    }
 
     const order = await prisma.order.findFirst({
         where: {
@@ -140,16 +142,16 @@ export async function getSingleOrder(orderId: number, organizationId: string) {
         },
     });
 
-    if (!order) return null;
-
     return order;
 }
 
 /**
  * Fetch selected orders formatted for Clipboard export
  */
-export async function getClipboardContent(selectedOrders: number[], organizationId: string) {
-    if (!selectedOrders || selectedOrders.length === 0 || !organizationId) return null;
+export async function fetchClipboardContent({ selectedOrders, organizationId }: { selectedOrders: number[], organizationId: string }) {
+    if (!selectedOrders || selectedOrders.length === 0 || !organizationId) {
+        throw new Error('[fetchClipboardContent] Selected order IDs and Organization ID are required to fetch clipboard content.');
+    }
 
     const orders = await prisma.order.findMany({
         where: {
@@ -168,7 +170,9 @@ export async function getClipboardContent(selectedOrders: number[], organization
         },
     });
 
-    if (orders.length === 0) return null;
+    if (orders.length === 0) {
+        throw new Error('[fetchClipboardContent] No orders found for the provided IDs.');
+    }
 
     return orders.map((order) => formatOrderText(order)).join("\n\n");
 }
@@ -183,7 +187,9 @@ export async function bulkUpdateOrders({
     orderIds,
     organizationId,
 }: UpdateOrdersParams) {
-    if (!orderIds || orderIds.length === 0 || !organizationId) return null;
+    if (!orderIds || orderIds.length === 0 || !organizationId) {
+        throw new Error('[bulkUpdateOrders] Order IDs and Organization ID are required for bulk update.');
+    }
 
     const isUnassigning = assigneeId === "none" || !assigneeId;
 
@@ -195,26 +201,26 @@ export async function bulkUpdateOrders({
         ...(status === OrderStatus.DELIVERED ? { date_delivered: new Date() } : { date_delivered: null }),
     };
 
-    const result = await prisma.order.updateMany({
+    await prisma.order.updateMany({
         where: {
             organizationId,
             order_id: { in: orderIds },
         },
         data: updateData,
     });
-
-    return result.count > 0 ? result : null;
 }
 
 /**
  * Fetch orders assigned to a specific driver/employee
  */
-export async function getEmployeeOrders(
+export async function fetchEmployeeOrders(
     userId: string,
     status: OrderStatus,
     organizationId: string
 ) {
-    if (!userId || !organizationId) return [];
+    if (!userId || !organizationId) {
+        throw new Error('[fetchEmployeeOrders] User ID and Organization ID are required to fetch employee orders.');
+    }
 
     return await prisma.order.findMany({
         where: {

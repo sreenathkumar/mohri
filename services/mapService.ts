@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 
-export interface FetchMerchantMapParams {
+export interface FetchOwnerMapParams {
     organizationId: string;
 }
 
@@ -15,8 +15,10 @@ export interface ChangeOrderLocationParams {
 /**
  * Fetch non-delivered/non-cancelled orders with coordinates for map display
  */
-export async function fetchMerchantMapData({ organizationId }: FetchMerchantMapParams) {
-    if (!organizationId) return [];
+export async function fetchOwnerMapData({ organizationId }: FetchOwnerMapParams) {
+    if (!organizationId) {
+        throw new Error("[fetchOwnerMapData] Missing required parameter: organizationId");
+    }
 
     const orders = await prisma.order.findMany({
         where: {
@@ -32,8 +34,10 @@ export async function fetchMerchantMapData({ organizationId }: FetchMerchantMapP
             status: true,
             latitude: true,
             longitude: true,
+            name: true,
             assignee: {
                 select: {
+                    id: true,
                     name: true,
                 },
             },

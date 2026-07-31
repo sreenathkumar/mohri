@@ -1,5 +1,6 @@
 'use server';
 
+import { getRequiredSessionContext } from '@/lib/auth-context';
 import {
     findUserById,
     updateUserProfile,
@@ -9,23 +10,20 @@ import {
 import { UserProfileType } from '@/types/UserType';
 
 //get user by id
-export async function getUser({ userId }: { userId: string }) {
-    if (!userId) return null;
-
+export async function getCurrentUser() {
     try {
+        const { userId } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager', 'driver']
+        })
         const user = await findUserById(userId);
 
-        if (!user) return null;
+        if (!user) {
+            throw new Error('User not found');
+        }
 
-        return {
-            name: user.name,
-            email: user.email,
-            image: user.image,
-            address: user.address,
-            phone: user.phone,
-        };
+        return user
     } catch (error: any) {
-        console.error('Error fetching user:', error?.message);
+        console.error('[getCurrentUser] Error fetching user:', error?.message);
         return null;
     }
 }

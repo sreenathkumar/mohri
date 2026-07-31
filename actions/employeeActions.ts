@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { getRequiredSessionContext } from "@/lib/auth-context";
 import {
     checkEmployeeExists,
+    fetchDrivers,
     fetchEmployees
 } from "@/services/employeeService";
 import { revalidatePath } from "next/cache";
@@ -41,6 +42,22 @@ export async function getAllEmployees() {
         return await fetchEmployees({ organizationId });
     } catch (error: any) {
         console.error("[getAllEmployees] Error fetching employees:", error?.message);
+        return [];
+    }
+}
+
+/**
+ * Action: Fetch all drivers for assigned orders
+ */
+export async function getAllDrivers() {
+    try {
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager']
+        });
+
+        return await fetchDrivers({ organizationId });
+    } catch (error: any) {
+        console.error("[getAllDrivers] Error fetching drivers:", error?.message);
         return [];
     }
 }
@@ -216,21 +233,3 @@ export async function updateEmployeeRole({ id, newRole }: { id: string, newRole:
     }
 }
 
-// /**
-//  * Action: Fetch all drivers for assigned orders
-//  */
-// export async function getAllDrivers() {
-//     try {
-//         const { role, organizationId } = await getServerSessionContext();
-
-//         if (role === "driver") {
-//             console.error("[getAllDrivers] Drivers cannot fetch driver list.");
-//             return [];
-//         }
-
-//         return await getDriversService({ organizationId });
-//     } catch (error: any) {
-//         console.error("[getAllDrivers] Error fetching drivers:", error?.message);
-//         return [];
-//     }
-// }

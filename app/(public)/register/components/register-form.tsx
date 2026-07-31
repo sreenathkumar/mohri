@@ -10,9 +10,10 @@ import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
 import PasswordField from "../../login/components/PasswordField";
+import { useRouter } from "next/navigation";
 
 function RegisterForm() {
-
+    const router = useRouter();
     const handleSignup = async (formData: FormData) => {
         const name = (formData.get('name') as string)?.trim();
         const email = (formData.get('email') as string)?.trim();
@@ -53,7 +54,7 @@ function RegisterForm() {
             return;
         }
 
-        toast.success("Account created successfully! Please check your email to verify your account.");
+        router.push('/email-verified?error=NOT_VERIFIED');
     };
 
 

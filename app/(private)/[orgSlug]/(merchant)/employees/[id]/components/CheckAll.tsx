@@ -4,13 +4,14 @@ import { Checkbox } from "@/components/shadcn/checkbox";
 import { useClipboardCopy } from "@/context/ClipboardCtx";
 import { generateClipboardText } from "@/lib/clipboardText";
 import { isSameArray } from "@/lib/utils";
-import { DriverOrderType, OrderStatus } from "@/types/OrderType";
+import { DriverOrderType } from "@/types/OrderType";
+import { OrderStatus } from "@prisma/client";
 import { formatDate } from "date-fns";
 
 
 
 interface CheckAllProps {
-    status?: OrderStatus.PROCESSING | OrderStatus.DELIVERED,
+    status?: Extract<OrderStatus, 'PROCESSING' | 'DELIVERED'>,
     orders: DriverOrderType[]
 }
 function CheckAll({ status, orders }: CheckAllProps) {

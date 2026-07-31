@@ -3,12 +3,12 @@
 import { Checkbox } from "@/components/shadcn/checkbox";
 import { useClipboardCopy } from "@/context/ClipboardCtx";
 import { generateClipboardText } from "@/lib/clipboardText";
+import { OrderStatus } from "@prisma/client";
 import { formatDate } from "date-fns";
 import { useEffect } from "react";
-import { OrderStatus } from "@/types/OrderType";
 
 interface SelectOrderProps {
-    status?: OrderStatus.PROCESSING | OrderStatus.DELIVERED
+    status?: Extract<OrderStatus, 'PROCESSING' | 'DELIVERED'>
     order: string;
 }
 

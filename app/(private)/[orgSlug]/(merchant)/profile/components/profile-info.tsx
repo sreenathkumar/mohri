@@ -6,7 +6,7 @@ import { Button } from '@/components/shadcn/button';
 import { updateProfileSchema } from '@/lib/zod';
 import toast from 'react-hot-toast';
 import { Input } from '@/components/shadcn/input';
-import { updateProfile } from '@/actions/user';
+import { updateProfile } from '@/actions/userActions';
 import { useSession } from 'next-auth/react';
 
 function ProfileInformation({ user }: { user?: UserProfileType }) {

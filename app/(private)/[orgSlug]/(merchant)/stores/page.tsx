@@ -1,9 +1,7 @@
-import { getServerSessionContext } from "@/lib/checkServerAuth";
+import { getShops } from "@/actions/shopActions";
+import { Suspense } from "react";
 import AddStoreBtn from "./components/connect-btn";
 import ConnectedStores from "./components/connected-stores";
-import { getShops } from "@/actions/shop";
-import { Suspense } from "react";
-import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,12 +12,6 @@ export interface StoreTypes {
 }
 
 async function StoresPage() {
-    const { role } = await getServerSessionContext();
-
-    if (role === 'driver') {
-        redirect('/driver/dashboard');
-    }
-
     const stores: StoreTypes[] = await getShops();
 
     return (

@@ -6,25 +6,28 @@ import {
     SelectValue,
 } from "@/components/shadcn/select"
 import { DriversType } from "./UpdateOrders"
+import { OrderStatus } from "@prisma/client"
 
 
 
-function StatusUpdateOptions({ options, label, id, placeholder }: { options: string[], label: string, id: string, placeholder: string }) {
+function StatusUpdateOptions({ label, id, placeholder }: { label: string, id: string, placeholder: string }) {
     return (
         <div className="space-y-2">
             <label htmlFor={id} className="text-sm font-medium">
                 {label}
             </label>
             <Select name="status">
-                <SelectTrigger id={id}>
+                <SelectTrigger>
                     <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>
-                    {options?.map((name) => (
-                        <SelectItem key={name} value={name.toLowerCase().replace(/\s/g, '_')}>
-                            {name}
-                        </SelectItem>
-                    ))}
+                    {
+                        Object.values(OrderStatus).map((status) => (
+                            <SelectItem key={status} value={status}>
+                                {status}
+                            </SelectItem>
+                        ))
+                    }
                 </SelectContent>
             </Select>
         </div>
@@ -37,7 +40,7 @@ function AssigneeUpdateOptions({ options, label, id, placeholder }: { options?: 
             <label htmlFor={id} className="text-sm font-medium">
                 {label}
             </label>
-            <Select name="assignee" >
+            <Select name="assigneeId" >
                 <SelectTrigger id={id}>
                     <SelectValue placeholder={placeholder} />
                 </SelectTrigger>

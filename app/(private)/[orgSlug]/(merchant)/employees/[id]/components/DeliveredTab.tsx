@@ -1,11 +1,12 @@
-import { getEmployeeOrders } from "@/actions/orderAction";
+import { getEmployeeOrders } from "@/actions/orderActions";
 import { Badge } from "@/components/shadcn/badge";
 import { CardContent } from "@/components/shadcn/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/shadcn/table";
 import CheckAll from "./CheckAll";
 import DeliveryDate from "./DeliveryDate";
 import SelectOrder from "./SelectOrder";
-import { OrderStatus } from "@/types/OrderType";
+import { OrderStatus } from "@prisma/client";
+
 
 
 //table columns for the delivered orders table

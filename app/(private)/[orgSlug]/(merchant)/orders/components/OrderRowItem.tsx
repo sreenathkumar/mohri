@@ -5,7 +5,11 @@ import Image from "next/image"
 import OrderCheckbox from "./OrderCheckbox"
 
 function OrderRowItem({ order, children }: { order: OrderType, children: React.ReactNode }) {
-
+    const assigneeObj = {
+        id: order?.assignee?.id,
+        name: order?.assignee?.name || 'Undefined',
+        image: order?.assignee?.image || undefined
+    }
     return (
         <TableRow className="border-b border-border/60 hover:bg-muted/10 transition-colors group">
             <TableCell className="px-6 py-4 text-muted-foreground">
@@ -22,12 +26,11 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
             <TableCell>
                 <Badge
                     variant={order.status === OrderStatus.DELIVERED ? 'default' : 'secondary'}
-
                 >
                     {order.status}
                 </Badge>
             </TableCell>
-            <TableAssigneeCell assignee={order.asignee} />
+            <TableAssigneeCell assignee={assigneeObj} />
             <TableCell className="text-right px-6 py-4 text-muted-foreground">
                 <div className="flex justify-end gap-4">
                     {children}
@@ -77,7 +80,7 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
 // }
 
 //Show the assignee name and image in the table cell
-function TableAssigneeCell({ assignee }: { assignee: { id?: string, name?: string, image?: string } | null }) {
+function TableAssigneeCell({ assignee }: { assignee: { id?: string, name: string, image?: string } }) {
     return (
         <TableCell className="px-6 py-4 text-muted-foreground">
             {(assignee?.name && assignee.image) ?

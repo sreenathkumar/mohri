@@ -16,6 +16,9 @@ const defaultTableColumns = ['Order Number', 'Name', 'City', 'Address', 'Phone N
 async function OrdersPage({ searchParams }: { searchParams: SearchParams }) {
     const { query, sort } = decodeSearchParams(await searchParams);
 
+    // Format query and sort parameters to ensure they are strings or undefined
+    const formattedQuery = (Array.isArray(query) ? query.join(' ') : query) || undefined;
+    const formattedSort = (Array.isArray(sort) ? sort[0] : sort) || undefined;
     return (
         <div className="pt-8 pb-4 flex flex-col flex-1 overflow-auto">
             <SelectedOrderProvider>
@@ -33,7 +36,7 @@ async function OrdersPage({ searchParams }: { searchParams: SearchParams }) {
                     </div>
                 </div>
                 <Suspense fallback={<TableSkeleton columns={defaultTableColumns} />}>
-                    <OrdersTable query={query} sort={sort} />
+                    <OrdersTable query={formattedQuery} sort={formattedSort} />
                 </Suspense>
             </SelectedOrderProvider>
         </div>

@@ -1,33 +1,24 @@
-import { getUser } from "@/actions/user";
+import { getCurrentUser } from "@/actions/userActions";
 import { Card, CardHeader, CardTitle } from "@/components/shadcn/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn/tabs";
 import { ClipboardProvider } from "@/context/ClipboardCtx";
-import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import CopyOrders from "./components/CopyOrders";
 import DeliveredTab from "./components/DeliveredTab";
 import ProcessingTab from "./components/ProcessingTab";
 import UserInfo from "./components/UserInfo";
-import { getServerSessionContext } from "@/lib/checkServerAuth";
 
 
-type Props = {
-    params: Promise<{ id: string }>
-};
+async function EmployeePage() {
+    const user = await getCurrentUser();
 
-async function EmployeePage({ params }: Props) {
-    const { id } = await params;
-    const { role, userId } = await getServerSessionContext();
-
-    if (userId === id) {
-        if (role === 'driver') {
-            redirect('/driver/profile');
-        }
-
-        redirect('/merchant/profile');
+    if (!user) {
+        return (
+            <div className="flex items-center space-x-4 text-gray-400">
+                Your information is not available.
+            </div>
+        )
     }
-
-    const user = await getUser({ userId: id });
 
     return (
         <div className="container mx-auto p-4 space-y-6 overflow-y-auto">
@@ -35,7 +26,11 @@ async function EmployeePage({ params }: Props) {
                 <CardHeader className="p-0 mb-12">
                     <CardTitle>Employee Details</CardTitle>
                 </CardHeader>
-                <UserInfo user={user} />
+                <UserInfo user={({
+                    name: user?.name || 'John Doe',
+                    image: user?.image || undefined,
+                    address: user?.address || 'No address'
+                })} />
             </Card>
 
             <Card className="p-6 bg-transparent">
@@ -51,12 +46,12 @@ async function EmployeePage({ params }: Props) {
                             </TabsList>
                             <TabsContent value="processing">
                                 <Suspense fallback={<div>Loading assigned orders...</div>}>
-                                    <ProcessingTab id={id} />
+                                    <ProcessingTab id={user.id} />
                                 </Suspense>
                             </TabsContent>
                             <TabsContent value="delivered">
                                 <Suspense fallback={<div>Loading assigned orders...</div>}>
-                                    <DeliveredTab id={id} />
+                                    <DeliveredTab id={user.id} />
                                 </Suspense>
                             </TabsContent>
                         </Tabs>

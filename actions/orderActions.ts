@@ -2,6 +2,7 @@
 
 import { getRequiredSessionContext } from '@/lib/auth-context';
 import { bulkUpdateOrders, fetchClipboardContent, fetchOrders, fetchSingleOrder, UpdateOrdersParams } from '@/services/orderService';
+import { OrderStatus } from '@prisma/client';
 
 export interface SearchParams {
     query?: string
@@ -11,10 +12,10 @@ export interface SearchParams {
 
 
 export interface UpdateOrderDataType {
-    assignee?: string,
-    assignee_name?: string,
-    status?: string,
-    order_ids: number[]
+    orderIds: number[];
+    assigneeId?: string | null;
+    assigneeName?: string;
+    status?: OrderStatus;
 }
 
 /**
@@ -109,7 +110,7 @@ export async function getClipboardContent(selectedOrders: number[]) {
  * @param status new status of the orders to be updated
  * @returns updated orders array
  */
-export async function updateOrders({ orderIds, assigneeId, assigneeName, status, }: UpdateOrdersParams) {
+export async function updateOrders({ orderIds, assigneeId, assigneeName, status, }: UpdateOrderDataType) {
     if (!orderIds || orderIds.length === 0) {
         throw new Error('No order IDs provided for update.');
     }
@@ -119,7 +120,7 @@ export async function updateOrders({ orderIds, assigneeId, assigneeName, status,
         });
 
         //update orders in db
-        const updatedOrders = await bulkUpdateOrders({
+        await bulkUpdateOrders({
             organizationId,
             orderIds,
             assigneeId,
@@ -127,7 +128,10 @@ export async function updateOrders({ orderIds, assigneeId, assigneeName, status,
             status,
         });
 
-        return updatedOrders;
+        return {
+            success: true,
+            message: 'Orders updated successfully',
+        }
 
     } catch (error: any) {
         console.error('[updateOrders] error in updateOrders: ', error.message);

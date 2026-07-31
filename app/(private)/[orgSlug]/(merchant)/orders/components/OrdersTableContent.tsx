@@ -21,7 +21,7 @@ const fetcher = (url: string) => fetch(url).then((res) => {
 
 interface OrdersTableContentProps {
     columns: number;
-    fallbackData: OrderType[];
+    fallbackData: OrderType[]
 }
 
 function OrdersTableContent({ columns, fallbackData }: OrdersTableContentProps) {
@@ -67,7 +67,7 @@ function OrdersTableContent({ columns, fallbackData }: OrdersTableContentProps) 
     return (
         <TableBody>
             {orders.length > 0 ? (
-                orders.map((order: OrderType) => (
+                orders.map((order) => (
                     <OrderRowItem key={order.order_id} order={order}>
                         <EditOrderBtn order_id={order.order_id} />
                     </OrderRowItem>
