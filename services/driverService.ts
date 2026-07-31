@@ -16,7 +16,7 @@ export interface MutateDeliveryStatusParams {
 /**
  * Fetch all orders assigned to a specific driver within an organization
  */
-export async function getDriverOrders({ driverId, organizationId }: FetchDriverOrdersParams) {
+export async function fetchDriverOrders({ driverId, organizationId }: FetchDriverOrdersParams) {
     if (!driverId || !organizationId) return [];
 
     return await prisma.order.findMany({
@@ -45,7 +45,7 @@ export async function getDriverOrders({ driverId, organizationId }: FetchDriverO
 /**
  * Mutate an order's delivery status with active driver status management
  */
-export async function updateDeliveryStatus({
+export async function changeDeliveryStatus({
     orderId,
     status,
     userId,

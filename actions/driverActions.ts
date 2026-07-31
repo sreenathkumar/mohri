@@ -1,60 +1,66 @@
 
 'use server'
 
-import { getServerSessionContext } from "@/lib/checkServerAuth";
-import { fetchDriverOrders, mutateDeliveryStatus } from "@/services/driver";
-import { OrderStatus } from "@/types/OrderType";
+import { getRequiredSessionContext } from "@/lib/auth-context";
+import { changeDeliveryStatus, fetchDriverOrders } from "@/services/driverService";
+import { OrderStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-
+/**
+ * Fetches the tasks (orders) assigned to the currently logged-in driver.
+ * @returns array of orders for the current driver
+ */
 
 export async function getDriverTasks() {
     try {
-        const { role, userId } = await getServerSessionContext();
-
-        if (role !== 'driver') {
-            throw new Error('Unauthorized access: Only drivers can access this resource.');
-        }
+        const { organizationId, userId } = await getRequiredSessionContext({
+            allowedRoles: ['driver'],
+        });
 
         //fetch driver tasks from the database
-        const tasks = await fetchDriverOrders(userId);
+        const tasks = await fetchDriverOrders({ organizationId, driverId: userId });
 
         return tasks;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        console.log('error in getting driver tasks: ', error.message);
+        console.error('[getDriverTasks] error in getting driver tasks: ', error?.message);
         return []
     }
 }
 
-type DriverDeliveryStatus = OrderStatus.DELIVERED | OrderStatus.OUT_FOR_DELIVERY | OrderStatus.FAILED
+/**
+ * Updates the delivery status of a specific order for the currently logged-in driver.
+ * @param order_id id of the order that status will be updated
+ * @param status status to be updated for the order (e.g., 'PENDING', 'IN_PROGRESS', 'DELIVERED')
+ * @returns status, message object
+ */
+interface UpdateDeliveryStatusParams {
+    orderId: number;
+    status: Extract<OrderStatus, 'OUT_FOR_DELIVERY' | 'FAILED' | 'DELIVERED'>;
+}
 
-export async function updateDeliveryStatus({ order_id, status }: { order_id: number, status: DriverDeliveryStatus }) {
+export async function updateDeliveryStatus({ orderId, status }: UpdateDeliveryStatusParams) {
+    if (!orderId || !status) {
+        throw new Error('Missing required parameters: orderId and status are required.');
+    }
+
     try {
-        const { role, userId } = await getServerSessionContext();
-
-        if (role !== 'driver') {
-            throw new Error('Unauthorized access: Only drivers can update delivery status.');
-        }
+        const { organizationId, userId } = await getRequiredSessionContext({
+            allowedRoles: ['driver'],
+        })
 
         //update delivery status in the database
-        const updatedOrder = await mutateDeliveryStatus({ order_id, status, userId });
+        await changeDeliveryStatus({ orderId, userId, organizationId, status });
 
         revalidatePath('/driver/dashboard');
-
-        if (!updatedOrder) {
-            throw new Error('Failed to update delivery status.');
-        }
 
         return {
             success: true,
             message: 'Delivery status updated successfully',
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        console.log('error in updating delivery status: ', error.message);
+        console.error('[updateDeliveryStatus] error in updating delivery status: ', error?.message);
         return {
             success: false,
             message: error.message || 'An error occurred while updating delivery status',

@@ -15,9 +15,37 @@ export interface MutateEmployeeParams {
 }
 
 /**
+ * Fetch all employees belonging to a specific organization
+ * @param organizationId - The ID of the organization
+ * @returns Array of employees with their user details
+ */
+export async function fetchEmployees({ organizationId }: FetchDriversParams) {
+    if (!organizationId) return [];
+
+    const members = await prisma.member.findMany({
+        where: {
+            organizationId,
+        },
+        select: {
+            role: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    email: true,
+                },
+            },
+        },
+    });
+
+    return members.map((member) => member.user);
+}
+
+/**
  * Fetch all drivers belonging to a specific organization
  */
-export async function getDrivers({ organizationId }: FetchDriversParams) {
+export async function fetchDrivers({ organizationId }: FetchDriversParams) {
     if (!organizationId) return [];
 
     const members = await prisma.member.findMany({
@@ -38,6 +66,32 @@ export async function getDrivers({ organizationId }: FetchDriversParams) {
     });
 
     return members.map((member) => member.user);
+}
+
+/**
+ * check if an employee with the given email exists in the specified organization
+ */
+export async function checkEmployeeExists({ email, organizationId }: { email: string, organizationId: string }) {
+    if (!email || !organizationId) {
+        throw new Error("Email and organizationId are required to check employee existence.");
+    }
+
+    const member = await prisma.member.findFirst({
+        where: {
+            organizationId,
+            user: {
+                email,
+            },
+        },
+        select: {
+            id: true,
+            user: true,
+            organizationId: true,
+            role: true,
+        }
+    });
+
+    return member !== null;
 }
 
 /**

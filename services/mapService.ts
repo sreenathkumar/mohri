@@ -15,7 +15,7 @@ export interface ChangeOrderLocationParams {
 /**
  * Fetch non-delivered/non-cancelled orders with coordinates for map display
  */
-export async function getMerchantMapData({ organizationId }: FetchMerchantMapParams) {
+export async function fetchMerchantMapData({ organizationId }: FetchMerchantMapParams) {
     if (!organizationId) return [];
 
     const orders = await prisma.order.findMany({
@@ -53,13 +53,13 @@ export async function updateOrderLocation({
     organizationId,
 }: ChangeOrderLocationParams) {
     if (!orderId || !organizationId) {
-        return { ok: false, message: "Missing required parameters" };
+        throw new Error("[updateOrderLocation] Missing required parameters: orderId and organizationId are required");
     }
 
     const numericOrderId = typeof orderId === "string" ? parseInt(orderId, 10) : orderId;
 
     if (isNaN(numericOrderId)) {
-        return { ok: false, message: "Invalid order ID format" };
+        throw new Error("[updateOrderLocation] Invalid orderId: must be a number or numeric string");
     }
 
     // Check if the order exists and belongs to the organization
@@ -72,7 +72,7 @@ export async function updateOrderLocation({
     });
 
     if (!existingOrder) {
-        return { ok: false, message: "Order not found" };
+        throw new Error("[updateOrderLocation] Order not found or does not belong to the organization");
     }
 
     //Perform location update
@@ -84,5 +84,4 @@ export async function updateOrderLocation({
         },
     });
 
-    return { ok: true, message: "Order coordinates updated successfully" };
 }

@@ -4,12 +4,13 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { cache } from "react";
-import { ac, driver, manager, owner, user } from "./permissions";
+import { ac, driver, manager, owner, } from "./permissions";
 import prisma from "./prisma";
 
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "mongodb" }),
+    advanced: { database: { generateId: false } },
     plugins: [
         organization({
             ac: ac,
@@ -17,7 +18,6 @@ export const auth = betterAuth({
                 owner,
                 manager,
                 driver,
-                user
             }
         }),
     ],
@@ -26,7 +26,7 @@ export const auth = betterAuth({
             activeOrganizationId: { type: "string", default: null, },
             role: {
                 type: "string",
-                default: 'user',
+                default: 'owner',
                 input: false
             },
         },
@@ -49,7 +49,7 @@ export const auth = betterAuth({
                     return {
                         data: {
                             ...session,
-                            role: membership?.role || 'user',
+                            role: membership?.role || 'owner',
                             activeOrganizationId: membership?.organizationId ? membership.organizationId.toString() : null,
                         },
                     };
@@ -70,15 +70,9 @@ export const auth = betterAuth({
             });
         },
         sendOnSignUp: true,
-        expiresIn: 60
+        expiresIn: 60,
+        autoSignInAfterVerification: true,
     }
-});
-
-export const getServerSession = cache(async () => {
-    const session = auth.api.getSession({
-        headers: await headers()
-    });
-    return session;
 });
 
 export const getOrgSlug = cache(async (userId: string) => {
@@ -88,4 +82,4 @@ export const getOrgSlug = cache(async (userId: string) => {
     return org?.slug;
 })
 
-export type Role = 'owner' | 'manager' | 'driver' | 'user';
+export type Role = 'owner' | 'manager' | 'driver';

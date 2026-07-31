@@ -1,42 +1,37 @@
 'use server'
 
-import { getServerSessionContext } from "@/lib/checkServerAuth";
+import { getRequiredSessionContext } from "@/lib/auth-context";
 import { FormState, updateOrderCoordinateSchema } from "@/lib/zod";
-import { changeOrderLocation, fetchMerchantMapData } from "@/services/map";
+import { updateOrderLocation, fetchMerchantMapData } from "@/services/mapService";
 import { MapPageOrderType } from "@/types/OrderType";
 import { revalidatePath } from "next/cache";
 
-
-export async function getMarchantMapData() {
+/**
+ * Fetch merchant map data for the current session's organization
+ * @returns orders data with longitude and latitude
+ */
+export async function getMerchantMapData() {
     try {
-        const { role, merchantId } = await getServerSessionContext();
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager']
+        })
 
-        if (role !== 'merchant' || !merchantId) {
-            throw new Error('Unauthorized access. Only merchants can access this data.');
-        }
+        // Fetch the merchant map data using the organizationId 
+        const merchantMapData = await fetchMerchantMapData({ organizationId });
+        return merchantMapData
 
-        // Fetch the merchant map data using the merchantId
-        const merchantMapData = await fetchMerchantMapData({ merchantId });
-
-        return merchantMapData.map(order => ({
-            id: order.order_id.toString() as string,
-            status: order.status as 'ASSIGNED' | 'OUT_FOR_DELIVERY' | 'PROCESSING',
-            latitude: order.latitude as number,
-            longitude: order.longitude as number,
-            address: order.address as string,
-            assignee: {
-                id: order.asignee?._id?.toString() as string,
-                name: order.asignee?.name as string
-            }
-        })) as MapPageOrderType[];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        console.log('Error in getMerchantMapData: ', error.message);
+        console.error('[getMerchantMapData] Error in getMerchantMapData: ', error.message);
         return [];
     }
 }
 
-
+/**
+ * 
+ * @param prevState previous state of the update form
+ * @param formData latitud and longitude
+ * @returns succ
+ */
 
 export async function updateOrderCoordinates(prevState: FormState, formData: FormData): Promise<FormState> {
     const validatedFields = updateOrderCoordinateSchema.safeParse({
@@ -56,35 +51,24 @@ export async function updateOrderCoordinates(prevState: FormState, formData: For
     const { orderId, latitude, longitude } = validatedFields.data;
 
     if (!orderId || latitude === undefined || longitude === undefined) {
-        return {
-            success: false,
-            message: 'Invalid input. Order ID, latitude, and longitude are required.'
-        };
+        throw new Error('Missing required parameters: orderId, latitude, or longitude.');
     }
 
     try {
-        const { role, merchantId } = await getServerSessionContext();
-
-        if (role !== 'merchant' || !merchantId) {
-            throw new Error('Unauthorized access. Only merchants can update order coordinates.');
-        }
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager']
+        });
 
         // Call the service to update the order coordinates
-        const updateResult = await changeOrderLocation({ orderId, latitude, longitude });
-
-        if (!updateResult.ok) {
-            throw new Error(updateResult.message || 'Failed to update order coordinates.');
-        }
-
+        await updateOrderLocation({ organizationId, orderId, latitude, longitude });
         revalidatePath(`/merchant/track`);
 
         return {
             success: true,
             message: 'Order coordinates updated successfully.'
         };
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        console.log('Error in updateOrderCoordinates: ', error.message);
+        console.error('[updateOrderCoordinates] Error in updateOrderCoordinates: ', error.message);
         return {
             success: false,
             message: error.message || 'An unexpected error occurred while updating order coordinates.'
