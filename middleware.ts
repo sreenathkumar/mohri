@@ -5,7 +5,7 @@ import { getCookieCache } from "better-auth/cookies";
 const authRoutes = ["/login", "/register"];
 
 // Platform entry / system routes exempt from general protection
-const platformRoutes = ["/continue", "/onboarding", "/verify-email"];
+const platformRoutes = ["/continue", "/onboarding", "/email-verified"];
 
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
