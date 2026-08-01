@@ -2,7 +2,7 @@
 
 import { getRequiredSessionContext } from '@/lib/auth-context';
 import { bulkUpdateOrders, fetchClipboardContent, fetchOrders, fetchSingleOrder, UpdateOrdersParams } from '@/services/orderService';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from '@lib/prisma';
 
 export interface SearchParams {
     query?: string

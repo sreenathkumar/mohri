@@ -3,7 +3,7 @@
 
 import { getRequiredSessionContext } from "@/lib/auth-context";
 import { changeDeliveryStatus, fetchDriverOrders } from "@/services/driverService";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from "@lib/prisma";
 import { revalidatePath } from "next/cache";
 
 /**

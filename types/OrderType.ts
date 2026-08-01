@@ -1,5 +1,5 @@
 import { getOrders } from "@/actions/orderActions";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from '@lib/prisma';
 
 export type OrderType = Awaited<ReturnType<typeof getOrders>>['orders'][number]
 

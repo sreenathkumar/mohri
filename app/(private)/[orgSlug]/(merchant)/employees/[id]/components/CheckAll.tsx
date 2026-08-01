@@ -5,7 +5,7 @@ import { useClipboardCopy } from "@/context/ClipboardCtx";
 import { generateClipboardText } from "@/lib/clipboardText";
 import { isSameArray } from "@/lib/utils";
 import { DriverOrderType } from "@/types/OrderType";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from '@lib/prisma';
 import { formatDate } from "date-fns";
 
 

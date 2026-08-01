@@ -1,8 +1,9 @@
 import { Badge } from "@/components/shadcn/badge"
 import { TableCell, TableRow } from "@/components/shadcn/table"
-import { OrderStatus, OrderType } from "@/types/OrderType"
 import Image from "next/image"
 import OrderCheckbox from "./OrderCheckbox"
+import { OrderType } from "@/types/OrderType"
+import { OrderStatus } from "@lib/prisma"
 
 function OrderRowItem({ order, children }: { order: OrderType, children: React.ReactNode }) {
     const assigneeObj = {

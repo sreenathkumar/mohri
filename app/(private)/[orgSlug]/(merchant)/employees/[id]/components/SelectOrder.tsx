@@ -3,7 +3,7 @@
 import { Checkbox } from "@/components/shadcn/checkbox";
 import { useClipboardCopy } from "@/context/ClipboardCtx";
 import { generateClipboardText } from "@/lib/clipboardText";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from '@lib/prisma';
 import { formatDate } from "date-fns";
 import { useEffect } from "react";
 

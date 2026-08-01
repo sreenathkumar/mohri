@@ -1,5 +1,4 @@
 import { OrderStatus, Prisma, prisma } from "@/lib/prisma";
-import { th } from "date-fns/locale";
 
 const LIMIT = Number(process.env.ORDER_QUERY_LIMIT) || 10;
 

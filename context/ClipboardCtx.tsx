@@ -1,6 +1,6 @@
 'use client'
 
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from '@lib/prisma';
 import { createContext, useContext, useState } from "react";
 
 // Define the type for the context value

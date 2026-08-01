@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from '@lib/prisma';
 
 export interface FetchOwnerMapParams {
     organizationId: string;
