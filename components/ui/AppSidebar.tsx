@@ -12,43 +12,40 @@ import { redirect } from "next/navigation"
 import Image from "next/image"
 import AppIcon from "@/app/icon.svg"
 import { getServerSession } from "@/lib/auth-context"
+import Link from "next/link"
 
-const navItems = [
-  { title: "Dashboard", url: "/merchant/dashboard", icon: LayoutDashboard },
-  { title: "Stores", url: "/merchant/stores", icon: Store, requires: ['owner', 'manager'] },
-  { title: "Employees", url: "/merchant/employees", icon: IdCard, requires: ['owner'] },
-  { title: "Orders", url: "/merchant/orders", icon: Package },
-  { title: 'Track Delivery', url: '/merchant/track', icon: Truck },
-]
 
 async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const session = await getServerSession();
-  const role = session?.session.role;
-  const userId = session?.session.userId;
-
-  if (!role || !userId) {
+  if (!session) {
     redirect('/login') // Redirect to login if the user is not authenticated
   }
+  const userId = session?.session.userId;
 
-  const filteredNavItems = navItems.filter((item) => {
-    // Include the item if no role is required, or if the user's role matches the required role
-    return !item.requires || item.requires.includes(role || 'guest');
-  });
+  const navItems = [
+    { title: "Dashboard", url: 'dashboard', icon: LayoutDashboard },
+    { title: "Stores", url: "stores", icon: Store, },
+    { title: "Employees", url: "employees", icon: IdCard, },
+    { title: "Orders", url: "orders", icon: Package },
+    { title: 'Track Delivery', url: 'track', icon: Truck },
+  ]
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="py-6 border-b mb-6">
-        <Image
-          src={AppIcon}
-          alt="Company Logo"
-          width={48}
-          height={24}
-          className="object-contain"
-          priority
-        />
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src={AppIcon}
+            alt="Company Logo"
+            width={48}
+            height={24}
+            className="object-contain"
+            priority
+          />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
-        <MainNav items={filteredNavItems} />
+        <MainNav items={navItems} />
       </SidebarContent>
       <SidebarFooter>
         {userId && <User />}

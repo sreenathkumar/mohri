@@ -24,7 +24,7 @@ function MainNav({ items }: MainNavProps) {
         <SidebarMenu>
             {items.map((item) => (
                 <SidebarMenuItem key={item.title} >
-                    <Link href={item.url}>
+                    <Link href={item.url} className="flex justify-center">
                         <NavItem text={item.title}>
                             {item.icon && <item.icon />}
                         </NavItem>
