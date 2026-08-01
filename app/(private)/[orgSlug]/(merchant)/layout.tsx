@@ -9,7 +9,6 @@ import AppSidebar from '@/components/ui/AppSidebar';
 import React from 'react';
 import { Toaster } from "react-hot-toast";
 
-export const dynamic = 'force-dynamic';
 
 async function MerchantDashLayout({ children }: { children: React.ReactNode }) {
     return (
