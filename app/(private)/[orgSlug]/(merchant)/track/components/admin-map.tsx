@@ -83,7 +83,7 @@ export default function AdminMap({ orders }: { orders: MapPageOrderType[] }) {
                 offset: 25,
                 closeButton: true,
                 closeOnClick: true
-            }).setHTML(createPopupHtml({ order_id, address: order.address }));
+            }).setHTML(createPopupHtml({ order_id, address: order.address || 'N/A' }));
 
             // Create and bind marker to map
             const marker = new Marker({ color: '#EF4444' })

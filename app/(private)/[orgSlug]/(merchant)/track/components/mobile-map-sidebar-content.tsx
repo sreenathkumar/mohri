@@ -31,7 +31,7 @@ const initialFormState: FormState = {
 };
 
 function MobileDrawer({ orders }: MobileDrawerProps) {
-  const [activeShowMore, setActiveShowMore] = useState<string | null>(null);
+  const [activeShowMore, setActiveShowMore] = useState<number | null>(null);
   const { mapRef } = useMapContext();
   const [state, updateCoordinates] = useActionState(updateOrderCoordinates, initialFormState);
   const router = useRouter();
@@ -107,9 +107,9 @@ function MobileDrawer({ orders }: MobileDrawerProps) {
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                       <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-0.5">Assignee</p>
-                      <p className="text-base font-semibold text-foreground">{order.assignee.name || 'Not assigned'}</p>
+                      <p className="text-base font-semibold text-foreground">{order?.assignee?.name || 'Not assigned'}</p>
                     </div>
-                    {activeShowMore === order.id && (
+                    {activeShowMore === order?.id && (
                       <form action={handleFormSubmit} id="update-coordinate-form" className="bg-primary/10 rounded-lg p-3 space-y-2" >
                         <p className="text-xs uppercase text-muted-foreground font-semibold">Custom Location</p>
                         <Input hidden type="text" name='orderId' value={order.id} readOnly />

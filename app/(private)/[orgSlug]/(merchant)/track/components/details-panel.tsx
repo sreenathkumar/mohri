@@ -71,7 +71,7 @@ function DetailsOpen({ selectedOrder, detailPanelOpen, setDetailPanelOpen, }: De
                 {/* Assignee */}
                 <div className="space-y-1">
                     <p className="text-xs uppercase text-muted-foreground font-semibold">Assignee</p>
-                    <p className="text-sm font-medium text-foreground">{selectedOrder.assignee.name || "None"}</p>
+                    <p className="text-sm font-medium text-foreground">{selectedOrder?.assignee?.name || "None"}</p>
                 </div>
 
                 {/* Coordinates */}

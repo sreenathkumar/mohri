@@ -2,6 +2,13 @@ import { getOrders } from "@/actions/orderActions";
 import { OrderStatus } from '@lib/prisma';
 
 export type OrderType = Awaited<ReturnType<typeof getOrders>>['orders'][number]
+export type AssigneeType = OrderType['assignee'] extends null ? null : {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+}
+
 
 export interface OrderLocationType {
     order_id: number;
@@ -59,15 +66,12 @@ export interface DriverOrderType {
     date_delivered?: string;
 }
 
-export interface MapPageOrderType {
-    id: number;
+export type MapPageOrderType = {
+    id: OrderType['order_id'];
     status: Extract<OrderStatus, 'ASSIGNED' | 'OUT_FOR_DELIVERY' | 'PROCESSING' | 'CANCELED'>;
     latitude: number | null;
     longitude: number | null;
-    name: string | null;
-    address: string | null;
-    assignee: {
-        id: string;
-        name: string;
-    } | null
+    name: OrderType['name'];
+    address: OrderType['address'];
+    assignee: Pick<AssigneeType, 'id' | 'name'> | null;
 }

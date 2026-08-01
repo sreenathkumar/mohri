@@ -2,10 +2,11 @@
 import { Button } from "@/components/shadcn/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/shadcn/tooltip";
 import { useMapContext } from "@/context/MapCtx";
-import { MapPageOrderType, OrderStatus } from "@/types/OrderType";
+import { MapPageOrderType } from "@/types/OrderType";
 import { Info, MapPin, X } from "lucide-react";
 import { useState } from "react";
 import DetailsOpen from "./details-panel";
+import { OrderStatus } from "@lib/prisma";
 
 interface PcMapSidebarContentProps {
     orders: MapPageOrderType[];
@@ -84,7 +85,7 @@ function PcMapSidebarContent({ orders, pointOutOrder, selectedOrder }: PcMapSide
 
                                         </div>
 
-                                        {order.assignee.name && <p className="text-xs text-muted-foreground">{order.assignee.name}</p>}
+                                        {order?.assignee?.name && <p className="text-xs text-muted-foreground">{order.assignee.name}</p>}
                                     </div>
                                 </div>
                             ))

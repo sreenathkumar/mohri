@@ -37,7 +37,7 @@ export async function getOwnerMapData() {
                 } : null
             }));
 
-        return formattedData;
+        return ownerMapData;
 
     } catch (error: any) {
         console.error('[getMerchantMapData] Error in getMerchantMapData: ', error.message);
