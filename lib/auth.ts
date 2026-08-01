@@ -24,6 +24,7 @@ export const auth = betterAuth({
     session: {
         additionalFields: {
             activeOrganizationId: { type: "string", default: null, },
+            activeOrganizationSlug: { type: "string", default: null, },
             role: {
                 type: "string",
                 default: 'owner',
@@ -45,12 +46,16 @@ export const auth = betterAuth({
                         where: {
                             userId: session.userId,
                         },
+                        include: {
+                            organization: true
+                        }
                     });
                     return {
                         data: {
                             ...session,
                             role: membership?.role || 'owner',
                             activeOrganizationId: membership?.organizationId ? membership.organizationId.toString() : null,
+                            activeOrganizationSlug: membership?.organization?.slug || null,
                         },
                     };
                 },

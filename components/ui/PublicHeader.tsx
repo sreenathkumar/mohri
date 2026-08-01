@@ -11,7 +11,7 @@ function PublicHeader() {
     console.log('PublicHeader session:', data);
     const isLoggedIn = !!data?.session
     const userRole = data?.session?.role;
-    const dashboardLink = userRole === 'driver' ? '/driver/dashboard' : '/dashboard';
+    const dashboardLink = userRole === 'driver' ? `${data?.session.activeOrganizationSlug}/driver/dashboard` : `${data?.session.activeOrganizationSlug}/dashboard`;
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-muted bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
@@ -64,7 +64,7 @@ function PublicHeader() {
                             className="gap-2 rounded-full"
                             asChild
                         >
-                            <Link href='/continue' className="flex items-center gap-2">
+                            <Link href={dashboardLink} className="flex items-center gap-2">
                                 Dashboard
                             </Link>
                         </Button>

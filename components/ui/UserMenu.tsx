@@ -8,8 +8,8 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator
 } from "@/components/shadcn/dropdown-menu";
+import { signOut } from "@/lib/auth-client";
 import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
