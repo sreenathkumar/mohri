@@ -1,16 +1,16 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { StoreTypes } from '../page'
 import StoreCard from './store-card'
 import { useEffect, useState } from 'react';
 import { Store } from 'lucide-react';
 import AddStoreBtn from './connect-btn';
 import { confirmShopConnection } from '@/actions/integration/connectShop';
 import toast from 'react-hot-toast';
+import { Store as StoreType } from '../page';
 
 
-function ConnectedStores({ stores }: { stores: StoreTypes[] }) {
+function ConnectedStores({ stores }: { stores: StoreType[] }) {
   const router = useRouter();
   const pathname = usePathname()
   const searchParams = useSearchParams();

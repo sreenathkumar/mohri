@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import RemoveStoreBtn from './remove-store';
 import { Input } from '@/components/shadcn/input';
 
-function StoreCard({ name, url, platform }: { name?: string, url: string, platform: string }) {
+function StoreCard({ name, url, platform }: { name: string | null, url: string, platform: string }) {
   const [shopName, setShopName] = useState(name || 'Shop Name');
   const [mode, setMode] = useState('');
 

@@ -2,17 +2,12 @@ import { getShops } from "@/actions/shopActions";
 import { Suspense } from "react";
 import AddStoreBtn from "./components/connect-btn";
 import ConnectedStores from "./components/connected-stores";
+import { Shop } from "@lib/prisma";
 
-export const dynamic = 'force-dynamic';
-
-export interface StoreTypes {
-    domain: string;
-    platform: string;
-    name?: string;
-}
+export type Store = Pick<Shop, 'name' | 'domain' | 'platform'>;
 
 async function StoresPage() {
-    const stores: StoreTypes[] = await getShops();
+    const stores = await getShops();
 
     return (
         <div className="p-4 flex flex-col grow">
