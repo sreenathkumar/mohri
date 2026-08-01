@@ -1,9 +1,8 @@
 import { auth } from '@/lib/auth';
 import { getServerSession } from '@/lib/auth-context';
 import { headers } from 'next/headers';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
 
 export default async function OrgLayout({
     children,
@@ -20,8 +19,8 @@ export default async function OrgLayout({
         redirect('/login')
     };
     if (!session.user.emailVerified) {
-        console.log("User email not verified. Redirecting to /verify-email.");
-        redirect('/verify-email');
+        console.log("User email not verified. Redirecting to /email-verified.");
+        redirect('/email-verified?error=NOT_VERIFIED');
     }
 
     const org = await auth.api.getFullOrganization({
