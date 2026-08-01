@@ -13,6 +13,8 @@ model User {
   email         String       @unique
   emailVerified Boolean      @default(false)
   image         String?
+  address       String?
+  phone         String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   sessions      Session[]
@@ -28,17 +30,17 @@ model User {
 model Session {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   expiresAt DateTime
-  token     String   
+  token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
 
-  userId               String  @db.ObjectId
-  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activeOrganizationId String?
+  userId                 String  @db.ObjectId
+  user                   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeOrganizationId   String?
   activeOrganizationSlug String?
-  role                 String?
+  role                   String?
 
   @@unique([token])
   @@index([userId])
@@ -89,7 +91,9 @@ model Organization {
   shops       Shop[]
   orders      Order[]
 
-@@unique([slug])
+  timezone    String? @default("UTC")
+
+  @@unique([slug])
   @@map("organization")
 }
 
@@ -117,9 +121,8 @@ model Invitation {
   status         String       @default("pending")
   expiresAt      DateTime
   createdAt      DateTime     @default(now())
-
-  inviterId String @db.ObjectId
-  user      User   @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+  inviterId      String       @db.ObjectId
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([email])
@@ -159,8 +162,7 @@ enum OrderStatus {
 }
 
 model Order {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
   shopId     String @db.ObjectId
   shop       Shop   @relation(fields: [shopId], references: [id])
   shopDomain String @map("shop")

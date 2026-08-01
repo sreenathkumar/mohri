@@ -46,6 +46,7 @@ function RegisterForm() {
         const { error: orgError } = await organization.create({
             name: `${name}'s Organization`,
             slug,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             userId: authData.user.id,
         });
 

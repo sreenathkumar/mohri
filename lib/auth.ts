@@ -2,8 +2,6 @@ import { sendVerificationEmail } from "@/services/emailService";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
-import { headers } from "next/headers";
-import { cache } from "react";
 import { ac, driver, manager, owner, } from "./permissions";
 import prisma from "./prisma";
 
@@ -18,6 +16,19 @@ export const auth = betterAuth({
                 owner,
                 manager,
                 driver,
+            },
+            schema: {
+                organization: {
+                    additionalFields: {
+                        timezone: {
+                            type: "string",
+                            required: false,
+                            defaultValue: 'UTC',
+                            input: true,
+                            returned: true,
+                        }
+                    }
+                }
             }
         }),
     ],
@@ -28,7 +39,8 @@ export const auth = betterAuth({
             role: {
                 type: "string",
                 default: 'owner',
-                input: false
+                input: false,
+
             },
         },
         cookieCache: {
@@ -75,7 +87,7 @@ export const auth = betterAuth({
             });
         },
         sendOnSignUp: true,
-        expiresIn: 60,
+        expiresIn: 60 * 24,
         autoSignInAfterVerification: true,
     }
 });
