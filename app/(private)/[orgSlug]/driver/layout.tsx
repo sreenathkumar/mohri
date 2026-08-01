@@ -1,4 +1,4 @@
-import { getOrgSlug, getServerSession } from '@/lib/auth';
+import { getOrgSlug, getServerSession } from '@/lib/auth-context';
 import BottomNav from './components/BottomNav';
 import DriverDashHeader from './components/Header';
 import { redirect } from 'next/navigation';

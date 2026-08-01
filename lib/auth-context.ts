@@ -45,3 +45,11 @@ export async function getRequiredSessionContext(options?: SessionContextOptions)
         role,
     };
 }
+
+
+export const getOrgSlug = cache(async (userId: string) => {
+    const org = await auth.api.getFullOrganization({
+        headers: await headers(),
+    });
+    return org?.slug;
+})

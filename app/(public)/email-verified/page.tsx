@@ -1,8 +1,8 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import ResendBtn from "./components/resend-btn";
-import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getServerSession } from "@/lib/auth-context";
 
 interface PageProps {
     searchParams: Promise<{
@@ -17,7 +17,6 @@ async function VerifyEmail({ searchParams }: PageProps) {
         console.log("[VerifyEmail] User email already verified. Redirecting to /continue.");
         redirect("/continue");
     }
-
 
     const { error } = await searchParams;
 

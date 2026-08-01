@@ -75,11 +75,4 @@ export const auth = betterAuth({
     }
 });
 
-export const getOrgSlug = cache(async (userId: string) => {
-    const org = await auth.api.getFullOrganization({
-        headers: await headers(),
-    });
-    return org?.slug;
-})
-
 export type Role = 'owner' | 'manager' | 'driver';

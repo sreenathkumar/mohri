@@ -11,7 +11,7 @@ import User from "./User"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import AppIcon from "@/app/icon.svg"
-import { getServerSession } from "@/lib/auth"
+import { getServerSession } from "@/lib/auth-context"
 
 const navItems = [
   { title: "Dashboard", url: "/merchant/dashboard", icon: LayoutDashboard },
