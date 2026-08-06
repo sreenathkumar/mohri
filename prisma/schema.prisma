@@ -176,7 +176,7 @@ model Order {
   address  String?
   phone    String
   payment  String
-  amount   String
+  amount   Float
   status   OrderStatus @default(PROCESSING)
 
   assignee_name String  @default("")
