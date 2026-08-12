@@ -1,9 +1,10 @@
-import { sendVerificationEmail } from "@/services/emailService";
+import { sendResetPasswordEmail, sendVerificationEmail } from "@/services/emailService";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
 import { ac, driver, manager, owner, } from "./permissions";
 import prisma from "./prisma";
+import { redirect } from "next/navigation";
 
 
 export const auth = betterAuth({
@@ -74,7 +75,20 @@ export const auth = betterAuth({
             },
         },
     },
-    emailAndPassword: { enabled: true, },
+    emailAndPassword: {
+        enabled: true,
+        revokeSessionsOnPasswordReset: true,
+        sendResetPassword: async ({ user, url }) => {
+            void sendResetPasswordEmail({
+                to: user.email,
+                resetLink: url,
+                userName: user.name || 'there'
+            });
+        },
+        onPasswordReset: async ({ user }, request) => {
+            redirect('/continue');
+        }
+    },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
             const customUrl = new URL(url);
