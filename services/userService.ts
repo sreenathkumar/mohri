@@ -13,18 +13,22 @@ export interface UpdateProfileParams {
 /**
  * Fetch user details by ID
  */
-export async function findUserById(userId: string) {
-    if (!userId) return null;
+export async function fetchCurrentUser({ userId, organizationId }: { userId: string; organizationId: string }) {
+    if (!userId || !organizationId) return null;
 
-    return await prisma.user.findUnique({
-        where: { id: userId },
+    return await prisma.member.findFirst({
+        where: { userId, organizationId },
         select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            address: true,
-            phone: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    address: true,
+                    phone: true,
+                },
+            },
             role: true,
         },
     });

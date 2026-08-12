@@ -1,18 +1,16 @@
 'use client'
-import React, { useEffect } from 'react'
-import DataTable from './data-table'
-import { UserProfileType } from '@/types/UserType'
+import { updateProfile, UserType } from '@/actions/userActions';
 import { Button } from '@/components/shadcn/button';
-import { updateProfileSchema } from '@/lib/zod';
-import toast from 'react-hot-toast';
 import { Input } from '@/components/shadcn/input';
-import { updateProfile } from '@/actions/userActions';
-import { useSession } from 'next-auth/react';
+import { authClient } from '@/lib/auth-client';
+import { updateProfileSchema } from '@/lib/zod';
+import React, { useEffect } from 'react';
+import DataTable from './data-table';
+import { toast } from 'sonner';
 
-function ProfileInformation({ user }: { user?: UserProfileType }) {
-    const [initialUser, setInitialUser] = React.useState<UserProfileType | undefined>(user);
+function ProfileInformation({ user }: { user?: UserType }) {
+    const [initialUser, setInitialUser] = React.useState<UserType | undefined>(user);
     const [mode, setMode] = React.useState<'edit' | 'view'>('view');
-    const { data: session, update } = useSession();
 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,12 +38,12 @@ function ProfileInformation({ user }: { user?: UserProfileType }) {
             //update profile
             const res = await updateProfile({ email: user?.email || '', ...validatedData });
 
-            if (res?.status === 'success') {
+            if (res.success && res.data) {
                 setInitialUser(res.data);
                 setMode('view');
 
                 //update name in session
-                update({ ...session, user: { ...session?.user, name: validatedData.name } });
+                await authClient.updateUser({ name: res.data.name })
                 toast.success(res.message, { id: toastId });
             } else {
                 toast.error(res?.message, { id: toastId });

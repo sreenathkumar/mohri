@@ -2,50 +2,64 @@
 
 import { getRequiredSessionContext } from '@/lib/auth-context';
 import {
-    findUserById,
+    UpdateProfileParams,
+    fetchCurrentUser,
     updateUserProfile,
     uploadAndUpdateUserPhoto,
-    UpdateProfileParams,
 } from '@/services/userService';
-import { UserProfileType } from '@/types/UserType';
+import { success } from 'better-auth';
 
-//get user by id
+/**
+ * Get the current user data from the server
+ * @returns user data object
+ */
 export async function getCurrentUser() {
     try {
-        const { userId } = await getRequiredSessionContext({
+        const { userId, organizationId } = await getRequiredSessionContext({
             allowedRoles: ['owner', 'manager', 'driver']
         })
-        const user = await findUserById(userId);
+        const user = await fetchCurrentUser({ userId, organizationId });
 
         if (!user) {
             throw new Error('User not found');
         }
 
-        return user
+        return {
+            id: user.user.id,
+            name: user.user.name,
+            email: user.user.email,
+            image: user.user.image,
+            address: user.user.address,
+            phone: user.user.phone,
+            role: user.role,
+        }
     } catch (error: any) {
         console.error('[getCurrentUser] Error fetching user:', error?.message);
         return null;
     }
 }
 
-//update user profile information
+export type UserType = Awaited<ReturnType<typeof getCurrentUser>>;//the type of the current user
+
+/**
+ * Update the user profile data on the server
+ * @param params updated data parameters(i.e name, address, phone)
+ * @returns updated user data object
+ */
 export async function updateProfile(params: UpdateProfileParams) {
     try {
+        const { role } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager', 'driver']
+        });
         const updatedUser = await updateUserProfile(params);
 
-        const updatedData: UserProfileType = {
-            id: updatedUser.id,
-            name: updatedUser.name ?? undefined,
-            address: updatedUser.address ?? undefined,
-            phone: updatedUser.phone ?? undefined,
-            image: updatedUser.image ?? undefined,
-            email: updatedUser.email,
-        };
-
         return {
-            status: 'success' as const,
+            success: true,
             message: 'Profile updated successfully',
-            data: updatedData,
+            data: {
+                ...updatedUser,
+                role,
+            },
         };
     } catch (error: any) {
         console.error('Error updating user profile:', error?.message);
@@ -53,13 +67,13 @@ export async function updateProfile(params: UpdateProfileParams) {
         // Prisma error code P2025: Record to update not found
         if (error?.code === 'P2025') {
             return {
-                status: 'error' as const,
+                success: false,
                 message: 'There is no user with this email',
             };
         }
 
         return {
-            status: 'error' as const,
+            success: false,
             message: error?.message || 'An unexpected error occurred',
         };
     }

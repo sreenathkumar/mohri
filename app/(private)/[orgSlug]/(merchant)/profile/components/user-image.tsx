@@ -2,8 +2,8 @@
 import { updateProfilePhoto } from "@/actions/userActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { Button } from "@/components/shadcn/button";
+import { authClient } from "@/lib/auth-client";
 import { Check, X } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -12,8 +12,6 @@ function UserImage({ avatarUrl, email, name }: { avatarUrl?: string | null, emai
     const [preview, setPreview] = useState<string | undefined>(undefined);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const router = useRouter();
-    const { data: session, update } = useSession();
-
 
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -37,7 +35,7 @@ function UserImage({ avatarUrl, email, name }: { avatarUrl?: string | null, emai
         const res = await updateProfilePhoto(formData);
 
         if (res?.status === 'success') {
-            update({ ...session, user: { ...session?.user, image: res.url } });
+            authClient.updateUser({ image: res.url })
             setPreview(undefined);
             toast.success(res.message, { id: toastId });
             router.refresh();
