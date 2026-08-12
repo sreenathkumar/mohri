@@ -53,13 +53,13 @@ function UserMenu({ userName, userEmail, userImage, userRole, isMobile }: UserMe
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-                <Link href={userRole === 'driver' ? '/driver/dashboard' : '/merchant/dashboard'}>
+                <Link href={userRole === 'driver' ? './driver/dashboard' : './dashboard'}>
                     <DropdownMenuItem >
                         <LayoutDashboard />
                         Dashboard
                     </DropdownMenuItem>
                 </Link>
-                <Link href={userRole === 'driver' ? '/driver/profile' : '/merchant/profile'}>
+                <Link href={userRole === 'driver' ? './driver/profile' : './profile'}>
                     <DropdownMenuItem >
                         <UserRound />
                         Account
