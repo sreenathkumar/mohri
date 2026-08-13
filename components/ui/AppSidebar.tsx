@@ -21,13 +21,14 @@ async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     redirect('/login') // Redirect to login if the user is not authenticated
   }
   const userId = session?.session.userId;
+  const orgSlug = session?.session.activeOrganizationSlug
 
   const navItems = [
-    { title: "Dashboard", url: 'dashboard', icon: LayoutDashboard },
-    { title: "Stores", url: "stores", icon: Store, },
-    { title: "Employees", url: "employees", icon: IdCard, },
-    { title: "Orders", url: "orders", icon: Package },
-    { title: 'Track Delivery', url: 'track', icon: Truck },
+    { title: "Dashboard", url: `/${orgSlug}/dashboard`, icon: LayoutDashboard },
+    { title: "Stores", url: `/${orgSlug}/stores`, icon: Store, },
+    { title: "Employees", url: `/${orgSlug}/employees`, icon: IdCard, },
+    { title: "Orders", url: `/${orgSlug}/orders`, icon: Package },
+    { title: 'Track Delivery', url: `/${orgSlug}/track`, icon: Truck },
   ]
 
   return (
