@@ -48,13 +48,13 @@ function PcMapSidebarContent({ orders, pointOutOrder, selectedOrder }: PcMapSide
                         {orders.length > 0 ? (
                             orders.map((order) => (
                                 <div
-                                    key={order.id}
+                                    key={order.order_id}
                                     onClick={() => {
-                                        setSelectedOrderId(order.id);
+                                        setSelectedOrderId(order.order_id);
                                         setDetailsPanelOpen(true);
                                         pointOutOrder(order);
                                     }}
-                                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer group backdrop-blur-sm ${selectedOrder?.id === order.id
+                                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer group backdrop-blur-sm ${selectedOrder?.order_id === order.order_id
                                         ? 'bg-primary/20 border-primary shadow-lg shadow-primary/20'
                                         : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
                                         }`}
@@ -62,7 +62,7 @@ function PcMapSidebarContent({ orders, pointOutOrder, selectedOrder }: PcMapSide
                                     <div className="space-y-2">
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-base font-bold text-foreground truncate">{order.id}</p>
+                                                <p className="text-base font-bold text-foreground truncate">{order.order_id}</p>
                                                 <p className="text-xs text-muted-foreground mt-1">{order.address}</p>
                                             </div>
                                             <div className="flex items-center flex-shrink-0 gap-2">

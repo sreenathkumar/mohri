@@ -14,7 +14,7 @@ function Map({ orders }: { orders: MapPageOrderType[] }) {
     const { selectedOrderId, mapRef } = useMapContext();
     const { isMobile } = useSidebar()
 
-    const selectedOrder = orders.find(order => order.id === selectedOrderId) || null;
+    const selectedOrder = orders.find(order => order.order_id === selectedOrderId) || null;
 
     const pointOutOrder = (order: MapPageOrderType) => {
         if (!mapRef) return;

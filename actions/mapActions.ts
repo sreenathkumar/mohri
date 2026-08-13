@@ -18,25 +18,6 @@ export async function getOwnerMapData() {
 
         // Fetch the merchant map data using the organizationId 
         const ownerMapData = await fetchOwnerMapData({ organizationId });
-
-        const allowedStatuses: MapPageOrderType['status'][] = ['PROCESSING', 'ASSIGNED', 'OUT_FOR_DELIVERY'];
-
-        const formattedData: MapPageOrderType[] = ownerMapData
-            .filter(order => allowedStatuses.includes(order.status as MapPageOrderType['status']))
-            .map(order => ({
-                id: order.order_id,
-                name: order.name,
-                city: order.city,
-                address: order.address,
-                status: order.status as MapPageOrderType['status'],
-                latitude: order.latitude,
-                longitude: order.longitude,
-                assignee: order.assignee ? {
-                    id: order.assignee.id,
-                    name: order.assignee.name
-                } : null
-            }));
-
         return ownerMapData;
 
     } catch (error: any) {

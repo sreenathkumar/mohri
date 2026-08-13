@@ -1,3 +1,4 @@
+import { getOwnerMapData } from "@/actions/mapActions";
 import { getOrders } from "@/actions/orderActions";
 import { OrderStatus } from '@lib/prisma';
 
@@ -66,12 +67,4 @@ export interface DriverOrderType {
     date_delivered?: string;
 }
 
-export type MapPageOrderType = {
-    id: OrderType['order_id'];
-    status: Extract<OrderStatus, 'ASSIGNED' | 'OUT_FOR_DELIVERY' | 'PROCESSING' | 'CANCELED'>;
-    latitude: number | null;
-    longitude: number | null;
-    name: OrderType['name'];
-    address: OrderType['address'];
-    assignee: Pick<AssigneeType, 'id' | 'name'> | null;
-}
+export type MapPageOrderType = Awaited<ReturnType<typeof getOwnerMapData>>[number] 
