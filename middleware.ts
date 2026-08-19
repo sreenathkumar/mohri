@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCookieCache } from "better-auth/cookies";
+import { auth } from "./lib/auth";
 
 // Guest-only routes
 const authRoutes = ["/login", "/register"];
 
 // Platform entry / system routes exempt from general protection
-const platformRoutes = ["/continue", "/onboarding", "/email-verified"];
+const platformRoutes = ["/continue", "/email-verified"];
 
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
-    const session = await getCookieCache(req);
+    const session = await auth.api.getSession({
+        headers: req.headers,
+    })
+    const searchParams = req.nextUrl.search;
 
+    const callbackUrl = encodeURIComponent(`${path}${searchParams}`);
     const isAuthRoute = authRoutes.some((r) => path.startsWith(r));
     const isPlatformRoute = platformRoutes.some((r) => path.startsWith(r));
 
@@ -25,7 +29,7 @@ export async function middleware(req: NextRequest) {
 
     //not logged in
     if (isPlatformRoute) {
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url));
     }
 
     return NextResponse.next();
