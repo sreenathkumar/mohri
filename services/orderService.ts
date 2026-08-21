@@ -18,7 +18,7 @@ export interface SharableOrderData {
     address: string | null;
     phone: string;
     payment: string;
-    amount: string;
+    amount: number;
     status: OrderStatus;
 }
 
@@ -188,6 +188,26 @@ export async function bulkUpdateOrders({
 }: UpdateOrdersParams) {
     if (!orderIds || orderIds.length === 0 || !organizationId) {
         throw new Error('[bulkUpdateOrders] Order IDs and Organization ID are required for bulk update.');
+    }
+
+    // case 1: is the new status is PROCESSING
+    // then remove all the assigneeId and assigneeName from the orders and set the status to processing
+    if (status === OrderStatus.PROCESSING) {
+        await prisma.order.updateMany({
+            where: {
+                organizationId,
+                order_id: { in: orderIds },
+            },
+            data: {
+                assigneeId: null,
+                assignee_name: "",
+                status: OrderStatus.PROCESSING,
+                assignedAt: null,
+                date_delivered: null,
+            },
+        })
+
+        return
     }
 
     const isUnassigning = assigneeId === "none" || !assigneeId;

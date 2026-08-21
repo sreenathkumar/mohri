@@ -119,6 +119,10 @@ export async function updateOrders({ orderIds, assigneeId, assigneeName, status,
             allowedRoles: ["owner", "manager"],
         });
 
+        if (status === OrderStatus.ASSIGNED && (!assigneeId || !assigneeName)) {
+            throw new Error('Assignee ID and name are required when assigning orders.');
+        }
+
         //update orders in db
         await bulkUpdateOrders({
             organizationId,
@@ -141,28 +145,3 @@ export async function updateOrders({ orderIds, assigneeId, assigneeName, status,
         };
     }
 }
-
-/**
- *
- * @param
- * @returns
- */
-
-// export async function getEmployeeOrders({ userId, status }: { userId: string, status: OrderStatus }) {
-//     try {
-//         const { role } = await getServerSessionContext();
-
-//         if (role === 'merchant' || role === 'clerk') {
-//             //fetch employee orders from the database
-//             const orders = await fetchEmployeeOrders({ userId, status });
-
-//             return orders;
-//         }
-
-//         throw new Error('Unauthorized access: Only employees or merchant can access this resource.');
-
-//     } catch (error: any) {
-//         console.log('error in getting employee orders: ', error.message);
-//         return []
-//     }
-// }
