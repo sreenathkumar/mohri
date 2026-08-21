@@ -4,16 +4,20 @@ import { Button } from "@/components/shadcn/button";
 import { Input } from "@/components/shadcn/input";
 import { Label } from "@/components/shadcn/label";
 import FormField from "@/components/ui/CustomField";
-import { organization, signUp } from "@/lib/auth-client";
-import { generateOrgSlug } from "@/lib/utils";
+import { signUp } from "@/lib/auth-client";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useFormStatus } from "react-dom";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import PasswordField from "../../login/components/PasswordField";
-import { useRouter } from "next/navigation";
 
 function RegisterForm() {
     const router = useRouter();
+    const searchParams = useSearchParams()
+
+    //redirect url 
+    const callbackUrl = searchParams.get('callbackUrl') || '/continue';
+
     const handleSignup = async (formData: FormData) => {
         const name = (formData.get('name') as string)?.trim();
         const email = (formData.get('email') as string)?.trim();
@@ -30,28 +34,12 @@ function RegisterForm() {
             email,
             password,
             name,
-            callbackURL: "/continue",
-        });
+            callbackURL: callbackUrl,
+        })
 
         if (authError) {
             // Better Auth returns specific error messages (e.g. USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL)
             toast.error(authError.message || 'An error occurred during registration.');
-            return;
-        }
-
-        // create the organization slug
-        const slug = generateOrgSlug(businessName, authData.user.id);
-
-        //create the organization for the user
-        const { error: orgError } = await organization.create({
-            name: `${name}'s Organization`,
-            slug,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            userId: authData.user.id,
-        });
-
-        if (orgError) {
-            toast.error(orgError.message || 'An error occurred while creating the business profile.');
             return;
         }
 

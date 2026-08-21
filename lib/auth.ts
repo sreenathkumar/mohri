@@ -1,4 +1,4 @@
-import { sendResetPasswordEmail, sendVerificationEmail } from "@/services/emailService";
+import { sendOrganizationInvitation, sendResetPasswordEmail, sendVerificationEmail } from "@/services/emailService";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
@@ -28,9 +28,21 @@ export const auth = betterAuth({
                             input: true,
                             returned: true,
                         }
-                    }
+                    },
                 }
-            }
+            },
+            requireEmailVerificationOnInvitation: true,
+            async sendInvitationEmail(data) {
+                const inviteUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/onboarding?invitationId=${data.id}`;
+                sendOrganizationInvitation({
+                    to: data.email,
+                    invitationLink: inviteUrl,
+                    name: 'there',
+                    inviterName: data.inviter.user.name || 'your colleague',
+                    organizationName: data.organization.name || 'your organization',
+                    role: data.role || 'driver'
+                })
+            },
         }),
     ],
     session: {
@@ -63,14 +75,51 @@ export const auth = betterAuth({
                             organization: true
                         }
                     });
+
                     return {
                         data: {
                             ...session,
-                            role: membership?.role || 'owner',
+                            role: membership?.role,
                             activeOrganizationId: membership?.organizationId ? membership.organizationId.toString() : null,
                             activeOrganizationSlug: membership?.organization?.slug || null,
                         },
                     };
+                },
+            },
+            update: {
+                before: async (sessionData, ctx) => {
+                    // Check if activeOrganizationId is being changed
+                    if (sessionData.activeOrganizationId !== undefined) {
+                        if (sessionData.activeOrganizationId === null) {
+                            return { data: sessionData };
+                        }
+
+                        // Fetch the organization's slug
+                        const userId = sessionData.userId || ctx?.context?.session?.session?.userId;
+
+                        if (!userId) {
+                            return { data: sessionData };
+                        }
+                        const member = await prisma.member.findFirst({
+                            where: {
+                                userId
+                            },
+                            include: {
+                                organization: true,
+                            },
+                        });
+
+                        if (member && member.organization) {
+                            return {
+                                data: {
+                                    ...sessionData,
+                                    activeOrganizationSlug: member.organization.slug,
+                                    role: member.role,
+                                },
+                            };
+                        }
+                    }
+                    return { data: sessionData };
                 },
             },
         },

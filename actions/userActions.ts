@@ -1,13 +1,14 @@
 'use server';
 
-import { getRequiredSessionContext } from '@/lib/auth-context';
+import { auth } from '@/lib/auth';
+import { getRequiredSessionContext, getServerSession } from '@/lib/auth-context';
 import {
     UpdateProfileParams,
     fetchCurrentUser,
     updateUserProfile,
     uploadAndUpdateUserPhoto,
 } from '@/services/userService';
-import { success } from 'better-auth';
+import { headers } from 'next/headers';
 
 /**
  * Get the current user data from the server
@@ -113,5 +114,66 @@ export async function updateProfilePhoto(formData: FormData) {
             status: 'error' as const,
             message: error?.message || 'Failed to update profile photo',
         };
+    }
+}
+
+
+export async function createOrganization(data: FormData) {
+    const orgName = data.get('orgName');
+    const orgSlug = data.get('orgSlug');
+    const timezone = data.get('timezone');
+
+    if (!orgName || !orgSlug) {
+        console.log('OrgName or orgSlug is missing')
+        return {
+            success: false,
+            message: 'Organization name or slug is missing.'
+        }
+    }
+    console.log('create org triggered')
+    try {
+        const session = await getServerSession()
+
+        if (!session || !session?.user.emailVerified) {
+            throw new Error("Unauthenticaed request. Please login")
+        }
+
+        //check if the user is already have an organization
+        const existingOrganization = await auth.api.listOrganizations({
+            query: {
+                userId: session.session.userId,
+            },
+            headers: await headers()
+        });
+
+        if (existingOrganization && existingOrganization.length > 0) {
+            throw new Error('You already have an organization. You cannot create a new one.');
+        }
+
+        const result = await auth.api.createOrganization({
+            body: {
+                name: orgName as string,
+                slug: orgSlug as string,
+                userId: session.session.userId,
+                timezone: timezone as string
+            },
+            headers: await headers()
+        });
+
+        if (!result) {
+            throw new Error('Organization creation failed.')
+        }
+
+        return {
+            orgId: result.id,
+            success: true,
+            message: 'Organization created successfully.'
+        }
+    } catch (error: any) {
+        console.error('[createOrganization] error in creating organization.');
+        return {
+            success: false,
+            message: error.message || 'Something went wrong when creating organization.'
+        }
     }
 }

@@ -2,6 +2,7 @@ import { createAccessControl } from "better-auth/plugins";
 
 const statement = {
     organization: ["update", "delete"],
+    invitation: ['create', 'cancel'],
     member: ["invite", "remove", "updateRole"],
     order: ["view", "updateStatus"],
 } as const;
@@ -11,6 +12,7 @@ export const ac = createAccessControl(statement);
 // Owner: Full access
 export const owner = ac.newRole({
     organization: ["update", "delete"],
+    invitation: ['create', 'cancel'],
     member: ["invite", "remove", "updateRole"],
     order: ["view", "updateStatus"],
 });
@@ -18,6 +20,7 @@ export const owner = ac.newRole({
 // Manager: can invite member and update member role
 export const manager = ac.newRole({
     organization: ["update"],
+    invitation: ["create"],
     member: ["invite", "updateRole"],
     order: ["view", "updateStatus"],
 });
@@ -26,5 +29,3 @@ export const manager = ac.newRole({
 export const driver = ac.newRole({
     order: ["view", "updateStatus"],
 });
-
-export const user = ac.newRole({})

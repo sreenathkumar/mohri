@@ -5,30 +5,24 @@ import { getRequiredSessionContext } from "@/lib/auth-context";
 import {
     checkEmployeeExists,
     fetchDrivers,
-    fetchEmployees
+    fetchEmployees,
+    fetchInvitation,
+    fetchSingleEmployee
 } from "@/services/employeeService";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 
-// Allowed email domains
-const ALLOWED_EMAIL_DOMAINS = ["gmail.com", "yahoo.com", "outlook.com"];
-
 const formSchema = z.object({
     name: z.string().min(1, { message: "Name is required" }),
     email: z
         .string()
-        .email({ message: "Invalid email address" })
-        .refine(
-            (email) => {
-                const domain = email.split("@")[1];
-                return ALLOWED_EMAIL_DOMAINS.includes(domain?.toLowerCase());
-            },
-            { message: "Only Gmail, Yahoo, and Outlook emails are allowed." }
-        ),
+        .email({ message: "Invalid email address" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
     role: z.string().min(1, { message: "Role is required" }),
 });
+
+
 
 /**
  * Action: Get all employees for active organization
@@ -45,6 +39,24 @@ export async function getAllEmployees() {
         return [];
     }
 }
+
+
+export async function getEmployeeById(id: string) {
+    try {
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager']
+        });
+
+        const employee = await fetchSingleEmployee({ id, organizationId });
+
+        return employee
+    } catch (error: any) {
+        console.error("[getEmployeeById] Error fetching employee:", error?.message);
+        return null;
+    }
+}
+
+export type EmployeeType = Awaited<ReturnType<typeof getEmployeeById>>;
 
 /**
  * Action: Fetch all drivers for assigned orders
@@ -92,7 +104,7 @@ export async function checkEmployeeEmail(email: string) {
  * @param data - FormData containing employee details
  * @returns Object with status and message indicating success or failure
  */
-export async function addEmployee(prevState: unknown, data: FormData) {
+export async function addEmployee(data: FormData) {
     try {
         const { role, organizationId } = await getRequiredSessionContext({
             allowedRoles: ["owner", "manager"],
@@ -149,46 +161,108 @@ export async function addEmployee(prevState: unknown, data: FormData) {
     }
 }
 
-// /**
-//  * Action: Send invitation link to employee
-//  */
-// export async function inviteEmployee(prevState: unknown, data: FormData) {
-//     try {
-//         const { role, organizationId, userId } = await getServerSessionContext();
+/**
+ * Action: Send invitation link to employee
+ */
+export async function inviteEmployee(formData: FormData) {
+    try {
+        const { role, organizationId, userId } = await getRequiredSessionContext({
+            allowedRoles: ["owner", "manager"],
+        });
 
-//         if (role !== "merchant" && role !== "owner" && role !== "admin") {
-//             return { status: "error", message: "Unauthorized: Only merchants can invite employees." };
-//         }
+        const email = formData.get("email") as string;
+        const staffRole = formData.get("role") as string;
 
-//         const email = data.get("email") as string;
-//         const staffRole = data.get("role") as string;
+        if (!email || !staffRole) {
+            return { status: "error", message: "Email and role are required." };
+        }
 
-//         if (!email || !staffRole) {
-//             return { status: "error", message: "Email and role are required." };
-//         }
+        console.log('inviteEmployee called with email: ', role, ' and role: ', staffRole);
 
-//         const token = crypto.randomBytes(32).toString("hex");
+        //manager can't invite owner or manager
+        if (role === 'manager' && (staffRole === 'owner' || staffRole === 'manager')) {
+            throw new Error("Unauthorized: You're not allowed to invite this role.");
+        }
 
-//         await createTeamInviteService({
-//             email,
-//             role: staffRole,
-//             token,
-//             organizationId,
-//             invitedBy: userId,
-//         });
+        //invite the employee
+        const data = await auth.api.createInvitation({
+            body: {
+                email,
+                role: staffRole as "owner" | "manager" | "driver",
+                organizationId,
+            },
+            headers: await headers()
+        });
 
-//         const inviteUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/invite?token=${token}`;
+        if (!data.id) {
+            throw new Error("Failed to send invitation. Please try again.");
+        }
 
-//         return {
-//             status: "success",
-//             link: inviteUrl,
-//             message: "Employee invited successfully. Please share the invitation link.",
-//         };
-//     } catch (error: any) {
-//         console.error("[inviteEmployee] Error:", error?.message);
-//         return { status: "error", message: error?.message || "An error occurred while inviting employee." };
-//     }
-// }
+        return {
+            status: "success",
+            message: "Invitation sent successfully.",
+        };
+    } catch (error: any) {
+        console.error("[inviteEmployee] Error:", error?.message);
+        return { status: "error", message: error?.message || "An error occurred while inviting employee." };
+    }
+}
+
+interface BulkInviteProps {
+    invites: Array<{
+        email: string;
+        role: "owner" | "manager" | "driver";
+    }>;
+}
+
+export async function inviteEmployeeInBulk({ invites }: BulkInviteProps) {
+    try {
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ["owner"],
+        });
+
+        //check the length of the invites array
+        if (invites.length > 5) {
+            throw new Error("You can invite a maximum of 5 members at a time.");
+        }
+
+        //invite the employees
+        for (const invite of invites) {
+            const { email, role } = invite;
+
+            if (!email || !role) {
+                throw new Error("Email and role are required for each invite.");
+            }
+
+            const data = await auth.api.createInvitation({
+                body: {
+                    email,
+                    role,
+                    organizationId,
+                },
+                headers: await headers()
+            });
+
+            if (!data.id) {
+                console.error(`Failed to send invitation to ${email}.`);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1s between invites
+        }
+
+        return {
+            success: true,
+            message: "Invitations sent successfully.",
+        };
+
+    } catch (error: any) {
+        console.error("[inviteEmployeeInBulk] Error:", error?.message);
+        return {
+            success: false,
+            message: error?.message || "An error occurred while inviting employees in bulk."
+        };
+    }
+}
 
 /**
  * Change the role of an existing employee in the organization
@@ -233,3 +307,19 @@ export async function updateEmployeeRole({ id, newRole }: { id: string, newRole:
     }
 }
 
+
+export async function getInvitationDetails({ invitationId, email }: { invitationId?: string, email?: string }) {
+    if (!invitationId && !email) {
+        return null;
+    }
+
+    try {
+        const invitation = await fetchInvitation({ invitationId, email });
+
+        return invitation;
+    } catch (error: any) {
+        console.error("[getInvitationDetails] Error:", error?.message);
+        return null;
+    }
+}
+export type InvitationType = Awaited<ReturnType<typeof getInvitationDetails>>;
