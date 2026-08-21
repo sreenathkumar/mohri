@@ -56,7 +56,19 @@ function VerifyEmailTemplate({
                             <Section className="text-center my-8">
                                 <Button
                                     href={verificationLink}
-                                    className="bg-[#ea580c] hover:bg-[#ea580c]/20 text-white font-medium py-3 px-6 rounded-lg text-sm inline-block shadow-sm"
+                                    style={{
+                                        backgroundColor: '#ea580c',
+                                        color: '#ffffff',
+                                        fontSize: '14px',
+                                        fontWeight: 500,
+                                        padding: '12px 24px',
+                                        borderRadius: '8px',
+                                        textDecoration: 'none',
+                                        textAlign: 'center',
+                                        display: 'inline-block',
+                                        lineHeight: '100%',
+                                        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                                    }}
                                 >
                                     Confirm Email Address
                                 </Button>
