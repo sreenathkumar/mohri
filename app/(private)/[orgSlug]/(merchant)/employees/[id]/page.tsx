@@ -1,18 +1,27 @@
-import { getCurrentUser } from "@/actions/userActions";
+import { getEmployeeById } from "@/actions/employeeActions";
 import { Card, CardHeader, CardTitle } from "@/components/shadcn/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn/tabs";
 import { ClipboardProvider } from "@/context/ClipboardCtx";
-import { Suspense } from "react";
 import CopyOrders from "./components/CopyOrders";
-import DeliveredTab from "./components/DeliveredTab";
-import ProcessingTab from "./components/ProcessingTab";
-import UserInfo from "./components/UserInfo";
+import DeliveredTab from "./components/delivery-tab";
+import DetailedProfile from "./components/detailed-profile";
+import DriverPerformance from "./components/driver-performance";
+import FailedTab from "./components/failed-tab";
+import ManagerPerformance from "./components/manager-performance";
+import ProcessingTab from "./components/processing-tab";
+import ProfileHighlight from "./components/profile-highlight";
 
+interface EmployeePageProps {
+    params: Promise<{
+        id: string;
+    }>;
+}
 
-async function EmployeePage() {
-    const user = await getCurrentUser();
+async function EmployeePage({ params }: EmployeePageProps) {
+    const { id } = await params;
+    const employee = await getEmployeeById(id)
 
-    if (!user) {
+    if (!employee) {
         return (
             <div className="flex items-center space-x-4 text-gray-400">
                 Your information is not available.
@@ -22,16 +31,21 @@ async function EmployeePage() {
 
     return (
         <div className="container mx-auto p-4 space-y-6 overflow-y-auto">
-            <Card className="p-6 bg-transparent">
-                <CardHeader className="p-0 mb-12">
-                    <CardTitle>Employee Details</CardTitle>
-                </CardHeader>
-                <UserInfo user={({
-                    name: user?.name || 'John Doe',
-                    image: user?.image || undefined,
-                    address: user?.address || 'No address'
-                })} />
-            </Card>
+            <div>
+                <p className="text-sm text-slate-400">People / Employees</p>
+                <h1 className="text-2xl font-bold tracking-tight text-white">Employee profile</h1>
+            </div>
+
+            <ProfileHighlight user={employee} />
+
+            <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+                {
+                    employee.role === 'driver' ?
+                        <DriverPerformance id={id} /> :
+                        <ManagerPerformance userId={id} />
+                }
+                <DetailedProfile employee={employee} />
+            </div>
 
             <Card className="p-6 bg-transparent">
                 <CardHeader>
@@ -41,18 +55,18 @@ async function EmployeePage() {
                     <ClipboardProvider>
                         <Tabs defaultValue="processing">
                             <TabsList>
-                                <TabsTrigger value="processing">Processing</TabsTrigger>
-                                <TabsTrigger value="delivered">Delivered</TabsTrigger>
+                                <TabsTrigger value="processing" className="cursor-pointer">Processing</TabsTrigger>
+                                <TabsTrigger value="delivered" className="cursor-pointer">Delivered</TabsTrigger>
+                                <TabsTrigger value="failed" className="cursor-pointer">Failed</TabsTrigger>
                             </TabsList>
                             <TabsContent value="processing">
-                                <Suspense fallback={<div>Loading assigned orders...</div>}>
-                                    <ProcessingTab id={user.id} />
-                                </Suspense>
+                                <ProcessingTab id={employee.id} />
                             </TabsContent>
                             <TabsContent value="delivered">
-                                <Suspense fallback={<div>Loading assigned orders...</div>}>
-                                    <DeliveredTab id={user.id} />
-                                </Suspense>
+                                <DeliveredTab id={employee.id} />
+                            </TabsContent>
+                            <TabsContent value="failed">
+                                <FailedTab id={employee.id} />
                             </TabsContent>
                         </Tabs>
                         <CopyOrders />

@@ -8,7 +8,7 @@ import { formatDate } from "date-fns";
 import { useEffect } from "react";
 
 interface SelectOrderProps {
-    status?: Extract<OrderStatus, 'PROCESSING' | 'DELIVERED'>
+    status?: OrderStatus,
     order: string;
 }
 
@@ -62,7 +62,7 @@ function SelectOrder({ status, order }: SelectOrderProps) {
     }
 
     return (
-        <Checkbox onCheckedChange={handleCheckboxChange} checked={isExist} />
+        <Checkbox onCheckedChange={handleCheckboxChange} checked={isExist} className="border-muted-foreground/30 cursor-pointer" />
     )
 }
 

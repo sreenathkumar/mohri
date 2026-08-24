@@ -1,9 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { Prisma, prisma } from "@/lib/prisma";
 import { OrderStatus } from '@lib/prisma';
 
 export interface FetchDriverOrdersParams {
     driverId: string;
     organizationId: string;
+    filter?: Prisma.OrderScalarWhereInput
 }
 
 export interface MutateDeliveryStatusParams {
@@ -16,13 +17,14 @@ export interface MutateDeliveryStatusParams {
 /**
  * Fetch all orders assigned to a specific driver within an organization
  */
-export async function fetchDriverOrders({ driverId, organizationId }: FetchDriverOrdersParams) {
+export async function fetchDriverOrders({ driverId, organizationId, filter }: FetchDriverOrdersParams) {
     if (!driverId || !organizationId) return [];
 
     return await prisma.order.findMany({
         where: {
             assigneeId: driverId,
             organizationId,
+            ...filter
         },
         select: {
             order_id: true,

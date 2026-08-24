@@ -8,6 +8,7 @@ import DeleteEmployee from "./DeleteEmployee"
 import { Button } from "@/components/shadcn/button"
 import { Trash } from "lucide-react"
 import Link from "next/link"
+import { useSession } from "@/lib/auth-client"
 
 
 type Props = {
@@ -24,7 +25,7 @@ const roleColors: Record<string, string> = {
 }
 
 export default function EmployeeTable({ employees, selectedItems, setSelectedItems }: Props) {
-
+    const { data } = useSession();
     return (
         <div className="border rounded-lg">
             <Table>
@@ -66,7 +67,7 @@ export default function EmployeeTable({ employees, selectedItems, setSelectedIte
                                 />
                             </TableCell>
                             <TableCell className="px-6 py-4 text-muted-foreground font-medium">
-                                <Link className="hover:underline" href={`/merchant/employees/${employee.id}`}>{employee.name}</Link>
+                                <Link className="hover:underline" href={data?.session.userId === employee.id ? './profile' : `./employees/${employee.id}`}>{employee.name}</Link>
                             </TableCell>
                             <TableCell className="px-6 py-4 text-muted-foreground font-medium">{employee.email}</TableCell>
                             <TableCell className="px-6 py-4 text-muted-foreground font-medium">

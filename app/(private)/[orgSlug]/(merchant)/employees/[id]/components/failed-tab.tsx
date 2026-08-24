@@ -1,16 +1,23 @@
-import { getEmployeeOrders } from "@/actions/orderActions";
 import { Badge } from "@/components/shadcn/badge";
 import { CardContent } from "@/components/shadcn/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/shadcn/table";
-import CheckAll from "./CheckAll";
-import SelectOrder from "./SelectOrder";
-import { OrderStatus } from "@prisma/client";
+import CheckAll from "./check-all";
+import SelectOrder from "./select-order";
+import { OrderStatus } from '@lib/prisma';
+import { getDriverAssignedOrders } from "@/actions/driverActions";
 
 //table columns for the processing orders table
 const tableColumns = ['Order Number', 'Name', 'City', 'Phone Number', 'Payment', 'Amount', 'Status'];
 
-async function ProcessingTab({ id }: { id: string }) {
-    const orders = await getEmployeeOrders({ userId: id, status: OrderStatus.PROCESSING });
+async function FailedTab({ id }: { id: string }) {
+    const orders = await getDriverAssignedOrders({
+        driverId: id,
+        filter: {
+            status: {
+                in: [OrderStatus.FAILED]
+            }
+        }
+    });
 
     return (
         <CardContent>
@@ -18,7 +25,7 @@ async function ProcessingTab({ id }: { id: string }) {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-12">
-                            <CheckAll status={OrderStatus.PROCESSING} orders={orders} />
+                            <CheckAll orders={orders} />
                         </TableHead>
                         {
                             tableColumns?.map((column) => (
@@ -33,22 +40,17 @@ async function ProcessingTab({ id }: { id: string }) {
                             orders.map((order) => (
                                 <TableRow key={order.order_id}>
                                     <TableCell>
-                                        <SelectOrder status={OrderStatus.PROCESSING} order={JSON.stringify(order)} />
+                                        <SelectOrder status={order.status} order={JSON.stringify(order)} />
                                     </TableCell>
                                     <TableCell className="font-medium">{order.order_id}</TableCell>
                                     <TableCell>{order.name}</TableCell>
                                     <TableCell>{order.city}</TableCell>
                                     <TableCell>{order.phone}</TableCell>
-                                    <TableCell>{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
-                                    <TableCell>{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
+                                    <TableCell>{order.payment === 'cod' ? 'Cash On Delivery' : 'PAID'}</TableCell>
+                                    <TableCell>{order.payment === 'cod' ? order.amount : 'N/A'}</TableCell>
                                     <TableCell>
                                         <Badge
-                                            variant={order.status === OrderStatus.DELIVERED ? 'default' : 'destructive'}
-                                            className={
-                                                order.status === OrderStatus.DELIVERED
-                                                    ? 'bg-green-100 text-green-800 hover:bg-green-100'
-                                                    : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                                            }
+                                            variant='destructive'
                                         >
                                             {order.status}
                                         </Badge>
@@ -61,4 +63,4 @@ async function ProcessingTab({ id }: { id: string }) {
     )
 }
 
-export default ProcessingTab
+export default FailedTab

@@ -1,9 +1,5 @@
 import { prisma } from "@/lib/prisma";
 
-export interface FetchDriversParams {
-    organizationId: string;
-}
-
 export interface MutateEmployeeParams {
     id: string; // The User ID or Member ID depending on target
     organizationId: string;
@@ -19,7 +15,7 @@ export interface MutateEmployeeParams {
  * @param organizationId - The ID of the organization
  * @returns Array of employees with their user details
  */
-export async function fetchEmployees({ organizationId }: FetchDriversParams) {
+export async function fetchEmployees({ organizationId }: { organizationId: string }) {
     if (!organizationId) return [];
 
     const members = await prisma.member.findMany({
@@ -46,9 +42,48 @@ export async function fetchEmployees({ organizationId }: FetchDriversParams) {
 }
 
 /**
+ * Get the single employee details by user ID and organization ID
+ */
+export async function fetchSingleEmployee({ id, organizationId }: { id: string, organizationId: string }) {
+    if (!id || !organizationId) {
+        throw new Error("User ID and organization ID are required to fetch employee details.");
+    }
+
+    const member = await prisma.member.findFirst({
+        where: {
+            userId: id,
+            organizationId,
+        },
+        select: {
+            role: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    email: true,
+                    address: true,
+                    phone: true,
+                    createdAt: true,
+                },
+            },
+        },
+    });
+
+    if (!member) {
+        return null; // Employee not found
+    }
+
+    return {
+        role: member.role,
+        ...member.user
+    };
+}
+
+/**
  * Fetch all drivers belonging to a specific organization
  */
-export async function fetchDrivers({ organizationId }: FetchDriversParams) {
+export async function fetchDrivers({ organizationId }: { organizationId: string }) {
     if (!organizationId) return [];
 
     const members = await prisma.member.findMany({
@@ -131,4 +166,40 @@ export async function mutateEmployee({ id, organizationId, data }: MutateEmploye
         });
     }
     return null
+}
+
+
+/**
+ * get the public information about an employee invitation using the invitation ID
+ */
+
+export async function fetchInvitation({ invitationId, email }: { invitationId?: string, email?: string }) {
+    if (!invitationId && !email) {
+        throw new Error("Either invitationId or email must be provided to fetch invitation details.");
+    }
+    const invitation = await prisma.invitation.findFirst({
+        where: invitationId ? { id: invitationId } : { email },
+        select: {
+            id: true,
+            email: true,
+            role: true,
+            organization: {
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                }
+            },
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                }
+            },
+            createdAt: true,
+            expiresAt: true,
+        },
+    });
+
+    return invitation;
 }

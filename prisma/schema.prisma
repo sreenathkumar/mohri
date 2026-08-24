@@ -23,6 +23,7 @@ model User {
   invitations   Invitation[]
 
   assignedOrders Order[] @relation("AssigneeOrders")
+  reconciledOrders  Order[] @relation("OrderReconciledBy")
 
   @@map("user")
 }
@@ -189,6 +190,9 @@ model Order {
   date_delivered    DateTime?
   date_created_gmt  DateTime
   date_modified_gmt DateTime
+
+  reconciledById   String?   @db.ObjectId
+  reconciledBy     User?     @relation("OrderReconciledBy", fields: [reconciledById], references:[id] )
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

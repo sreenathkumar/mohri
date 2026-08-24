@@ -187,7 +187,7 @@ export async function bulkUpdateOrders({
     organizationId,
 }: UpdateOrdersParams) {
     if (!orderIds || orderIds.length === 0 || !organizationId) {
-        throw new Error('[bulkUpdateOrders] Order IDs and Organization ID are required for bulk update.');
+        throw new Error('Order IDs and Organization ID are required for bulk update.');
     }
 
     // case 1: is the new status is PROCESSING

@@ -1,11 +1,11 @@
-import { getEmployeeOrders } from "@/actions/orderActions";
+import { getDriverAssignedOrders } from "@/actions/driverActions";
 import { Badge } from "@/components/shadcn/badge";
 import { CardContent } from "@/components/shadcn/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/shadcn/table";
-import CheckAll from "./CheckAll";
-import DeliveryDate from "./DeliveryDate";
-import SelectOrder from "./SelectOrder";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus } from '@lib/prisma';
+import CheckAll from "./check-all";
+import DeliveryDate from "./delivery-date";
+import SelectOrder from "./select-order";
 
 
 
@@ -13,15 +13,19 @@ import { OrderStatus } from "@prisma/client";
 const tableColumns = ['Order Number', 'Status', 'Delivery Date', 'Payment', 'Amount'];
 
 async function DeliveredTab({ id }: { id: string }) {
-    const orders = await getEmployeeOrders({ userId: id, status: OrderStatus.DELIVERED });
-
+    const orders = await getDriverAssignedOrders({
+        driverId: id,
+        filter: {
+            status: OrderStatus.DELIVERED
+        }
+    });
     return (
         <CardContent>
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-12">
-                            <CheckAll status={OrderStatus.DELIVERED} orders={orders} />
+                            <CheckAll orders={orders} />
                         </TableHead>
                         {
                             tableColumns?.map((column) => (
@@ -37,7 +41,7 @@ async function DeliveredTab({ id }: { id: string }) {
                                 <TableRow key={order.order_id}>
                                     <TableCell>
                                         <SelectOrder
-                                            status={OrderStatus.PROCESSING}
+                                            status={OrderStatus.DELIVERED}
                                             order={JSON.stringify(order)}
                                         />
                                     </TableCell>
@@ -55,8 +59,8 @@ async function DeliveredTab({ id }: { id: string }) {
                                         </Badge>
                                     </TableCell>
                                     {order.date_delivered && <DeliveryDate date={order.date_delivered} />}
-                                    <TableCell>{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
-                                    <TableCell>{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
+                                    <TableCell>{order.payment === 'cod' ? 'Cash On Delivery' : 'PAID'}</TableCell>
+                                    <TableCell>{order.payment === 'cod' ? order.amount : 'N/A'}</TableCell>
                                 </TableRow>
                             ))}
                 </TableBody>

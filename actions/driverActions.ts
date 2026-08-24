@@ -3,7 +3,7 @@
 
 import { getRequiredSessionContext } from "@/lib/auth-context";
 import { changeDeliveryStatus, fetchDriverOrders } from "@/services/driverService";
-import { OrderStatus } from "@lib/prisma";
+import { OrderStatus, Prisma } from "@lib/prisma";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -24,6 +24,40 @@ export async function getDriverTasks() {
 
     } catch (error: any) {
         console.error('[getDriverTasks] error in getting driver tasks: ', error?.message);
+        return []
+    }
+}
+
+export async function getDriverAssignedOrders({ driverId, filter }: { driverId: string, filter?: Prisma.OrderScalarWhereInput }) {
+    try {
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ['owner', 'manager', 'driver'],
+        });
+
+        //fetch driver assigned orders by filtering from the database
+        const orders = await fetchDriverOrders({ organizationId, driverId, filter });
+
+        if (!orders || orders.length === 0) {
+            return [];
+        }
+
+        const formattedOrders = orders.map(order => ({
+            order_id: order.order_id,
+            name: order.name,
+            city: order.city,
+            address: order.address,
+            phone: order.phone,
+            payment: order.payment,
+            amount: order.amount,
+            status: order.status,
+            assignedAt: order.assignedAt,
+            date_delivered: order.date_delivered,
+        }));
+
+        return formattedOrders;
+
+    } catch (error: any) {
+        console.error('[getDriverAssignedOrders] error in getting driver assigned orders: ', error?.message);
         return []
     }
 }

@@ -1,4 +1,5 @@
 import { OrderStatus, prisma } from "@/lib/prisma";
+import { getLocalDateString, getStartOfLocalDay } from "../date-utlls";
 
 export interface BarChartParams {
   preset?: 'last7' | 'last30' | 'last90';
@@ -27,14 +28,11 @@ export async function fetchOrderBarChartData({ organizationId, preset }: BarChar
   const tz = organization?.timezone || 'UTC'; //the timezone of the organization
 
   let days = 7;
-  let bucketCount = 7;
 
   if (preset === 'last30') {
     days = 30;
-    bucketCount = 10;
   } else if (preset === 'last90') {
     days = 90;
-    bucketCount = 12; //grouped by week
   }
 
   //the moment it clicked,
@@ -96,21 +94,3 @@ export async function fetchOrderBarChartData({ organizationId, preset }: BarChar
 }
 
 
-//get the start of the day in the local timezone
-function getStartOfLocalDay(date: Date, timezone: string): Date {
-  const dateStr = getLocalDateString(date, timezone);
-
-  return new Date(`${dateStr}T00:00:00.000Z`);
-}
-
-// format a date to yyyy-mm-dd in the given timezone
-function getLocalDateString(date: Date, timeZone: string): string {
-  const formatter = new Intl.DateTimeFormat('en-CA', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  });
-
-  return formatter.format(date)
-}
