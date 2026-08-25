@@ -141,7 +141,7 @@ export async function updateOrders({ orderIds, assigneeId, assigneeName, status,
         console.error('[updateOrders] error in updateOrders: ', error.message);
         return {
             success: false,
-            message: 'An error occurred while updating orders'
+            message: error?.message || 'An error occurred while updating orders'
         };
     }
 }
