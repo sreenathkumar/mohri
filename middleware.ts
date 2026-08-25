@@ -18,13 +18,20 @@ export async function middleware(req: NextRequest) {
     const isAuthRoute = authRoutes.some((r) => path.startsWith(r));
     const isPlatformRoute = platformRoutes.some((r) => path.startsWith(r));
 
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-pathname", path);
+
     //logged in
     if (session) {
         if (isAuthRoute) {
             return NextResponse.redirect(new URL("/continue", req.url));
         }
 
-        return NextResponse.next();
+        return NextResponse.next({
+            request: {
+                headers: requestHeaders,
+            }
+        });
     }
 
     //not logged in
@@ -32,7 +39,11 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url));
     }
 
-    return NextResponse.next();
+    return NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        }
+    });
 }
 
 export const config = {
