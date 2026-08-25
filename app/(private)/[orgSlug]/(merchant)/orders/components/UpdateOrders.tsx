@@ -42,7 +42,7 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
     }
 
     //handle update order status
-    const handleUpdateStatus = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleUpdateStatus = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const toastId = toast.loading('Updating orders...');
@@ -50,7 +50,7 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
         if (selectedOrder.length > 0) {
 
             const formData = new FormData(e.currentTarget);
-            const assigneeId = formData.get('assigneeId') as string;
+            const assigneeId = formData.get('assigneeId') as string || 'none';
             const status = formData.get('status') as OrderStatus || undefined
             const assigneeName = drivers.find(driver => driver.id === String(assigneeId))?.name;
 
