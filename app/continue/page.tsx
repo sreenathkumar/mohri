@@ -18,8 +18,8 @@ export default async function ContinuePage({
 
     // Email Verification Check
     if (!session.user.emailVerified) {
-        console.log("[Continue] User email unverified. Redirecting to /verify-email.");
-        redirect("/verify-email?error=NOT_VERIFIED");
+        console.log("[Continue] User email unverified. Redirecting to /email-verified.");
+        redirect("/email-verified?error=NOT_VERIFIED");
     }
 
     const reqHeaders = await headers();
