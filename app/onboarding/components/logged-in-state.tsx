@@ -5,6 +5,8 @@ import AcceptInviteBtn from "./accept-invite-btn";
 import OnboardingFlow from "./onboarding-flow";
 import OrgExists from "./org-active-view";
 import SwitchOrgBtn from "./switch-org-btn";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 
 interface LoggedInStateProps {
@@ -13,7 +15,16 @@ interface LoggedInStateProps {
 }
 async function LoggedInState({ invitationId, session }: LoggedInStateProps) {
     //check if the user already has an active organization, 
-    if (session?.session?.activeOrganizationId) {
+    let validOrg = null;
+    try {
+        validOrg = await auth.api.getFullOrganization({
+            headers: await headers(),
+        });
+    } catch (error) {
+        console.error("Failed to fetch full organization details:", error);
+    }
+
+    if (session?.session?.activeOrganizationId && validOrg) {
         const activeRole = session?.session?.role;
         let dashboardUrl = `/${session?.session?.activeOrganizationSlug}/dashboard`;
 
