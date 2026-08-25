@@ -6,9 +6,14 @@ import { auth } from "@/lib/auth";
  * Basic session fetcher for Server Components and layouts (doesn't throw errors)
  */
 export const getServerSession = cache(async () => {
-    return await auth.api.getSession({
-        headers: await headers(),
-    });
+    try {
+        return await auth.api.getSession({
+            headers: await headers(),
+        });
+    } catch (e) {
+        console.error("Error fetching session:", e);
+        return null;
+    }
 });
 
 export interface SessionContextOptions {
@@ -19,7 +24,12 @@ export interface SessionContextOptions {
  * Strict context resolver for Server Actions (validates session, active org, and roles)
  */
 export async function getRequiredSessionContext(options?: SessionContextOptions) {
-    const sessionData = await getServerSession();
+    const sessionData = await auth.api.getSession({
+        headers: await headers(),
+        query: {
+            disableCookieCache: true,
+        }
+    });
 
     if (!sessionData || !sessionData.user) {
         throw new Error("Unauthorized: User session not found. Please log in.");
