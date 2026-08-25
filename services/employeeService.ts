@@ -172,13 +172,15 @@ export async function mutateEmployee({ id, organizationId, data }: MutateEmploye
 /**
  * get the public information about an employee invitation using the invitation ID
  */
-
 export async function fetchInvitation({ invitationId, email }: { invitationId?: string, email?: string }) {
     if (!invitationId && !email) {
         throw new Error("Either invitationId or email must be provided to fetch invitation details.");
     }
     const invitation = await prisma.invitation.findFirst({
-        where: invitationId ? { id: invitationId } : { email },
+        where: {
+            status: 'pending',
+            ...(invitationId ? { id: invitationId } : { email })
+        },
         select: {
             id: true,
             email: true,
