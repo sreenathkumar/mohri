@@ -1,34 +1,30 @@
 'use client'
 
+import { deleteEmployee } from "@/actions/employeeActions"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/shadcn/alert-dialog'
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/shadcn/button";
+import { Trash } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
-interface Props {
-    children: React.ReactNode;
-    selectedItems: string[];
-    setSelectedItems: (items: string[]) => void;
-}
+function DeleteEmployeeBtn({ email }: { email: string }) {
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-function DeleteEmployee({ children, selectedItems, setSelectedItems }: Props) {
-    const [open, setOpen] = useState(false);
-    const router = useRouter()
-
-    //handle delete employee
     const handleDeleteEmployee = async () => {
-        // const res = await deleteEmployees(selectedItems);
+        const res = await deleteEmployee(email);
 
-        // if (res?.status === 'success') {
-        //     setSelectedItems([]);
-        //     router.refresh();
-        // }
-        console.log("Deleting employees with IDs:", selectedItems);
+        if (res?.status === 'success') {
+            toast.success(res.message || "Employee deleted successfully");
+        } else {
+            toast.error(res.message || "Failed to delete employee");
+        }
     }
-
     return (
-        <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
             <AlertDialogTrigger asChild>
-                {children}
+                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
+                    <Trash />
+                </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -40,10 +36,7 @@ function DeleteEmployee({ children, selectedItems, setSelectedItems }: Props) {
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={() => {
-                            handleDeleteEmployee()
-                            setOpen(false)
-                        }}
+                        onClick={handleDeleteEmployee}
                     >
                         Delete
                     </AlertDialogAction>
@@ -53,4 +46,4 @@ function DeleteEmployee({ children, selectedItems, setSelectedItems }: Props) {
     )
 }
 
-export default DeleteEmployee
+export default DeleteEmployeeBtn

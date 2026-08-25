@@ -43,6 +43,13 @@ export const auth = betterAuth({
                     role: data.role || 'driver'
                 })
             },
+            organizationHooks: {
+                afterRemoveMember: async ({ user }) => {
+                    const ctx = await auth.$context;
+                    await ctx.internalAdapter.deleteUserSessions(user.id);
+                    console.log(`User ${user.email} has been removed from the organization and their sessions have been deleted.`);
+                }
+            }
         }),
     ],
     session: {

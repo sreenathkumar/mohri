@@ -40,7 +40,11 @@ export async function getAllEmployees() {
     }
 }
 
-
+/**
+ * Get a single employee by ID for the active organization
+ * @param id the id of the required employee
+ * @returns the employee data or null 
+ */
 export async function getEmployeeById(id: string) {
     try {
         const { organizationId } = await getRequiredSessionContext({
@@ -109,14 +113,20 @@ export async function addEmployee(data: FormData) {
         const { role, organizationId } = await getRequiredSessionContext({
             allowedRoles: ["owner", "manager"],
         });
-
-        if (role === 'manager' && data.get("role") === 'owner' || 'manager') {
+        const { name, email, role: newRole, password } = Object.fromEntries(data)
+        if (role === 'manager' && (data.get("role") === 'owner' || 'manager')) {
             throw new Error("Unauthorized: You're not allowed to set this role.");
         }
 
-        const validated = formSchema.safeParse(data);
+        const validated = formSchema.safeParse({
+            name,
+            email,
+            role: newRole,
+            password
+        });
 
         if (!validated.success) {
+            console.error("[addEmployee] Validation errors:", validated.error.flatten().fieldErrors);
             return {
                 status: "error",
                 message: "Invalid form data. Please check your inputs.",
@@ -162,7 +172,9 @@ export async function addEmployee(data: FormData) {
 }
 
 /**
- * Action: Send invitation link to employee
+ * Invite an employee to the organization via email
+ * @param formData - FormData containing email and role of the employee to invite
+ * @returns Object with status and message indicating success or failure
  */
 export async function inviteEmployee(formData: FormData) {
     try {
@@ -208,6 +220,11 @@ export async function inviteEmployee(formData: FormData) {
     }
 }
 
+/**
+ * Invite multiple employees to the organization via email in bulk when create the account
+ * @param invites - Array of objects containing email and role of the employees to invite
+ * @returns Object with success status and message indicating success or failure
+ */
 interface BulkInviteProps {
     invites: Array<{
         email: string;
@@ -323,3 +340,40 @@ export async function getInvitationDetails({ invitationId, email }: { invitation
     }
 }
 export type InvitationType = Awaited<ReturnType<typeof getInvitationDetails>>;
+
+
+export async function deleteEmployee(employeeEmail: string) {
+    if (!employeeEmail) {
+        return { status: "error", message: "No employee email provided for deletion." };
+    }
+
+    try {
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ["owner"],
+        });
+
+        const data = await auth.api.removeMember({
+            body: {
+                memberIdOrEmail: employeeEmail,
+                organizationId
+            },
+            headers: await headers()
+        });
+
+        if (!data.member) {
+            throw new Error("Failed to delete employee. Please try again.");
+        }
+
+        revalidatePath("/employees");
+        return {
+            status: "success",
+            message: `Employee with email ${employeeEmail} deleted successfully.`,
+        }
+    } catch (error: any) {
+        console.error("[deleteEmployee] Error:", error?.message);
+        return {
+            status: "error",
+            message: error?.message || "An error occurred while deleting employee."
+        };
+    }
+}

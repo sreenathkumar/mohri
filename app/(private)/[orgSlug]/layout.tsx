@@ -14,9 +14,14 @@ export default async function OrgLayout({
     const reqHeaders = await headers();
     const session = await getServerSession();
 
-    const org = await auth.api.getFullOrganization({
-        headers: reqHeaders,
-    });
+    let org = null;
+    try {
+        org = await auth.api.getFullOrganization({
+            headers: reqHeaders,
+        });
+    } catch (error) {
+        console.error("Failed to fetch full organization details:", error);
+    }
 
     const currentPath = reqHeaders.get('x-pathname') || `/${orgSlug}/dashboard`;
 

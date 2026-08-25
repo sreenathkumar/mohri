@@ -10,7 +10,9 @@ import {
     DialogTrigger,
 } from "@/components/shadcn/dialog"
 import { useState } from 'react'
-import AddEmployeeFrom from "./AddEmployeeForm"
+import DirectRegisterForm from "./direct-register-form"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn/tabs"
+import InviteLinkForm from "./invite-link-form"
 
 
 export default function AddEmployee() {
@@ -31,9 +33,22 @@ export default function AddEmployee() {
                         Please use gmail, yahoo, or outlook email to add an employee.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="w-full min-w-0 overflow-hidden">
-                    <AddEmployeeFrom />
-                </div>
+                <Tabs className='w-full' defaultValue="direct">
+                    <TabsList className='w-full bg-muted/20'>
+                        <TabsTrigger value="direct" className='w-full text-center dark:data-[state=active]:bg-muted/70 '>
+                            Direct Register
+                        </TabsTrigger>
+                        <TabsTrigger value="link" className='w-full text-center dark:data-[state=active]:bg-muted/70'>
+                            Invite Link
+                        </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="direct" className='w-full p-4'>
+                        <DirectRegisterForm />
+                    </TabsContent>
+                    <TabsContent value="link" className='w-full p-4'>
+                        <InviteLinkForm />
+                    </TabsContent>
+                </Tabs>
             </DialogContent>
         </Dialog>
     )

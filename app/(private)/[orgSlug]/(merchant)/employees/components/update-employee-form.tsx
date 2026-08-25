@@ -51,9 +51,6 @@ function UpdateEmployeeForm({ data }: { data: { id: string, name: string, email:
         }
     }
 
-    console.log('edit data: ', data);
-
-
     return (
         <>
             {state && <DynamicAlert state={state} />}
@@ -70,10 +67,9 @@ function UpdateEmployeeForm({ data }: { data: { id: string, name: string, email:
                             <SelectValue placeholder="Select role" />
                         </SelectTrigger>
                         <SelectContent className="bg-muted">
-                            <SelectItem value="admin"  >Admin</SelectItem>
-                            <SelectItem value="clerk">Clerk</SelectItem>
+                            <SelectItem value="owner">Owner</SelectItem>
+                            <SelectItem value="manager">Manager</SelectItem>
                             <SelectItem value="driver">Driver</SelectItem>
-                            <SelectItem value="user">User</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
