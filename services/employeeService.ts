@@ -23,10 +23,11 @@ export async function fetchEmployees({ organizationId }: { organizationId: strin
             organizationId,
         },
         select: {
+            id: true,
             role: true,
+            userId: true,
             user: {
                 select: {
-                    id: true,
                     name: true,
                     image: true,
                     email: true,
@@ -36,8 +37,12 @@ export async function fetchEmployees({ organizationId }: { organizationId: strin
     });
 
     return members.map((member) => ({
+        id: member.id,
+        userId: member.userId,
+        name: member.user.name,
+        image: member.user.image,
+        email: member.user.email,
         role: member.role,
-        ...member.user
     }));
 }
 

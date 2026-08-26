@@ -48,7 +48,7 @@ async function EmployeesPage({ searchParams }: { searchParams: Promise<{ [key: s
                     {employees.length > 0 ? employees.map((employee) => (
                         <TableRow key={employee.id} className="border-b border-border/60 hover:bg-muted/10 transition-colors group">
                             <TableCell className="px-6 py-4 text-muted-foreground font-medium">
-                                <Link className="hover:underline" href={session?.session.userId === employee.id ? './profile' : `./employees/${employee.id}`}>{employee.name}</Link>
+                                <Link className="hover:underline" href={session?.session.userId === employee.userId ? './profile' : `./employees/${employee.userId}`}>{employee.name}</Link>
                             </TableCell>
                             <TableCell className="px-6 py-4 text-muted-foreground font-medium">{employee.email}</TableCell>
                             <TableCell className="px-6 py-4 text-muted-foreground font-medium">
