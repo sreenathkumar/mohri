@@ -1,5 +1,4 @@
 import { auth } from '@/lib/auth';
-import { getServerSession } from '@/lib/auth-context';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -12,7 +11,12 @@ export default async function OrgLayout({
 }) {
     const { orgSlug } = await params;
     const reqHeaders = await headers();
-    const session = await getServerSession();
+    const session = await auth.api.getSession({
+        headers: reqHeaders,
+        query: {
+            disableCookieCache: true,
+        }
+    })
 
     let org = null;
     try {

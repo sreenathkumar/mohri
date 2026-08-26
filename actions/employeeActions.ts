@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { getRequiredSessionContext } from "@/lib/auth-context";
+import prisma from "@/lib/prisma";
 import {
     checkEmployeeExists,
     fetchDrivers,
@@ -308,6 +309,18 @@ export async function updateEmployeeRole({ id, newRole }: { id: string, newRole:
 
         if (Object.keys(result).length === 0) {
             throw new Error("Failed to update employee role. Please try again.");
+        }
+
+        const member = await prisma.member.findUnique({ where: { id } });
+
+        if (member) {
+            await prisma.session.updateMany({
+                where: {
+                    userId: member.userId,
+                    activeOrganizationId: organizationId,
+                },
+                data: { role: newRole },
+            });
         }
         revalidatePath("/employees");
 
