@@ -96,3 +96,35 @@ export async function changeDeliveryStatus({
 
     return updatedOrder;
 }
+
+
+/**
+ * update driver dashboard information
+ */
+interface UpdateDriverInfoParams {
+    driverId: string;
+    organizationId: string;
+    info: {
+        name?: string;
+        phone?: string;
+        address?: string;
+    };
+}
+export async function updateDriverInfo({ driverId, organizationId, info }: UpdateDriverInfoParams) {
+    if (!driverId || !organizationId) {
+        throw new Error('Missing required parameters: driverId and organizationId are required.');
+    }
+
+    const updatedDriver = await prisma.user.update({
+        where: {
+            id: driverId,
+        },
+        data: {
+            name: info.name?.trim() || undefined,
+            phone: info.phone?.trim() || undefined,
+            address: info.address?.trim() || undefined,
+        },
+    });
+
+    return updatedDriver;
+}

@@ -2,7 +2,7 @@
 'use server'
 
 import { getRequiredSessionContext } from "@/lib/auth-context";
-import { changeDeliveryStatus, fetchDriverOrders } from "@/services/driverService";
+import { changeDeliveryStatus, fetchDriverOrders, updateDriverInfo } from "@/services/driverService";
 import { fetchSingleEmployee } from "@/services/employeeService";
 import { OrderStatus, Prisma } from "@lib/prisma";
 import { revalidatePath } from "next/cache";
@@ -135,6 +135,53 @@ export async function updateDeliveryStatus({ orderId, status }: UpdateDeliverySt
         return {
             success: false,
             message: error.message || 'An error occurred while updating delivery status',
+        }
+    }
+}
+
+export async function updateDriverProfile(prev: any, formData: FormData) {
+    try {
+        const { name, phone, address } = Object.fromEntries(formData.entries());
+
+        if (!name && !phone && !address) {
+            throw new Error('Missing required parameters: name, phone, and address are required.');
+        }
+
+
+        const { organizationId, userId } = await getRequiredSessionContext({
+            allowedRoles: ['driver'],
+        });
+
+        //update driver profile in the database
+        const updatedProfile = await fetchSingleEmployee({ organizationId, id: userId });
+
+        if (!updatedProfile) {
+            throw new Error("Driver profile not found.");
+        }
+
+        // Assuming you have a function to update the profile in the database
+        await updateDriverInfo({
+            driverId: userId,
+            organizationId,
+            info: {
+                name: name as string,
+                phone: phone as string,
+                address: address as string,
+            },
+        })
+
+        revalidatePath('/driver/profile');
+
+        return {
+            success: true,
+            message: 'Driver profile updated successfully',
+        };
+
+    } catch (error: any) {
+        console.error('[updateDriverProfile] error in updating driver profile: ', error?.message);
+        return {
+            success: false,
+            message: error.message || 'An error occurred while updating driver profile',
         }
     }
 }
