@@ -73,7 +73,7 @@
   --ring: #ea580c; 
 
   --chart-1: #ea580c;
-  --chart-2: #f97316;
+  --chart-2: #fca160;
   --chart-3: #fdba74;
   --chart-4: #94a3b8;
   --chart-5: #cbd5e1;
@@ -112,7 +112,7 @@
   --ring: #ea580c;
 
   --chart-1: #ea580c;
-  --chart-2: #f97316;
+  --chart-2: #fca160;
   --chart-3: #fdba74;
   --chart-4: #cbd5e1;
   --chart-5: #475569;
@@ -150,7 +150,7 @@
     --input: #1e293b;
     --ring: #ea580c;
     --chart-1: #ea580c;
-    --chart-2: #f97316;
+    --chart-2: #fca160;
     --chart-3: #fdba74;
     --chart-4: #cbd5e1;
     --chart-5: #475569;
@@ -192,4 +192,28 @@
 
 .maplibregl-popup .popup-content-header {
   @apply bg-gradient-to-r from-primary/20 to-primary/10 border-b border-white/10 px-5 py-4 flex flex-col justify-between;
+}
+
+.opscom-tz-select__control {
+  @apply !bg-transparent !border-border !rounded-lg !shadow-sm !ring-1 !ring-inset !ring-border;
+  
+}
+
+.opscom-tz-select__single-value {
+  @apply !text-foreground;
+}
+
+.opscom-tz-select__option{
+  @apply !bg-transparent 
+}
+.opscom-tz-select__option:hover{
+  @apply !bg-primary/20 
+}
+.opscom-tz-select__option:active{
+  @apply !bg-primary
+}
+
+
+.opscom-tz-select__menu {
+  @apply !bg-card !rounded-lg !shadow-lg;
 }
