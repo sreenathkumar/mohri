@@ -12,7 +12,7 @@ interface ClipboardCtxType {
 
 interface ClipBoardContentType {
     text?: string,
-    status?: Extract<OrderStatus, 'PROCESSING' | 'DELIVERED'>,
+    status?: OrderStatus,
     ids: number[]
 }
 
