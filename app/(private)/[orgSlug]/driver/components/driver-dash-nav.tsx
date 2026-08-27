@@ -10,7 +10,6 @@ export default function BottomNav() {
 
     const navItems = [
         { id: 'dashboard', label: 'Tasks', icon: '📋', url: `/${session?.session?.activeOrganizationSlug}/driver/dashboard` },
-        { id: 'earnings', label: 'Earnings', icon: '💰', url: `/${session?.session?.activeOrganizationSlug}/driver/earnings` },
         { id: 'profile', label: 'Profile', icon: '👤', url: `/${session?.session?.activeOrganizationSlug}/driver/profile` },
     ];
 
