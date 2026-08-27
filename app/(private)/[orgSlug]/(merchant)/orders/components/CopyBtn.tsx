@@ -17,6 +17,7 @@ function CopyBtn() {
     }
 
     useEffect(() => {
+        if (!selectedOrder || selectedOrder.length === 0) return
         const fetchClipboardData = async () => {
             const res = await getClipboardContent(selectedOrder)
 
