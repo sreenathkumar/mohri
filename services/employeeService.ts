@@ -72,6 +72,7 @@ export async function fetchSingleEmployee({ id, organizationId }: { id: string, 
                     createdAt: true,
                 },
             },
+            organization: true,
         },
     });
 
@@ -81,7 +82,8 @@ export async function fetchSingleEmployee({ id, organizationId }: { id: string, 
 
     return {
         role: member.role,
-        ...member.user
+        ...member.user,
+        organizationName: member.organization.name,
     };
 }
 
