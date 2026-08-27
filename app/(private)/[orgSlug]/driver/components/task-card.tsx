@@ -1,12 +1,12 @@
-import MakeCurrentBtn from "./MakeCurrentBtn";
+import MakeCurrentBtn from "./make-current-btn";
 
-interface SecondaryTaskCardProps {
+interface DriverTaskProps {
     id: number;
     customer: string;
-    amount: string;
+    amount?: number;
 }
 
-export default function SecondaryTaskCard({ id, customer, amount }: SecondaryTaskCardProps) {
+export default function DriverTask({ id, customer, amount }: DriverTaskProps) {
     return (
         <div className="group bg-card/50 hover:bg-card border border-border/40 hover:border-border/80 rounded-lg p-3.5 flex items-center justify-between transition-all duration-200 active:scale-95">
             <div className="flex-1 min-w-0 flex items-center gap-3">
@@ -16,7 +16,7 @@ export default function SecondaryTaskCard({ id, customer, amount }: SecondaryTas
                 </div>
             </div>
             <div className="flex items-center gap-2 ml-2 whitespace-nowrap">
-                <p className="text-xs font-semibold text-secondary bg-secondary/10 px-2 py-1 rounded-sm">{amount}</p>
+                <p className="text-xs font-semibold text-muted-foreground bg-muted/50 px-2 py-1 rounded-sm">{amount || "N/A"}</p>
                 <MakeCurrentBtn order_id={id} />
             </div>
         </div>

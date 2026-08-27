@@ -1,15 +1,17 @@
 'use client';
 
+import { useSession } from '@/lib/auth-client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function BottomNav() {
     const pathname = usePathname();
+    const { data: session } = useSession()
 
     const navItems = [
-        { id: 'dashboard', label: 'Tasks', icon: '📋', url: '/driver/dashboard' },
-        { id: 'earnings', label: 'Earnings', icon: '💰', url: '/driver/earnings' },
-        { id: 'profile', label: 'Profile', icon: '👤', url: '/driver/profile' },
+        { id: 'dashboard', label: 'Tasks', icon: '📋', url: `/${session?.session?.activeOrganizationSlug}/driver/dashboard` },
+        { id: 'earnings', label: 'Earnings', icon: '💰', url: `/${session?.session?.activeOrganizationSlug}/driver/earnings` },
+        { id: 'profile', label: 'Profile', icon: '👤', url: `/${session?.session?.activeOrganizationSlug}/driver/profile` },
     ];
 
     return (

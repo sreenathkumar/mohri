@@ -27,7 +27,7 @@ export default function TabControl() {
             >
                 Active Tasks
                 <span className="ml-1.5 text-xs bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-sm">3</span>
-                {searchParams.get('task') === 'active' && (
+                {(searchParams.get('task') === 'active' || !searchParams.get('task')) && (
                     <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-primary to-primary/50 rounded-full"></div>
                 )}
             </button>

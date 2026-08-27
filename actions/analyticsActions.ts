@@ -3,6 +3,7 @@
 import { getRequiredSessionContext } from "@/lib/auth-context";
 import {
     fetchDashOverviewMetrics,
+    fetchDriverAnalytics,
     fetchDriverPerformanceMetrics,
     fetchManagerPerformanceMetrics,
     fetchOrderBarChartData,
@@ -110,5 +111,26 @@ export async function getDriverPerformanceMetrics({ userId, preset }: ManagerPer
     } catch (error: any) {
         console.error('[getDriverPerformanceMetrics] Error fetching driver performance metrics:', error?.message);
         return [];
+    }
+}
+
+/**
+ * Get the driver analytics for the driver profile page.
+ * @returns the analytics for the driver profile page. The data contains the number of assinged, delivered and failed orders.
+ */
+export async function getDriverAnalytics() {
+    try {
+        const { organizationId, userId } = await getRequiredSessionContext({
+            allowedRoles: ['driver'],
+        })
+        const driverAnalytics = await fetchDriverAnalytics({ organizationId, userId });
+        return driverAnalytics;
+    } catch (error: any) {
+        console.error('[getDriverAnalytics] Error fetching driver analytics:', error?.message);
+        return {
+            [OrderStatus.ASSIGNED]: 0,
+            [OrderStatus.DELIVERED]: 0,
+            [OrderStatus.FAILED]: 0,
+        };
     }
 }

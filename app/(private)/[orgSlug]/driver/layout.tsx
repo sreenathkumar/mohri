@@ -1,13 +1,13 @@
-import { getOrgSlug, getServerSession } from '@/lib/auth-context';
-import BottomNav from './components/BottomNav';
-import DriverDashHeader from './components/Header';
+import { getServerSession } from '@/lib/auth-context';
 import { redirect } from 'next/navigation';
+import BottomNav from './components/driver-dash-nav';
+import DriverDashHeader from './components/driver-dash-header';
 
 
 async function DriverDashLayout({ children }: { children: React.ReactNode }) {
     const session = await getServerSession();
-    const orgSlug = await getOrgSlug(session?.session.userId as string);
     const userRole = session?.session.role;
+    const orgSlug = session?.session.activeOrganizationSlug;
 
     //if not a driver, redirect to continue and that will send to the right page
     if (userRole !== 'driver') {

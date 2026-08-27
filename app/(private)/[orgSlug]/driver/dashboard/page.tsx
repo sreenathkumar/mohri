@@ -1,9 +1,9 @@
 import { getDriverTasks } from "@/actions/driverActions";
-import { OrderStatus } from "@/types/OrderType";
-import SecondaryTaskCard from "../components/SecondaryTaskCard";
+import TaskCard from "../components/task-card";
 import StatusBanner from "../components/StatusBanner";
-import TabControl from "../components/Tabs";
-import TaskCard from "../components/TaskCard";
+import TabControl from "../components/tabs";
+import InProgressTaskCard from "../components/inprogress-task-card";
+import { OrderStatus } from "@prisma/client";
 
 interface DriverDashPageProps {
     searchParams: Promise<{ [task: string]: 'active' | 'issues' }>;
@@ -18,11 +18,11 @@ async function DriverDashPage({ searchParams }: DriverDashPageProps) {
 
     //Find the active moving route, fallback to the first queue item if none are running
     const featuredTask = tasks.find(task => task.status === OrderStatus.OUT_FOR_DELIVERY) ||
-        tasks.find(task => task.status === OrderStatus.PROCESSING);
+        tasks.find(task => task.status === OrderStatus.ASSIGNED);
 
     //remaining active items
     const activeTasks = tasks.filter(task => {
-        const isValidStatus = task.status === OrderStatus.PROCESSING || task.status === OrderStatus.OUT_FOR_DELIVERY;
+        const isValidStatus = task.status === OrderStatus.ASSIGNED || task.status === OrderStatus.OUT_FOR_DELIVERY;
         const isCurrentlyFeatured = featuredTask && task.order_id === featuredTask.order_id;
 
         return isValidStatus && !isCurrentlyFeatured;
@@ -54,7 +54,7 @@ async function DriverDashPage({ searchParams }: DriverDashPageProps) {
                                     <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Current Delivery</h2>
                                 </div>
 
-                                <TaskCard
+                                <InProgressTaskCard
                                     id={featuredTask.order_id}
                                     customer={featuredTask.name}
                                     location={`${featuredTask.city}, ${featuredTask?.address}`}
@@ -73,7 +73,7 @@ async function DriverDashPage({ searchParams }: DriverDashPageProps) {
                                 <div className="space-y-2">
                                     {
                                         activeTasks.map((task) => (
-                                            <SecondaryTaskCard
+                                            <TaskCard
                                                 key={task.order_id}
                                                 id={task.order_id}
                                                 customer={task.name}
@@ -97,7 +97,7 @@ async function DriverDashPage({ searchParams }: DriverDashPageProps) {
                     <div className="space-y-2">
                         {
                             issueTasks.map((task) => (
-                                <SecondaryTaskCard
+                                <TaskCard
                                     key={task.order_id}
                                     id={task.order_id}
                                     customer={task.name}

@@ -1,12 +1,12 @@
 'use client';
 
 import { updateDeliveryStatus } from "@/actions/driverActions";
-import { OrderStatus } from "@/types/OrderType";
+import { OrderStatus } from "@prisma/client";
 
 function MakeCurrentBtn({ order_id }: { order_id: number }) {
     const handleMakeCurrent = async () => {
         await updateDeliveryStatus({
-            order_id,
+            orderId: order_id,
             status: OrderStatus.OUT_FOR_DELIVERY
         });
     }

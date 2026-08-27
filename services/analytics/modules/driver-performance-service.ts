@@ -91,3 +91,37 @@ export async function fetchDriverPerformanceMetrics({
 
     return Array.from(dateMap.values())
 }
+
+interface DriverAnalyticsParams {
+    userId: string;
+    organizationId: string;
+}
+export async function fetchDriverAnalytics({ userId, organizationId }: DriverAnalyticsParams) {
+    if (!userId || !organizationId) throw new Error('userId and organizationId are required');
+
+    const totalDeliveries = await prisma.order.findMany({
+        where: {
+            organizationId,
+            assigneeId: userId,
+        },
+        select: {
+            id: true,
+            status: true,
+            date_delivered: true,
+        }
+    });
+
+    //analytics map
+    const analyticsMap = new Map<string, number>();
+
+    for (const order of totalDeliveries) {
+        const status = order.status ?? 'unknown';
+        analyticsMap.set(status, (analyticsMap.get(status) ?? 0) + 1);
+    }
+
+    return {
+        [OrderStatus.ASSIGNED]: totalDeliveries.length ?? 0,
+        [OrderStatus.DELIVERED]: analyticsMap.get(OrderStatus.DELIVERED) ?? 0,
+        [OrderStatus.FAILED]: analyticsMap.get(OrderStatus.FAILED) ?? 0,
+    }
+}
