@@ -29,18 +29,18 @@ function DriverProfileSetting() {
     const [state, updateProfile] = useActionState(updateDriverProfile, init);
     const [showMessage, setShowMessage] = useState(false);
 
-    const handleAccountDeletion = async () => {
-        //send request to delete the account
-        const res = true;
+    // const handleAccountDeletion = async () => {
+    //     //send request to delete the account
+    //     const res = true;
 
-        if (res) {
-            toast.success("Account removal request sent successfully. We will process your request and notify you once it's completed.");
-            await authClient.signOut();
-            router.push('/')
-        } else {
-            toast.error("Failed to send account removal request. Please try again later.");
-        }
-    }
+    //     if (res) {
+    //         toast.success("Account removal request sent successfully. We will process your request and notify you once it's completed.");
+    //         await authClient.signOut();
+    //         router.push('/')
+    //     } else {
+    //         toast.error("Failed to send account removal request. Please try again later.");
+    //     }
+    // }
 
     useEffect(() => {
         if (state.success && state.message) {
@@ -94,11 +94,11 @@ function DriverProfileSetting() {
                         </form>
                     </DialogContent>
                 </Dialog>
-                <Button
+                {/* <Button
                     onClick={handleAccountDeletion}
                     className="w-full px-4 py-3 bg-destructive/10 hover:bg-destructive/20 border border-destructive/30 hover:border-destructive/50 rounded-lg text-sm font-semibold text-destructive transition-all duration-200 active:scale-95">
                     Delete the Account
-                </Button>
+                </Button> */}
             </div>
         </section>
     )
