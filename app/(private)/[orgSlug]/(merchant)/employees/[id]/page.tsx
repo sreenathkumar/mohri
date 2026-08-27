@@ -47,7 +47,7 @@ async function EmployeePage({ params }: EmployeePageProps) {
                 <DetailedProfile employee={employee} />
             </div>
 
-            <Card className="p-6 bg-transparent">
+            {employee.role === 'driver' && <Card className="p-6 bg-transparent">
                 <CardHeader>
                     <CardTitle>Assigned Orders</CardTitle>
                 </CardHeader>
@@ -72,7 +72,7 @@ async function EmployeePage({ params }: EmployeePageProps) {
                         <CopyOrders />
                     </ClipboardProvider>
                 </div>
-            </Card>
+            </Card>}
         </div>
     )
 }
