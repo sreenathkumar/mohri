@@ -1,17 +1,17 @@
 'use client';
 
+import { useSession } from '@/lib/auth-client';
 import { User as UserIcon } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../shadcn/button';
-import Image from 'next/image';
-import { signOut, useSession } from '@/lib/auth-client';
 
 function PublicHeader() {
     const { data } = useSession();
     console.log('PublicHeader session:', data);
     const isLoggedIn = !!data?.session
     const userRole = data?.session?.role;
-    const dashboardLink = userRole === 'driver' ? `${data?.session.activeOrganizationSlug}/driver/dashboard` : `${data?.session.activeOrganizationSlug}/dashboard`;
+    const dashboardLink = userRole === 'driver' ? `/${data?.session.activeOrganizationSlug}/driver/dashboard` : `/${data?.session.activeOrganizationSlug}/dashboard`;
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-muted bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
