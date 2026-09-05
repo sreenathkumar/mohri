@@ -12,7 +12,7 @@ export type AssigneeType = OrderType['assignee'] extends null ? null : {
 
 
 export interface OrderLocationType {
-    order_id: number;
+    order_id: string;
     city: string;
     address: {
         block?: string;
@@ -29,7 +29,7 @@ export interface OrderLocationType {
 }
 
 export interface OrderInfoType {
-    order_id: number;
+    order_id: string;
     name: string;
     address: string;
     city: string;
@@ -44,27 +44,17 @@ export interface OrderInfoType {
     date_modified_gmt: string;
 }
 
-// export enum OrderStatus {
-//     PROCESSING = 'PROCESSING',
-//     CANCELLED = 'CANCELLED',
-//     ASSIGNED = 'ASSIGNED',
-//     OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
-//     DELIVERED = 'DELIVERED',     // Cash collected by driver
-//     RECONCILED = 'RECONCILED',   // Cash handed to merchant
-//     FAILED = 'FAILED'
-// }
-
 export interface DriverOrderType {
-    order_id: number;
+    order_id: string;
     name: string;
     city: string;
-    address: string;
+    address: string | null;
     phone: string;
     payment?: string;
-    amount: string;
+    amount: number;
     status: OrderStatus;
-    assignedAt?: string;
-    date_delivered?: string;
+    assignedAt: Date | null;
+    date_delivered: Date | null;
 }
 
 export type MapPageOrderType = Awaited<ReturnType<typeof getOwnerMapData>>[number] 

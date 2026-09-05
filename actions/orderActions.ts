@@ -12,7 +12,7 @@ export interface SearchParams {
 
 
 export interface UpdateOrderDataType {
-    orderIds: number[];
+    orderIds: string[];
     assigneeId?: string | null;
     assigneeName?: string;
     status?: OrderStatus;
@@ -45,7 +45,7 @@ export async function getOrders(searchParams: SearchParams = {}) {
  * @param order_id the id of the order
  * @returns order object
  */
-export async function getSingleOrder(order_id: number) {
+export async function getSingleOrder(order_id: string) {
     if (!order_id) {
         throw new Error('Order ID is required to fetch the order.');
     }
@@ -87,7 +87,7 @@ export async function getAssignedOrders(searchParams: SearchParams = {}) {
  * @param selectedOrders selected order ids which data will be copied in clipboard
  * @returns formatted text of selected order data
  */
-export async function getClipboardContent(selectedOrders: number[]) {
+export async function getClipboardContent(selectedOrders: string[]) {
     try {
         const { organizationId } = await getRequiredSessionContext({
             allowedRoles: ["owner", "manager"],

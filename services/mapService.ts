@@ -6,7 +6,7 @@ export interface FetchOwnerMapParams {
 }
 
 export interface ChangeOrderLocationParams {
-    orderId: number | string;
+    orderId: string;
     latitude: number;
     longitude: number;
     organizationId: string;
@@ -22,7 +22,7 @@ export async function fetchOwnerMapData({ organizationId }: FetchOwnerMapParams)
 
     const orders = await prisma.order.findMany({
         where: {
-            organizationId,
+            shop: { organizationId },
             status: {
                 notIn: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
             },
@@ -60,17 +60,11 @@ export async function updateOrderLocation({
         throw new Error("[updateOrderLocation] Missing required parameters: orderId and organizationId are required");
     }
 
-    const numericOrderId = typeof orderId === "string" ? parseInt(orderId, 10) : orderId;
-
-    if (isNaN(numericOrderId)) {
-        throw new Error("[updateOrderLocation] Invalid orderId: must be a number or numeric string");
-    }
-
     // Check if the order exists and belongs to the organization
     const existingOrder = await prisma.order.findFirst({
         where: {
-            order_id: numericOrderId,
-            organizationId,
+            order_id: orderId,
+            shop: { organizationId },
         },
         select: { id: true },
     });

@@ -3,7 +3,7 @@
 import { updateDeliveryStatus } from "@/actions/driverActions";
 import { OrderStatus } from "@prisma/client";
 
-function MakeCurrentBtn({ order_id }: { order_id: number }) {
+function MakeCurrentBtn({ order_id }: { order_id: string }) {
     const handleMakeCurrent = async () => {
         await updateDeliveryStatus({
             orderId: order_id,

@@ -63,7 +63,7 @@ export async function fetchDriverPerformanceMetrics({
 
     const dbResults = await prisma.order.findMany({
         where: {
-            organizationId,
+            shop: { organizationId },
             assigneeId: userId,
             updatedAt: {
                 gte: startDate,
@@ -101,7 +101,7 @@ export async function fetchDriverAnalytics({ userId, organizationId }: DriverAna
 
     const totalDeliveries = await prisma.order.findMany({
         where: {
-            organizationId,
+            shop: { organizationId },
             assigneeId: userId,
         },
         select: {

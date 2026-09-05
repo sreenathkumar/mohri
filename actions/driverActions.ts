@@ -106,7 +106,7 @@ export async function getDriverAssignedOrders({ driverId, filter }: { driverId: 
  * @returns status, message object
  */
 interface UpdateDeliveryStatusParams {
-    orderId: number;
+    orderId: string;
     status: Extract<OrderStatus, 'OUT_FOR_DELIVERY' | 'FAILED' | 'DELIVERED'>;
 }
 

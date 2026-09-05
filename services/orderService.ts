@@ -12,7 +12,7 @@ export interface OrdersFilterParams {
 }
 
 export interface SharableOrderData {
-    order_id: number;
+    order_id: string;
     name: string;
     city: string;
     address: string | null;
@@ -26,7 +26,7 @@ export interface UpdateOrdersParams {
     assigneeId?: string | null;
     assigneeName?: string;
     status?: OrderStatus;
-    orderIds: number[];
+    orderIds: string[];
     organizationId: string;
 }
 
@@ -46,21 +46,18 @@ export async function fetchOrders({
 
     // Build Tenant & Role Scoped Where Clause
     const where: Prisma.OrderWhereInput = {
-        organizationId,
+        shop: { organizationId },
         ...(role === "driver" && { assigneeId: userId }),
     };
 
     //Add Search Filter
     if (searchQuery) {
-        const numQuery = Number(searchQuery);
-        const isNumeric = !isNaN(numQuery) && searchQuery !== "";
-
         where.OR = [
+            { order_id: { contains: searchQuery, mode: "insensitive" } },
             { name: { contains: searchQuery, mode: "insensitive" } },
             { phone: { contains: searchQuery, mode: "insensitive" } },
             { city: { contains: searchQuery, mode: "insensitive" } },
             { assignee_name: { contains: searchQuery, mode: "insensitive" } },
-            ...(isNumeric ? [{ order_id: numQuery }] : []),
         ];
     }
 
@@ -117,7 +114,7 @@ export async function fetchOrders({
 /**
  * Fetch a single order by order_id
  */
-export async function fetchSingleOrder({ orderId, organizationId }: { orderId: number, organizationId: string }) {
+export async function fetchSingleOrder({ orderId, organizationId }: { orderId: string, organizationId: string }) {
     if (!orderId || !organizationId) {
         throw new Error('[fetchSingleOrder] Order ID and Organization ID are required to fetch the order.');
     }
@@ -125,7 +122,7 @@ export async function fetchSingleOrder({ orderId, organizationId }: { orderId: n
     const order = await prisma.order.findFirst({
         where: {
             order_id: orderId,
-            organizationId,
+            shop: { organizationId },
         },
         select: {
             order_id: true,
@@ -147,15 +144,15 @@ export async function fetchSingleOrder({ orderId, organizationId }: { orderId: n
 /**
  * Fetch selected orders formatted for Clipboard export
  */
-export async function fetchClipboardContent({ selectedOrders, organizationId }: { selectedOrders: number[], organizationId: string }) {
+export async function fetchClipboardContent({ selectedOrders, organizationId }: { selectedOrders: string[], organizationId: string }) {
     if (!selectedOrders || selectedOrders.length === 0 || !organizationId) {
         throw new Error('[fetchClipboardContent] Selected order IDs and Organization ID are required to fetch clipboard content.');
     }
 
     const orders = await prisma.order.findMany({
         where: {
-            organizationId,
             order_id: { in: selectedOrders },
+            shop: { organizationId },
         },
         select: {
             order_id: true,
@@ -195,7 +192,7 @@ export async function bulkUpdateOrders({
     if (status === OrderStatus.PROCESSING) {
         await prisma.order.updateMany({
             where: {
-                organizationId,
+                shop: { organizationId },
                 order_id: { in: orderIds },
             },
             data: {
@@ -222,7 +219,6 @@ export async function bulkUpdateOrders({
 
     await prisma.order.updateMany({
         where: {
-            organizationId,
             order_id: { in: orderIds },
         },
         data: updateData,
@@ -243,7 +239,7 @@ export async function fetchEmployeeOrders(
 
     return await prisma.order.findMany({
         where: {
-            organizationId,
+            shop: { organizationId },
             assigneeId: userId,
             status,
         },

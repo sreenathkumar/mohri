@@ -20,7 +20,7 @@ export interface DriversType {
 
 //type for single order data
 interface SingleOrderType {
-    order_id: number,
+    order_id: string,
     payment: string,
     status: string,
     assignee?: {
@@ -31,13 +31,13 @@ interface SingleOrderType {
 }
 
 
-function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_id?: number }) {
+function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_id?: string }) {
     const { selectedOrder, setSelectedOrder } = useSelectedOrder();
     const [singleOrder, setSingleOrder] = useState<SingleOrderType | null>(null);
     const [drivers, setDrivers] = useState<DriversType[]>([]);
     const { mutate } = useSWRConfig();
 
-    const removeOrder = (orderId: number) => {
+    const removeOrder = (orderId: string) => {
         setSelectedOrder(selectedOrder.filter(id => id !== orderId));
     }
 

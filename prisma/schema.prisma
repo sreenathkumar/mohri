@@ -90,7 +90,6 @@ model Organization {
   members     Member[]
   invitations Invitation[]
   shops       Shop[]
-  orders      Order[]
 
   timezone    String? @default("UTC")
 
@@ -165,13 +164,10 @@ enum OrderStatus {
 model Order {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   shopId     String @db.ObjectId
-  shop       Shop   @relation(fields: [shopId], references: [id])
-  shopDomain String @map("shop")
+  shop       Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopDomain String 
 
-  organizationId String       @db.ObjectId
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  order_id Int         @unique
+  order_id String         
   name     String
   city     String
   address  String?
@@ -198,4 +194,37 @@ model Order {
   updatedAt DateTime @updatedAt
 
   @@map("order")
+  @@unique([shopId, order_id])
+}
+
+model ShopifyNonce{
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  nonce            String
+  shop             String    @unique
+  organizationId   String
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+
+  @@map("shopifyNonce")
+}
+
+model ShopifySessions {
+  session_id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  id                    String      @unique
+  shop                  String
+  state                 String
+  isOnline              Boolean     @default(false)
+  scope                 String?
+  expires               DateTime?
+  accessToken           String
+  userId                BigInt?
+  firstName             String?
+  lastName              String?
+  email                 String?
+  accountOwner          Boolean     @default(false)
+  locale                String?
+  collaborator          Boolean?    @default(false)
+  emailVerified         Boolean?    @default(false)
+  refreshToken          String?
+  refreshTokenExpires   DateTime?
 }

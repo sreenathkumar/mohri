@@ -13,7 +13,7 @@ interface ClipboardCtxType {
 interface ClipBoardContentType {
     text?: string,
     status?: OrderStatus,
-    ids: number[]
+    ids: string[]
 }
 
 // context which will provide the selected order for actions (i.e, update, delete)

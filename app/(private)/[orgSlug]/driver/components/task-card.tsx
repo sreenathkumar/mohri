@@ -1,7 +1,7 @@
 import MakeCurrentBtn from "./make-current-btn";
 
 interface DriverTaskProps {
-    id: number;
+    id: string;
     customer: string;
     amount?: number;
 }

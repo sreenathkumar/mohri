@@ -63,7 +63,7 @@ export async function fetchOrderBarChartData({ organizationId, preset }: BarChar
 
   const dbResults = await prisma.order.findMany({
     where: {
-      organizationId,
+      shop: { organizationId },
       date_created_gmt: {
         gte: startDate,
         lte: now

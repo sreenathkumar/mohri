@@ -7,7 +7,7 @@ import { MessageCircleMore, PhoneCall, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 
 interface TaskCardProps {
-    id: number;
+    id: string;
     customer: string;
     location: string;
     amount?: number;

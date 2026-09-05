@@ -15,7 +15,7 @@ export async function fetchManagerPerformanceMetrics({ organizationId, userId, p
     const performanceMetrics = await Promise.all([
         prisma.order.aggregate({
             where: {
-                organizationId,
+                shop: { organizationId },
                 status: OrderStatus.DELIVERED,
                 reconciledById: userId,
             },

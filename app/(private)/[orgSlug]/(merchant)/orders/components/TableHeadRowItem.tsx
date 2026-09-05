@@ -1,7 +1,7 @@
 import { TableHead, TableRow } from "@/components/shadcn/table"
 import SelectAllCheckbox from "./SelectAllCheckbox"
 
-function TableHeadRowItem({ columns, orderIds }: { columns: string[], orderIds: number[] }) {
+function TableHeadRowItem({ columns, orderIds }: { columns: string[], orderIds: string[] }) {
     return (
         <TableRow>
             <TableHead className="px-6 py-4 font-semibold text-foreground">

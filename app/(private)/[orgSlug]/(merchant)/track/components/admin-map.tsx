@@ -75,7 +75,7 @@ export default function AdminMap({ orders }: { orders: MapPageOrderType[] }) {
 
             if (typeof lat !== 'number' || typeof lon !== 'number') return;
 
-            const order_id = order.id ?? 'N/A';
+            const order_id = order.order_id ?? 'N/A';
 
 
             // Create customizable popup instance

@@ -8,7 +8,7 @@ export interface FetchDriverOrdersParams {
 }
 
 export interface MutateDeliveryStatusParams {
-    orderId: number;
+    orderId: string;
     status: OrderStatus;
     userId: string;
     organizationId: string;
@@ -23,7 +23,7 @@ export async function fetchDriverOrders({ driverId, organizationId, filter }: Fe
     return await prisma.order.findMany({
         where: {
             assigneeId: driverId,
-            organizationId,
+            shop: { organizationId },
             ...filter
         },
         select: {
@@ -55,11 +55,29 @@ export async function changeDeliveryStatus({
 }: MutateDeliveryStatusParams) {
     if (!orderId || !organizationId) return null;
 
+    //get the shop data
+    const shopInfo = await prisma.shop.findFirst({
+        where: {
+            organizationId,
+        },
+        select: {
+            id: true,
+            name: true,
+            domain: true,
+        }
+    });
+
+    if (!shopInfo) {
+        throw new Error('Shop not found for the given organization.');
+    }
+
     // update the incoming order's status
     const updatedOrder = await prisma.order.update({
         where: {
-            organizationId,
-            order_id: orderId,
+            shopId_order_id: {
+                shopId: shopInfo.id,
+                order_id: orderId
+            }
         },
         data: {
             status,
@@ -84,7 +102,7 @@ export async function changeDeliveryStatus({
         await prisma.order.updateMany({
             where: {
                 assigneeId: userId,
-                organizationId,
+                shop: { organizationId },
                 status: OrderStatus.OUT_FOR_DELIVERY,
                 order_id: { not: orderId }, // Exclude target order
             },

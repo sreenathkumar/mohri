@@ -43,7 +43,7 @@ function TableContent({ orders, columns }: { orders: OrderType[], columns: numbe
     )
 }
 
-function EditOrderBtn({ order_id }: { order_id: number }) {
+function EditOrderBtn({ order_id }: { order_id: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const { setSelectedOrder } = useSelectedOrder()
 

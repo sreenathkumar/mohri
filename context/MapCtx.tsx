@@ -3,8 +3,8 @@
 import { createContext, useContext, useState } from "react";
 
 interface MapContextType {
-    selectedOrderId: number | null;
-    setSelectedOrderId: React.Dispatch<React.SetStateAction<number | null>>;
+    selectedOrderId: string | null;
+    setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;
     mapRef: maplibregl.Map | null;
     setMapRef: React.Dispatch<React.SetStateAction<maplibregl.Map | null>>;
 }
@@ -22,7 +22,7 @@ export function useMapContext() {
 }
 
 export function MapProvider({ children, }: { children: React.ReactNode }) {
-    const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [mapRef, setMapRef] = useState<maplibregl.Map | null>(null);
 
     return <MapCtx.Provider value={{ selectedOrderId, setSelectedOrderId, mapRef, setMapRef }}>

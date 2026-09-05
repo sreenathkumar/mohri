@@ -41,7 +41,7 @@ export async function fetchDashOverviewMetrics({ organizationId, localFrom, loca
         prisma.order.groupBy({
             by: ['status'],
             where: {
-                organizationId,
+                shop: { organizationId },
             },
             _count: { _all: true }
         }),
@@ -55,7 +55,7 @@ export async function fetchDashOverviewMetrics({ organizationId, localFrom, loca
 
         prisma.order.aggregate({
             where: {
-                organizationId,
+                shop: { organizationId },
 
                 payment: "cod",
                 status: OrderStatus.DELIVERED
