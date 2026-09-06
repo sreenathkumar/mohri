@@ -1,6 +1,6 @@
 'use client'
 
-import { connectShop } from "@/actions/integration/connectShop"
+import { connectShop } from "@/actions/integrationActions"
 import { Input } from "@/components/shadcn/input"
 import { Label } from "@/components/shadcn/label"
 import { cn } from "@/lib/utils"
