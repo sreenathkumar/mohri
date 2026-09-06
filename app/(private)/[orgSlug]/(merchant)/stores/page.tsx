@@ -1,8 +1,8 @@
 import { getShops } from "@/actions/shopActions";
-import { Suspense } from "react";
-import AddStoreBtn from "./components/connect-btn";
-import ConnectedStores from "./components/connected-stores";
 import { Shop } from "@lib/prisma";
+import { Store } from "lucide-react";
+import AddStoreBtn from "./components/connect-btn";
+import StoreCard from "./components/store-card";
 
 export type Store = Pick<Shop, 'name' | 'domain' | 'platform'>;
 
@@ -21,9 +21,17 @@ async function StoresPage() {
 
                 <AddStoreBtn />
             </div>
-            <Suspense>
-                <ConnectedStores stores={stores} />
-            </Suspense>
+            {stores.length > 0 ?
+                <div className="flex flex-col gap-4 mt-10">
+                    {stores.map((store) => (
+                        <StoreCard key={store.domain} name={store.name} url={store.domain} platform={store.platform} />
+                    ))}
+                </div> : <div className="flex flex-col items-center text-center py-12 text-background my-auto">
+                    <Store className="h-12 w-12 text-foreground mx-auto mb-4" />
+                    <h3 className="text-lg text-muted-foreground font-medium mb-2">No stores connected</h3>
+                    <p className="text-muted-foreground mb-4">Connect your first store to get started</p>
+                    <AddStoreBtn />
+                </div>}
         </div>
     )
 }
