@@ -26,12 +26,12 @@ async function verifyWebhook(req: NextRequest) {
     }
 
     //extract the data 
-    const { topic, shopDomain, payload } = JSON.parse(rawbody);
+    const { topic, shop, payload } = JSON.parse(rawbody);
 
     return {
         valid: true,
         topic,
-        shopDomain,
+        shopDomain: shop,
         data: payload
     }
 }

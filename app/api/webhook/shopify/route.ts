@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
         //verify the webhook
         const { valid, topic, shopDomain, data: orderData } = await verifyWebhook(req);
 
-        if (!valid) {
-            console.error('Invalid webhook call, not handling it');
+        if (!valid || !topic || !shopDomain || !orderData) {
+            console.error('Webhook verification failed or missing data:', { valid, topic, shopDomain, orderData });
             return new Response("Invalid webhook", { status: 400 });
         }
 
