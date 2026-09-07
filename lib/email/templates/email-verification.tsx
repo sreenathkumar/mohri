@@ -79,7 +79,7 @@ function VerifyEmailTemplate({
                                 This verification link will expire in 24 hours.
                             </Text>
                             <Text className="text-slate-500 text-xs leading-normal">
-                                If the button above doesn't work, copy and paste this link into your browser:{" "}
+                                If the button above doesn&lsquo;t work, copy and paste this link into your browser:{" "}
                                 <Link href={verificationLink} className="text-blue-600 underline break-all">
                                     {verificationLink}
                                 </Link>
@@ -91,7 +91,7 @@ function VerifyEmailTemplate({
                         {/* Security Notice & Footer */}
                         <Section>
                             <Text className="text-slate-400 text-xs m-0 leading-relaxed">
-                                If you didn't create an account with OpsCommerce, you can safely ignore this email.
+                                If you didn&lsquo;t create an account with OpsCommerce, you can safely ignore this email.
                             </Text>
                             <Text className="text-slate-400 text-xs mt-2 m-0">
                                 © {new Date().getFullYear()} OpsCommerce. All rights reserved.

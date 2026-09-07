@@ -3,10 +3,10 @@ import NewPasswordForm from "./components/new-password-view";
 import RequestPasswordReset from "./components/request-password-view";
 
 interface ResetPasswordPageProps {
-    searchParams: {
+    searchParams: Promise<{
         token?: string;
         error?: string;
-    }
+    }>
 }
 
 async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {

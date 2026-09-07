@@ -32,23 +32,35 @@ const chartConfig: ChartConfig = {
   },
 }
 
-function DriverPerformanceChart({ initialData, userId }: { initialData: any, userId: string }) {
+function DriverPerformanceChart({ initialData, userId }: { initialData: DriverPerformanceDataPoints[], userId: string }) {
   const [chartData, setChartData] = useState<DriverPerformanceDataPoints[]>(initialData);
   const [activePreset, setActivePreset] = useState<'last7' | 'last30' | 'last90'>('last7');
 
-
-  // Fetch chart data when activePreset changes
+  // Fetch chart data when switching to a preset that needs a server request.
   useEffect(() => {
-    if (activePreset === 'last7' && initialData) {
-      setChartData(initialData);
-      return;
-    }
-    async function fetchData() {
+    if (activePreset === 'last7') return;
+
+    let cancelled = false;
+
+    (async () => {
       const data = await getDriverPerformanceMetrics({ userId, preset: activePreset });
-      setChartData(data);
+      if (!cancelled) {
+        setChartData(data);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [activePreset, userId]);
+
+  // Reset to `initialData` synchronously when switching back to 'last7',
+  // via the render-time derived-state pattern instead of an effect.
+  const [prevPreset, setPrevPreset] = useState(activePreset);
+  if (activePreset !== prevPreset) {
+    setPrevPreset(activePreset);
+    if (activePreset === 'last7') {
+      setChartData(initialData);
     }
-    fetchData();
-  }, [activePreset]);
+  }
 
   return (
     <>

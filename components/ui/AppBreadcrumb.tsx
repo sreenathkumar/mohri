@@ -13,23 +13,26 @@ import React from "react";
 
 function AppBreadcrumb() {
     const pathname = usePathname();
-    const pathArray = pathname.split('/');
+    const segments = pathname.split('/').filter(Boolean);
+
     return (
         <Breadcrumb>
             <BreadcrumbList>
-                <BreadcrumbItem className={pathArray.length === 1 ? 'hidden' : 'block'}>
+                <BreadcrumbItem className={segments.length === 0 ? 'hidden' : 'block'}>
                     <Link href="/merchant/dashboard">
                         <Home className="text-muted-foreground w-4 h-4 md:w-6 md:h-6" />
                     </Link>
                 </BreadcrumbItem>
                 {
-                    pathArray.map((path, index) => {
-                        if (path === '') return null;
+                    segments.map((segment, index) => {
+                        const href = '/' + segments.slice(0, index + 1).join('/');
+                        const isLast = index === segments.length - 1;
+
                         return (
-                            <React.Fragment key={path}>
-                                <BreadcrumbSeparator className={pathArray.length === 1 ? 'hidden' : 'block'} />
-                                <BreadcrumbItem className={index === pathArray.length - 1 ? 'text-primary' : ''}>
-                                    <Link href={`/${path}`} >{capitalize(path)}</Link>
+                            <React.Fragment key={href}>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem className={isLast ? 'text-primary' : ''}>
+                                    <Link href={href}>{capitalize(segment)}</Link>
                                 </BreadcrumbItem>
                             </React.Fragment>
                         )

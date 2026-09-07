@@ -30,7 +30,7 @@ function LoginForm() {
                     toast.error(ctx.error.message || 'Something went wrong in signing in. Please try again later.');
                 }
             });
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         } catch (err: any) {
             toast.error(err?.message || 'Something went wrong. Please try again later.');
         }

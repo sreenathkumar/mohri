@@ -18,7 +18,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function OrdersChart({ chartData }: { chartData: any[] }) {
   return (
     <ChartContainer config={chartConfig} className="h-[40vh] w-full md:h-[60vh]">

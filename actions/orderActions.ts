@@ -26,12 +26,12 @@ export interface UpdateOrderDataType {
 export async function getOrders(searchParams: SearchParams = {}) {
     const { query, page, sort } = searchParams;
     try {
-        const { organizationId, role, userId } = await getRequiredSessionContext({
+        const { organizationId } = await getRequiredSessionContext({
             allowedRoles: ["owner", 'manager'],
         });
 
         //fetch orders based on the role and userId
-        const fetchedData = await fetchOrders({ role, userId, organizationId, query, page, sort });
+        const fetchedData = await fetchOrders({ organizationId, query, page, sort });
 
         return fetchedData // Return the fetched data 
     } catch (error: any) {
@@ -73,7 +73,7 @@ export async function getAssignedOrders(searchParams: SearchParams = {}) {
         });
 
         //fetch assigned orders based on the role and userId
-        const fetchedData = await fetchOrders({ role, userId, organizationId, query, page, sort });
+        const fetchedData = await fetchOrders({ organizationId, query, page, sort });
         return fetchedData;
 
     } catch (error: any) {

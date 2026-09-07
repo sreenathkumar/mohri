@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
                             shopDomain: existingShop.domain,
                         }
                     })
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
                 } catch (error: any) {
                     throw new Error(`Failed to save order. Reason: ${error.message}`);
                 }
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         }
 
         return new Response(`${topic} handled successfully.`, { status: 200 });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (error: any) {
         console.error("Error handling webhook:", error.message);
         return new Response(`Error handling webhook: ${error.message}`, { status: 500 });

@@ -14,7 +14,7 @@ const chartConfig = {
 
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function CollectionChart({ chartData }: { chartData: any[] }) {
     const totalAmount = useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.total_amount, 0)

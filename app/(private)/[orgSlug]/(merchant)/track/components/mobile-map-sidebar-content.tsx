@@ -31,7 +31,7 @@ const initialFormState: FormState = {
 };
 
 function MobileDrawer({ orders }: MobileDrawerProps) {
-  const [activeShowMore, setActiveShowMore] = useState<number | null>(null);
+  const [activeShowMore, setActiveShowMore] = useState<string | null>(null);
   const { mapRef } = useMapContext();
   const [state, updateCoordinates] = useActionState(updateOrderCoordinates, initialFormState);
   const router = useRouter();
@@ -85,12 +85,12 @@ function MobileDrawer({ orders }: MobileDrawerProps) {
           {
             orders.length > 0 ? (
               orders.map((order) => (
-                <div key={order.id} className="group bg-linear-to-br border rounded-xl space-y-4 transition-all duration-300">
+                <div key={order.order_id} className="group bg-linear-to-br border rounded-xl space-y-4 transition-all duration-300">
                   {/* card header */}
                   <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-4 flex justify-between rounded-t-xl mb-0">
                     <div className="flex flex-col">
                       <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Order ID</p>
-                      <p className={`text-sm font-semibold font-mono`}>{order.id}</p>
+                      <p className={`text-sm font-semibold font-mono`}>{order.order_id}</p>
                     </div>
                     <Button
                       onClick={() => pointOutOrder(order)}
@@ -109,10 +109,10 @@ function MobileDrawer({ orders }: MobileDrawerProps) {
                       <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-0.5">Assignee</p>
                       <p className="text-base font-semibold text-foreground">{order?.assignee?.name || 'Not assigned'}</p>
                     </div>
-                    {activeShowMore === order?.id && (
+                    {activeShowMore === order?.order_id && (
                       <form action={handleFormSubmit} id="update-coordinate-form" className="bg-primary/10 rounded-lg p-3 space-y-2" >
                         <p className="text-xs uppercase text-muted-foreground font-semibold">Custom Location</p>
-                        <Input hidden type="text" name='orderId' value={order.id} readOnly />
+                        <Input hidden type="text" name='orderId' value={order.order_id} readOnly />
                         <Input
                           type="number"
                           step="0.0001"
@@ -138,10 +138,10 @@ function MobileDrawer({ orders }: MobileDrawerProps) {
                   </div>
 
                   <button
-                    onClick={() => setActiveShowMore(activeShowMore === order.id ? null : order.id)}
+                    onClick={() => setActiveShowMore(activeShowMore === order.order_id ? null : order.order_id)}
                     className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-2 font-medium"
                   >
-                    {activeShowMore === order.id ? '▲ Hide details' : '▼ Show details'}
+                    {activeShowMore === order.order_id ? '▲ Hide details' : '▼ Show details'}
                   </button>
                 </div>
 

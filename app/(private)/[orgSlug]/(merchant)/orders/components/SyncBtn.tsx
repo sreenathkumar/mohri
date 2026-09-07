@@ -1,6 +1,6 @@
 'use client'
 
-import syncWithWoo from "@/actions/integration/syncWithWoo";
+
 import { Button } from "@/components/shadcn/button";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { CloudDownload } from "lucide-react";
@@ -18,14 +18,7 @@ function SyncBtn() {
     }
 
     const handleClick = async () => {
-        const toastId = toast.loading('Syncing orders...');
-        const res = await syncWithWoo();
-
-        if (res) {
-            toast.success(res.message, { id: toastId });
-        }
-
-        router.refresh();
+        toast.loading("Testing: Syncing orders...");
     }
     return (
         <ConfirmationDialog open={modalOpen} onOpenChange={handleModal} trigger={

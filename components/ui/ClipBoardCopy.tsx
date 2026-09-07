@@ -19,7 +19,7 @@ export function ClipboardCopy({ content, children, className }: ClipboardCopyPro
             await navigator.clipboard.writeText(content)
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 2000) // Reset after 2 seconds
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         } catch (err: any) {
             console.error("Failed to copy text: ", err.message)
         }

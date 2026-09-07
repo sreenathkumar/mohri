@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import RegisterForm from "./components/register-form"
 
 function RegisterPage() {
@@ -7,7 +8,9 @@ function RegisterPage() {
                 <div className="text-center">
                     <h2 className="mt-6 text-3xl font-extrabold">Create an Account</h2>
                 </div>
-                <RegisterForm />
+                <Suspense fallback={<div>Loading Login...</div>}>
+                    <RegisterForm />
+                </Suspense>
             </div>
         </main>
     )

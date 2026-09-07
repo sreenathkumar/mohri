@@ -24,7 +24,7 @@ function InfiniteTableContent({ columns }: { columns: number }) {
     const sort = searchParams.get('sort') || '';
 
     //Tells SWR how to paginate while retaining current filters
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const getKey = (pageIndex: number, previousPageData: any) => {
         console.log('running the swr getkey')
         // Reached the end of data pages

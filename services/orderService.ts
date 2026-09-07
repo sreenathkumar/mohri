@@ -3,8 +3,6 @@ import { OrderStatus, Prisma, prisma } from "@/lib/prisma";
 const LIMIT = Number(process.env.ORDER_QUERY_LIMIT) || 10;
 
 export interface OrdersFilterParams {
-    userId: string;
-    role: string;
     organizationId: string;
     query?: string;
     page?: number;
@@ -34,8 +32,6 @@ export interface UpdateOrdersParams {
  * Fetch paginated orders with search, sorting, and tenant isolation
  */
 export async function fetchOrders({
-    userId,
-    role,
     organizationId,
     query = "",
     page = 1,
@@ -47,7 +43,6 @@ export async function fetchOrders({
     // Build Tenant & Role Scoped Where Clause
     const where: Prisma.OrderWhereInput = {
         shop: { organizationId },
-        ...(role === "driver" && { assigneeId: userId }),
     };
 
     //Add Search Filter
@@ -73,32 +68,25 @@ export async function fetchOrders({
             orderBy,
             skip,
             take: LIMIT,
-            select: role === "driver"
-                ? {
-                    order_id: true,
-                    payment: true,
-                    amount: true,
-                    status: true,
-                    date_delivered: true,
-                }
-                : {
-                    order_id: true,
-                    name: true,
-                    city: true,
-                    address: true,
-                    phone: true,
-                    payment: true,
-                    amount: true,
-                    status: true,
-                    date_delivered: true,
-                    assignee: {
-                        select: {
-                            id: true,
-                            name: true,
-                            image: true,
-                        },
+            select: {
+                order_id: true,
+                name: true,
+                city: true,
+                address: true,
+                phone: true,
+                payment: true,
+                amount: true,
+                status: true,
+                date_delivered: true,
+                assignee: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        email: true,
                     },
                 },
+            },
         }),
         prisma.order.count({ where }),
     ]);

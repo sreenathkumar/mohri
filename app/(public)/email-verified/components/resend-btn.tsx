@@ -33,7 +33,7 @@ export default function ResendBtn() {
             toast.success('Verification link resent successfully. Please check your email.');
             setResendTimer(60);
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         } catch (err: any) {
             setError(err.message || 'An error occurred while resending the verification link. Please try again.')
         }

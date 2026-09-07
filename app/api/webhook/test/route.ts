@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             status: 200,
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (error: any) {
         console.log('Error in test webhook:', error.message)
         return new Response(`Webhook error: ${error.message}`, {

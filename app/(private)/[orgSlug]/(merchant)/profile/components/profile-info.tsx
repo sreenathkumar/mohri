@@ -4,14 +4,20 @@ import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
 import { authClient } from '@/lib/auth-client';
 import { updateProfileSchema } from '@/lib/zod';
-import React, { useEffect } from 'react';
+import React from 'react';
 import DataTable from './data-table';
 import { toast } from 'sonner';
 
 function ProfileInformation({ user }: { user?: UserType }) {
     const [initialUser, setInitialUser] = React.useState<UserType | undefined>(user);
     const [mode, setMode] = React.useState<'edit' | 'view'>('view');
+    const [prevUser, setPrevUser] = React.useState(user);
 
+    // Sync local state when the `user` prop changes, without an effect.
+    if (user !== prevUser) {
+        setPrevUser(user);
+        setInitialUser(user);
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -59,10 +65,6 @@ function ProfileInformation({ user }: { user?: UserType }) {
         e.stopPropagation();
         setMode(mode === 'view' ? 'edit' : 'view')
     }
-
-    useEffect(() => {
-        setInitialUser(user)
-    }, [user])
 
     return (
         <>

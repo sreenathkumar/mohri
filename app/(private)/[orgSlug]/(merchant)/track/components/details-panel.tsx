@@ -52,7 +52,7 @@ function DetailsOpen({ selectedOrder, detailPanelOpen, setDetailPanelOpen, }: De
 
             {/* Header - Fixed size determined by its own padding */}
             <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between shrink-0">
-                <p className="text-sm font-bold text-foreground">{selectedOrder.id}</p>
+                <p className="text-sm font-bold text-foreground">{selectedOrder.order_id}</p>
                 <Button
                     onClick={() => setDetailPanelOpen(false)}
                     className="p-1.5 bg-transparent hover:bg-white/10 rounded-lg transition"
@@ -92,7 +92,7 @@ function DetailsOpen({ selectedOrder, detailPanelOpen, setDetailPanelOpen, }: De
                 {/* Custom Coordinates */}
                 <form id="update-coordinate-form" className="bg-primary/10 rounded-lg p-3 space-y-2" action={handleFormSubmit}>
                     <p className="text-xs uppercase text-muted-foreground font-semibold">Custom Location</p>
-                    <Input hidden type="text" name='orderId' value={selectedOrder.id} readOnly />
+                    <Input hidden type="text" name='orderId' value={selectedOrder.order_id} readOnly />
                     <Input
                         type="number"
                         step="0.0001"

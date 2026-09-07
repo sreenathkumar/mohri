@@ -23,7 +23,7 @@ function CheckAll({ orders }: CheckAllProps) {
 
     const isSame = isSameArray(ids, clipboardContent.ids)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     orders.forEach((order: any, index: number) => {
         const { date_delivered } = order;
 

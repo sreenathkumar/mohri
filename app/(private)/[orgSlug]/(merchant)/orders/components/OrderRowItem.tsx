@@ -2,15 +2,11 @@ import { Badge } from "@/components/shadcn/badge"
 import { TableCell, TableRow } from "@/components/shadcn/table"
 import Image from "next/image"
 import OrderCheckbox from "./OrderCheckbox"
-import { OrderType } from "@/types/OrderType"
+import { AssigneeType, OrderType } from "@/types/OrderType"
 import { OrderStatus } from "@lib/prisma"
 
 function OrderRowItem({ order, children }: { order: OrderType, children: React.ReactNode }) {
-    const assigneeObj = {
-        id: order?.assignee?.id,
-        name: order?.assignee?.name || 'Undefined',
-        image: order?.assignee?.image || undefined
-    }
+
     return (
         <TableRow className="border-b border-border/60 hover:bg-muted/10 transition-colors group">
             <TableCell className="px-6 py-4 text-muted-foreground">
@@ -19,7 +15,6 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
             <TableCell className="font-medium px-6 py-4 text-muted-foreground">{order.order_id}</TableCell>
             <TableCell className="px-6 py-4 text-muted-foreground">{order.name}</TableCell>
             <TableCell className="px-6 py-4 text-muted-foreground">{order.city}</TableCell>
-            {/* <TableAddressCell address={order.address} /> */}
             <TableCell className="px-6 py-4 text-muted-foreground">{order.address}</TableCell>
             <TableCell className="px-6 py-4 text-muted-foreground">{order.phone}</TableCell>
             <TableCell className="px-6 py-4 text-muted-foreground">{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
@@ -31,7 +26,7 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
                     {order.status}
                 </Badge>
             </TableCell>
-            <TableAssigneeCell assignee={assigneeObj} />
+            <TableAssigneeCell assignee={order.assignee} />
             <TableCell className="text-right px-6 py-4 text-muted-foreground">
                 <div className="flex justify-end gap-4">
                     {children}
@@ -41,47 +36,8 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
     )
 }
 
-
-// function TableAddressCell({
-//     address,
-// }: {
-//     address: {
-//         block?: string;
-//         street?: string;
-//         house?: string;
-//         jaddah?: string;
-//         floorApt?: string;
-//     };
-// }) {
-//     // Create an array of address parts that will be joined into a single string
-//     const addressParts = [
-//         address.block && <><strong>Block:</strong> {address.block}</>,
-//         address.street && <><strong>Street:</strong> {address.street}</>,
-//         address.house && <><strong>House:</strong> {address.house}</>,
-//         address.jaddah && <><strong>Jaddah:</strong> {address.jaddah}</>,
-//         address.floorApt && <><strong>Floor/Apt:</strong> {address.floorApt}</>,
-//     ]
-//         .filter(Boolean)
-
-//     return (
-//         <TableCell>
-//             {/* Conditionally render the address string as a single paragraph */}
-//             {addressParts.length > 0 ? <p>{
-//                 <>
-//                     <>{address.block && <><strong>Block:</strong> {`${address.block}`}</>}</>
-//                     <>{address.street && <>, <strong>Street:</strong> {`${address.street}`}</>}</>
-//                     <>{address.house && <>, <strong>House:</strong> {`${address.house}`}</>}</>
-//                     <>{address.jaddah && <>, <strong>Jaddah:</strong> {`${address.jaddah}`}</>}</>
-//                     <>{address.floorApt && <>, <strong>Floor/Apt:</strong> {`${address.floorApt}`}</>}</>
-//                 </>}
-//             </p>
-//                 : <p>No address available</p>}
-//         </TableCell>
-//     );
-// }
-
 //Show the assignee name and image in the table cell
-function TableAssigneeCell({ assignee }: { assignee: { id?: string, name: string, image?: string } }) {
+function TableAssigneeCell({ assignee }: { assignee: AssigneeType | null }) {
     return (
         <TableCell className="px-6 py-4 text-muted-foreground">
             {(assignee?.name && assignee.image) ?

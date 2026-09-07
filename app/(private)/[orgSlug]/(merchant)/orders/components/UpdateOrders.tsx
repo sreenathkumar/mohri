@@ -3,7 +3,7 @@
 import { getAllDrivers } from "@/actions/employeeActions"
 import { Button } from "@/components/shadcn/button"
 import { useSelectedOrder } from "@/context/SelectedOrderCtx"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import OrderBadge from "./OrderBadge"
 import { AssigneeUpdateOptions, StatusUpdateOptions } from "./UpdateOptions"
 import { getSingleOrder, updateOrders } from "@/actions/orderActions"
@@ -42,7 +42,7 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
     }
 
     //handle update order status
-    const handleUpdateStatus = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleUpdateStatus = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const toastId = toast.loading('Updating orders...');
@@ -85,47 +85,47 @@ function UpdateOrders({ closeModal, order_id }: { closeModal: () => void, order_
 
     }
 
-    //fetch the drivers
-    const fetchDrivers = async () => {
-        const res = await getAllDrivers();
-
-        if (res && res.length > 0) {
-            setDrivers(res.map(driver => ({
-                id: driver.id,
-                name: driver.name,
-                image: driver.image || undefined
-            })));
-        }
-    }
-
-    //fetch the single order data
-    const fetchSingleOrder = useCallback(async () => {
-        const res = await getSingleOrder(order_id!);
-
-        if (res) {
-            setSingleOrder({
-                order_id: res.order_id,
-                payment: res.payment,
-                status: res.status,
-                assignee: res.assignee ? {
-                    id: res.assignee.id,
-                    name: res.assignee.name,
-                    image: res.assignee.image || undefined
-                } : undefined
-            });
-        }
-
-    }, [order_id])
-
-    //update drivers on page load
+    //fetch drivers on page load
     useEffect(() => {
-        fetchDrivers();
+        let cancelled = false;
+
+        (async () => {
+            const res = await getAllDrivers();
+            if (!cancelled && res && res.length > 0) {
+                setDrivers(res.map(driver => ({
+                    id: driver.id,
+                    name: driver.name,
+                    image: driver.image || undefined
+                })));
+            }
+        })();
+
+        return () => { cancelled = true; };
     }, []);
 
-    //update single order on page load
+    //fetch single order data on page load / when order_id changes
     useEffect(() => {
-        fetchSingleOrder();
-    }, [fetchSingleOrder]);
+        if (!order_id) return;
+        let cancelled = false;
+
+        (async () => {
+            const res = await getSingleOrder(order_id);
+            if (!cancelled && res) {
+                setSingleOrder({
+                    order_id: res.order_id,
+                    payment: res.payment,
+                    status: res.status,
+                    assignee: res.assignee ? {
+                        id: res.assignee.id,
+                        name: res.assignee.name,
+                        image: res.assignee.image || undefined
+                    } : undefined
+                });
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, [order_id]);
 
 
     return (

@@ -48,7 +48,7 @@ export async function fetchDashOverviewMetrics({ organizationId, localFrom, loca
 
         prisma.order.count({
             where: {
-                organizationId,
+                shop: { organizationId },
                 status: OrderStatus.PROCESSING
             }
         }),

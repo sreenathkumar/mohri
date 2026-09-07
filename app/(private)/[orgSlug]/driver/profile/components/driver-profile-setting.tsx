@@ -1,9 +1,8 @@
 'use client'
 
-import { Button } from "@/components/shadcn/button"
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { updateDriverProfile } from "@/actions/driverActions";
+import SubmitBtn from "@/app/(public)/login/components/SubmitBtn";
+import { Button } from "@/components/shadcn/button";
 import {
     Dialog,
     DialogContent,
@@ -11,12 +10,11 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/shadcn/dialog"
-import { useActionState, useEffect, useState } from "react";
-import FormField from "@/components/ui/CustomField";
+} from "@/components/shadcn/dialog";
 import { Input } from "@/components/shadcn/input";
-import { updateDriverProfile } from "@/actions/driverActions";
-import SubmitBtn from "@/app/(public)/login/components/SubmitBtn";
+import FormField from "@/components/ui/CustomField";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
 
 const init = {
     success: false,
@@ -28,33 +26,25 @@ function DriverProfileSetting() {
     const [open, setOpen] = useState(false);
     const [state, updateProfile] = useActionState(updateDriverProfile, init);
     const [showMessage, setShowMessage] = useState(false);
+    const [prevState, setPrevState] = useState(state);
 
-    // const handleAccountDeletion = async () => {
-    //     //send request to delete the account
-    //     const res = true;
-
-    //     if (res) {
-    //         toast.success("Account removal request sent successfully. We will process your request and notify you once it's completed.");
-    //         await authClient.signOut();
-    //         router.push('/')
-    //     } else {
-    //         toast.error("Failed to send account removal request. Please try again later.");
-    //     }
-    // }
-
-    useEffect(() => {
+    if (state !== prevState) {
+        setPrevState(state);
         if (state.success && state.message) {
             setShowMessage(true);
-
-            const timer = setTimeout(() => {
-                setShowMessage(false);
-            }, 3000)
-
-            return () => clearTimeout(timer)
         }
+    }
 
+    // Hide the message after 3 seconds
+    useEffect(() => {
+        if (!showMessage) return;
 
-    }, [state])
+        const timer = setTimeout(() => {
+            setShowMessage(false);
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [showMessage]);
 
     return (
         <section className="px-4 mt-10">
@@ -94,11 +84,6 @@ function DriverProfileSetting() {
                         </form>
                     </DialogContent>
                 </Dialog>
-                {/* <Button
-                    onClick={handleAccountDeletion}
-                    className="w-full px-4 py-3 bg-destructive/10 hover:bg-destructive/20 border border-destructive/30 hover:border-destructive/50 rounded-lg text-sm font-semibold text-destructive transition-all duration-200 active:scale-95">
-                    Delete the Account
-                </Button> */}
             </div>
         </section>
     )

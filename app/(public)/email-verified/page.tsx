@@ -4,6 +4,8 @@ import ResendBtn from "./components/resend-btn";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth-context";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
     searchParams: Promise<{
         error?: string;

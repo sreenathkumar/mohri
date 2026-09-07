@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteShop, updateShop } from '@/actions/shopActions';
+import { updateShop } from '@/actions/shopActions';
 import { Button } from '@/components/shadcn/button';
 import { CheckCircle2 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -47,7 +47,7 @@ function StoreCard({ name, url, platform }: { name: string | null, url: string, 
               <div className="flex items-center gap-4">
                 <Button onClick={changeMode} variant='link' size='sm' className='text-foreground/80 hover:text-primary font-bold text-xs underline decoration-dotted underline-offset-4 transition-colors cursor-pointer px-0'>{mode === 'edit' ? 'Cancel' : 'Edit'}</Button>
                 <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-white/[0.15]" />
-                <RemoveStoreBtn onConfirm={() => deleteShop(url)} />
+                <RemoveStoreBtn onConfirm={() => console.log('deleting connected shop.')} />
               </div>
             </div>
           </div>

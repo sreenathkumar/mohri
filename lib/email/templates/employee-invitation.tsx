@@ -32,7 +32,7 @@ function EmployeeInvitation({
         <Html lang="en">
             <Tailwind>
                 <Head />
-                <Preview>You've been invited to join the team</Preview>
+                <Preview>You&lsquo;ve been invited to join the team</Preview>
 
                 <Body className="bg-slate-50 font-sans py-10">
                     <Container className="bg-white mx-auto my-0 p-8 rounded-xl border border-slate-200 max-w-lg shadow-sm">
@@ -46,7 +46,7 @@ function EmployeeInvitation({
                         {/* Main Message */}
                         <Section className="mb-6">
                             <Text className="text-2xl font-bold text-slate-900 mb-2">
-                                You've been invited to join the {organizationName} team
+                                You&lsquo;ve been invited to join the {organizationName} team
                             </Text>
                             <Text className="text-slate-600 text-base leading-relaxed mb-4">
                                 Hi {name},
@@ -83,7 +83,7 @@ function EmployeeInvitation({
                                 This verification link will expire in 2 days.
                             </Text>
                             <Text className="text-slate-500 text-xs leading-normal">
-                                If the button above doesn't work, copy and paste this link into your browser:{" "}
+                                If the button above doesn&lsquo;t work, copy and paste this link into your browser:{" "}
                                 <Link href={invitationLink} className="text-blue-600 underline break-all">
                                     {invitationLink}
                                 </Link>
@@ -95,7 +95,7 @@ function EmployeeInvitation({
                         {/* Security Notice & Footer */}
                         <Section>
                             <Text className="text-slate-400 text-xs m-0 leading-relaxed">
-                                If you think the email is reached to you unintentionally or you don't recognize the sender, then ignore it.
+                                If you think the email is reached to you unintentionally or you don&lsquo;t recognize the sender, then ignore it.
                             </Text>
                             <Text className="text-slate-400 text-xs mt-2 m-0">
                                 © {new Date().getFullYear()} OpsCommerce. All rights reserved.

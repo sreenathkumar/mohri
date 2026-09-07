@@ -4,7 +4,7 @@ import { getRequiredSessionContext } from "@/lib/auth-context";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export async function connectShop(initialState: any, formData: FormData) {
     const url = formData.get('url') as string;
     const platform = formData.get('platform') as string;
