@@ -1,7 +1,7 @@
 import { getDriverTasks } from "@/actions/driverActions";
 import TaskCard from "../components/task-card";
 import StatusBanner from "../components/StatusBanner";
-import TabControl from "../components/tabs";
+import TabControl from "../components/tabs-control";
 import InProgressTaskCard from "../components/inprogress-task-card";
 import { OrderStatus } from "@prisma/client";
 
