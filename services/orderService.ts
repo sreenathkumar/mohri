@@ -78,6 +78,7 @@ export async function fetchOrders({
                 amount: true,
                 status: true,
                 date_delivered: true,
+                shopDomain: true,
                 assignee: {
                     select: {
                         id: true,

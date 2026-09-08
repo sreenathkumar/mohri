@@ -5,7 +5,7 @@ import OrdersTableContent from "./OrdersTableContent";
 import TableHeadRowItem from "./TableHeadRowItem";
 
 
-const tableColumns = ['Order Number', 'Name', 'City', 'Address', 'Phone Number', 'Payment', 'Amount', 'Status', 'Asignee', 'Actions'];
+const tableColumns = ['Order Number', 'Name', 'City', 'Address', 'Phone Number', 'Payment Method', 'Amount', 'Status', 'Asignee', 'Shop', 'Actions'];
 
 async function
     OrdersTable({ query, sort }: { query: string | undefined, sort: string | undefined }) {

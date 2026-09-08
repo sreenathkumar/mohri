@@ -17,8 +17,8 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
             <TableCell className="px-6 py-4 text-muted-foreground">{order.city}</TableCell>
             <TableCell className="px-6 py-4 text-muted-foreground">{order.address}</TableCell>
             <TableCell className="px-6 py-4 text-muted-foreground">{order.phone}</TableCell>
-            <TableCell className="px-6 py-4 text-muted-foreground">{order.payment === 'hesabe' ? 'PAID' : 'Cash On Delivery'}</TableCell>
-            <TableCell className="px-6 py-4 text-foreground">{order.payment === 'hesabe' ? 'N/A' : order.amount}</TableCell>
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.payment}</TableCell>
+            <TableCell className="px-6 py-4 text-foreground">{order.amount}</TableCell>
             <TableCell>
                 <Badge
                     variant={order.status === OrderStatus.DELIVERED ? 'default' : 'secondary'}
@@ -27,7 +27,8 @@ function OrderRowItem({ order, children }: { order: OrderType, children: React.R
                 </Badge>
             </TableCell>
             <TableAssigneeCell assignee={order.assignee} />
-            <TableCell className="text-right px-6 py-4 text-muted-foreground">
+            <TableCell className="px-6 py-4 text-muted-foreground">{order.shopDomain}</TableCell>
+            <TableCell className="text-right px-6 py-4 text-muted-foreground sticky right-0 bg-muted/30 backdrop-blur-md">
                 <div className="flex justify-end gap-4">
                     {children}
                 </div>

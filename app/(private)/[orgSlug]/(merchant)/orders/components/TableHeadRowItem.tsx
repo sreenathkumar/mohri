@@ -10,7 +10,7 @@ function TableHeadRowItem({ columns, orderIds }: { columns: string[], orderIds: 
 
             {
                 columns.map((column, index) => (
-                    <TableHead key={column} className={`px-6 py-4 ${index === columns.length - 1 ? "text-right" : ""} min-w-[128px]`} >{column}</TableHead>
+                    <TableHead key={column} className={`px-6 py-4 ${index === columns.length - 1 ? "text-right sticky right-0 bg-muted/30 backdrop-blur-md" : ""} min-w-[128px] `} >{column}</TableHead>
                 ))
             }
         </TableRow>
