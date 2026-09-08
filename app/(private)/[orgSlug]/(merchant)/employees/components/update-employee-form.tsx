@@ -1,0 +1,84 @@
+'use client'
+
+import { updateEmployeeRole } from "@/actions/employeeActions"
+import SubmitBtn from "@/app/(public)/login/components/SubmitBtn"
+import DynamicAlert from "@/app/(public)/reset-password/components/DynamicAlert"
+import { Input } from "@/components/shadcn/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/shadcn/select"
+import FormField from "@/components/ui/CustomField"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
+interface formState {
+    status: string,
+    message: string,
+    errors?: {
+        name?: string[],
+        email?: string[],
+        role?: string[],
+    }
+}
+
+const initailState = {
+    status: '',
+    message: '',
+    errors: {
+
+    }
+}
+
+
+function UpdateEmployeeForm({ data }: { data: { id: string, name: string, email: string, role: string } }) {
+    const router = useRouter();
+    const [state, setState] = useState<formState>(initailState);
+
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget);
+        const res = await updateEmployeeRole({ id: data.id, newRole: formData.get("role") as string });
+        setState(res);
+
+
+        if (res.status === 'success') {
+            router.refresh();
+        }
+    }
+
+    return (
+        <>
+            {state && <DynamicAlert state={state} />}
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <FormField label="Name" htmlFor="name" error={state.errors?.name}>
+                    <Input id="name" name="name" required defaultValue={data.name} className="w-full px-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" />
+                </FormField>
+                <FormField label="Email" htmlFor="email" error={state.errors?.email}>
+                    <Input id="email" name="email" type="email" required defaultValue={data.email} className="w-full px-4 py-3 rounded-xl border border-border text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" />
+                </FormField>
+                <div className="mb-6">
+                    <Select name="role" required defaultValue={data.role} >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-muted">
+                            <SelectItem value="owner">Owner</SelectItem>
+                            <SelectItem value="manager">Manager</SelectItem>
+                            <SelectItem value="driver">Driver</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <SubmitBtn text="Update Employee" loadingText="Updating Employee..." />
+
+            </form>
+        </>
+    )
+}
+
+export default UpdateEmployeeForm

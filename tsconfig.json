@@ -23,7 +23,7 @@
       "@components/*": ["./components/*"],
       "@shadcn/*": ["./components/shadcn/*"],
       "@lib/*": ["./lib/*"],
-      "@assets/*": ["./assets/*"],
+      "@assets/*": ["./assets/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

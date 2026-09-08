@@ -1,4 +1,3 @@
-import { auth } from "@/auth"
 import {
   Sidebar,
   SidebarContent,
@@ -6,42 +5,51 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/shadcn/sidebar"
-import { HelpCircle, IdCard, LayoutDashboard, Package, Truck, Store, BookOpenText } from 'lucide-react'
+import { IdCard, LayoutDashboard, Package, Truck, Store } from 'lucide-react'
 import MainNav from "./MainNav"
 import User from "./User"
+import { redirect } from "next/navigation"
+import Image from "next/image"
+import AppIcon from "@/app/icon.svg"
+import { getServerSession } from "@/lib/auth-context"
+import Link from "next/link"
 
-const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Stores", url: "/stores", icon: Store },
-  { title: "Employees", url: "/employees", icon: IdCard, requires: ['admin', 'clerk'] },
-  { title: "Orders", url: "/orders", icon: Package },
-  { title: 'Track Delivery', url: '/track', icon: Truck },
-  { title: "Privacy Policy", url: "/privacy-policy", icon: BookOpenText },
-  { title: "Help", url: "/help", icon: HelpCircle },
-]
 
 async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const session = await auth();
+  const session = await getServerSession();
   if (!session) {
-    return null;
+    redirect('/login') // Redirect to login if the user is not authenticated
   }
-  const user = session.user;
+  const userId = session?.session.userId;
+  const orgSlug = session?.session.activeOrganizationSlug
 
-  const filteredNavItems = navItems.filter((item) => {
-    // Include the item if no role is required, or if the user's role matches the required role
-    return !item.requires || item.requires.includes(user.role || 'guest');
-  });
+  const navItems = [
+    { title: "Dashboard", url: `/${orgSlug}/dashboard`, icon: LayoutDashboard },
+    { title: "Stores", url: `/${orgSlug}/stores`, icon: Store, },
+    { title: "Employees", url: `/${orgSlug}/employees`, icon: IdCard, },
+    { title: "Orders", url: `/${orgSlug}/orders`, icon: Package },
+    { title: 'Track Delivery', url: `/${orgSlug}/track`, icon: Truck },
+  ]
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="py-6 border-b mb-6">
-        Logo
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src={AppIcon}
+            alt="Company Logo"
+            width={48}
+            height={24}
+            className="object-contain"
+            priority
+          />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
-        <MainNav items={filteredNavItems} />
+        <MainNav items={navItems} />
       </SidebarContent>
       <SidebarFooter>
-        {user && <User />}
+        {userId && <User />}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

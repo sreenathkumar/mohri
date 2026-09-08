@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Label } from "../shadcn/label";
 
 interface FormFieldProps {
     label?: string;
@@ -13,11 +14,11 @@ const FormField = ({ label, htmlFor, children, error }: FormFieldProps) => {
     const id = htmlFor || getChildId(children);
 
     return (
-        <div className="self-stretch mb-6">
+        <div className="self-stretch">
             {label && (
-                <label htmlFor={id} className="mb-2 block text-neutral-200 text-sm leading-3 tracking-wider">
+                <Label htmlFor={id} className="text-xs font-bold tracking-wider text-muted-foreground mb-2">
                     {label}
-                </label>
+                </Label>
             )}
             {children}
             {
@@ -35,13 +36,12 @@ const FormField = ({ label, htmlFor, children, error }: FormFieldProps) => {
 // ===============================================================
 // Function which returns the id of the child element
 // ===============================================================
-const getChildId = (children: React.ReactNode) => {
-    const child = React.Children.only(children) as React.ReactElement;
-
-    if (child && child) {
-        return child.props.id;
+const getChildId = (children: React.ReactNode): string | undefined => {
+    if (!React.isValidElement<{ id: string }>(children)) {
+        return undefined;
     }
-    return null;
+
+    return children.props.id ?? undefined;
 };
 
 export default FormField;

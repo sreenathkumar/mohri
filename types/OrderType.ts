@@ -1,21 +1,18 @@
-export interface OrderType {
-    order_id: number,
-    name: string,
-    city: string,
-    address: string,
-    phone: string,
-    amount: string,
-    status: string,
-    payment?: string,
-    asignee: {
-        id?: string,
-        name?: string,
-        image?: string
-    } | null
+import { getOwnerMapData } from "@/actions/mapActions";
+import { getOrders } from "@/actions/orderActions";
+import { OrderStatus } from '@lib/prisma';
+
+export type OrderType = Awaited<ReturnType<typeof getOrders>>['orders'][number]
+export type AssigneeType = OrderType['assignee'] extends null ? null : {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
 }
 
+
 export interface OrderLocationType {
-    order_id: number;
+    order_id: string;
     city: string;
     address: {
         block?: string;
@@ -32,7 +29,7 @@ export interface OrderLocationType {
 }
 
 export interface OrderInfoType {
-    order_id: number;
+    order_id: string;
     name: string;
     address: string;
     city: string;
@@ -46,3 +43,18 @@ export interface OrderInfoType {
     date_created_gmt: string;
     date_modified_gmt: string;
 }
+
+export interface DriverOrderType {
+    order_id: string;
+    name: string;
+    city: string;
+    address: string | null;
+    phone: string;
+    payment?: string;
+    amount: number;
+    status: OrderStatus;
+    assignedAt: Date | null;
+    date_delivered: Date | null;
+}
+
+export type MapPageOrderType = Awaited<ReturnType<typeof getOwnerMapData>>[number] 

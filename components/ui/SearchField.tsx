@@ -28,15 +28,15 @@ export default function SearchField({ className }: { className?: string }) {
 
     return (
         <div className={cn(`flex items-center justify-between w-full ${className}`)}>
-            <form className="relative flex-1 mr-4">
+            <form className="relative flex-1 max-w-md">
                 <Input
                     type="search"
                     placeholder="Search..."
-                    className="w-full pl-10 pr-4"
+                    className="pl-11 h-11 bg-card border-border rounded-xl focus-visible:ring-ring"
                     defaultValue={searchParams.get('query')?.toString()}
                     onChange={handleSearch}
                 />
-                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
             </form>
         </div>
     )

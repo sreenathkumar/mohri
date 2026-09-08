@@ -1,10 +1,29 @@
 import { OrderInfoType } from "@/types/OrderType";
 import { type ClassValue, clsx } from "clsx"
-import mongoose from "mongoose";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
+}
+
+export function generateOrgSlug(name: string, userId: string): string {
+    if (!name) {
+        return `org-${userId.slice(0, 8)}`;
+    }
+
+    // Convert to lowercase
+    let slug = name.toLowerCase();
+
+    // Replace spaces and special characters with hyphens
+    slug = slug.replace(/[^a-z0-9]+/g, "-");
+
+    // Remove leading and trailing hyphens
+    slug = slug.replace(/^-+|-+$/g, "");
+
+    // Append a unique identifier (first 8 characters of userId)
+    slug += `-${userId.slice(0, 8)}`;
+
+    return slug;
 }
 
 //generate OTP verfication
@@ -17,42 +36,6 @@ export function generateOTP(length = 6) {
     }
 
     return OTP;
-}
-
-//==========================================
-// transform the _id property to id string
-//==========================================
-interface TransformedObject {
-    [key: string]: unknown; // Define a general structure for the object with key-value pairs
-}
-
-export function transformIdProperty(obj: Record<string, unknown>): TransformedObject {
-    // Create an empty object to store the transformed object
-    const transformedObj: TransformedObject = {};
-
-    // Helper function to check if a value is a MongoDB ObjectId
-    function isObjectId(value: unknown): boolean {
-        return (
-            mongoose.Types.ObjectId.isValid(value as string) &&
-            String(new mongoose.Types.ObjectId(value as string)) === value?.toString()
-        );
-    }
-
-    for (const key in obj) {
-        if (Object.hasOwnProperty.call(obj, key)) {
-            // Check if the key is '_id' and rename it to 'id'
-            const newKey = key === "_id" ? "id" : key;
-
-            // Convert the value to string if it is a valid ObjectId
-            const value = isObjectId(obj[key]) ? String(obj[key]) : obj[key];
-
-            // Assign the new key and transformed value to the transformed object
-            transformedObj[newKey] = value;
-        }
-    }
-
-    // Return the transformed object
-    return transformedObj;
 }
 
 // ==========================================
@@ -152,7 +135,6 @@ export function getCookieValue(cookiesHeader: Headers, key: string): string | un
     return undefined;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function normalizeShopifyResponse(data: any): OrderInfoType | null {
     if (!data) return null;
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { OrderStatus } from '@lib/prisma';
 import { createContext, useContext, useState } from "react";
 
 // Define the type for the context value
@@ -11,8 +12,8 @@ interface ClipboardCtxType {
 
 interface ClipBoardContentType {
     text?: string,
-    status?: 'processing' | 'delivered',
-    ids: number[]
+    status?: OrderStatus,
+    ids: string[]
 }
 
 // context which will provide the selected order for actions (i.e, update, delete)

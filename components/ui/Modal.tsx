@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { X } from "lucide-react"
 import { createPortal } from "react-dom"
 
@@ -13,12 +13,6 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     const modalRef = useRef<HTMLDivElement>(null);
-    const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
-
-    // Ensure `modalRoot` is set only on the client
-    useEffect(() => {
-        setModalRoot(document.getElementById("modal-root"));
-    }, []);
 
     // Close the modal when the escape key is pressed
     useEffect(() => {
@@ -48,8 +42,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
     if (!isOpen) return null
 
+    const modalRoot = document.getElementById("modal-root") ?? document.body
+
     return createPortal(
-        <div className="fixed inset-0  px-2 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+        <div className="fixed inset-0  px-2 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-hidden focus:outline-hidden">
             <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
             <div
                 ref={modalRef}
@@ -65,7 +61,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
                     </h3>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="text-gray-400 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         aria-label="Close modal"
                     >
                         <X size={24} />
@@ -73,8 +69,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
                 </div>
                 <div className="mt-4">{children}</div>
             </div>
-        </div>, modalRoot || document.body)
+        </div>, modalRoot)
 }
 
 export default Modal
-

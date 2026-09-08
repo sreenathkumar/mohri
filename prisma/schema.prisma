@@ -1,0 +1,230 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String       @unique
+  emailVerified Boolean      @default(false)
+  image         String?
+  address       String?
+  phone         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  members       Member[]
+  invitations   Invitation[]
+
+  assignedOrders Order[] @relation("AssigneeOrders")
+  reconciledOrders  Order[] @relation("OrderReconciledBy")
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId                 String  @db.ObjectId
+  user                   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeOrganizationId   String?
+  activeOrganizationSlug String?
+  role                   String?
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  accountId             String
+  providerId            String
+  userId                String    @db.ObjectId
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Organization {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String
+  logo        String?
+  createdAt   DateTime     @default(now())
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+  shops       Shop[]
+
+  timezone    String? @default("UTC")
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("member")
+  createdAt DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String       @default("pending")
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String       @db.ObjectId
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
+}
+
+enum Platform {
+  woocommerce
+  shopify
+}
+
+model Shop {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String?
+  domain   String
+  platform Platform
+
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders         Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([domain])
+  @@map("shop")
+}
+
+enum OrderStatus {
+  PROCESSING
+  CANCELLED
+  ASSIGNED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  RECONCILED
+  FAILED
+}
+
+model Order {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  shopId     String @db.ObjectId
+  shop       Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopDomain String 
+
+  order_id String         
+  name     String
+  city     String
+  address  String?
+  phone    String
+  payment  String
+  amount   Float
+  status   OrderStatus @default(PROCESSING)
+
+  assignee_name String  @default("")
+  assigneeId    String? @db.ObjectId
+  assignee      User?   @relation("AssigneeOrders", fields: [assigneeId], references: [id])
+
+  assignedAt        DateTime?
+  latitude          Float?
+  longitude         Float?
+  date_delivered    DateTime?
+  date_created_gmt  DateTime
+  date_modified_gmt DateTime
+
+  reconciledById   String?   @db.ObjectId
+  reconciledBy     User?     @relation("OrderReconciledBy", fields: [reconciledById], references:[id] )
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("order")
+  @@unique([shopId, order_id])
+}
+
+model ShopifyNonce{
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  nonce            String
+  shop             String    @unique
+  organizationId   String
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+
+  @@map("shopifyNonce")
+}
+
+model ShopifySessions {
+  session_id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  id                    String      @unique
+  shop                  String
+  state                 String
+  isOnline              Boolean     @default(false)
+  scope                 String?
+  expires               DateTime?
+  accessToken           String
+  userId                BigInt?
+  firstName             String?
+  lastName              String?
+  email                 String?
+  accountOwner          Boolean     @default(false)
+  locale                String?
+  collaborator          Boolean?    @default(false)
+  emailVerified         Boolean?    @default(false)
+  refreshToken          String?
+  refreshTokenExpires   DateTime?
+}

@@ -1,52 +1,81 @@
-import { auth } from '@/auth';
-import { User as UserIcon } from 'lucide-react';
-import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '../shadcn/avatar';
-import { Button } from '../shadcn/button';
-import { DropdownMenu, DropdownMenuTrigger } from '../shadcn/dropdown-menu';
-import UserMenu from './UserMenu';
+'use client';
 
-async function PublicHeader() {
-    const session = await auth();
-    const isLoggedIn = !!session?.user;
+import { useSession } from '@/lib/auth-client';
+import { User as UserIcon } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '../shadcn/button';
+
+function PublicHeader() {
+    const { data } = useSession();
+    console.log('PublicHeader session:', data);
+    const isLoggedIn = !!data?.session
+    const userRole = data?.session?.role;
+    const dashboardLink = userRole === 'driver' ? `/${data?.session.activeOrganizationSlug}/driver/dashboard` : `/${data?.session.activeOrganizationSlug}/dashboard`;
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-muted bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8">
-                {/* Logo */}
-                <div className="flex items-center gap-8">
-                    <Link href="/" className="flex items-center gap-2">
-                        <span className="font-semibold text-lg">Order Management</span>
-                    </Link>
-                </div>
+        <header className="sticky top-0 z-50 w-full border-b border-muted bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+            <div className="container flex h-14 max-w-(--breakpoint-2xl) items-center justify-between px-4 mx-auto">
+                <Link href='/' className="flex items-center gap-8">
+                    <Image
+                        width={240}
+                        height={56}
+                        src="/logo-light.svg"
+                        alt="Company Logo"
+                        priority
+                        className="dark:hidden object-contain"
+                    />
 
-                {/* Right side actions */}
+                    <Image
+                        width={240}
+                        height={56}
+                        src="/logo-dark.svg"
+                        alt="Company Logo"
+                        priority
+                        className="hidden dark:block object-contain"
+                    />
+                </Link>
+
                 <div className="flex items-center gap-3">
+
                     <Link
-                        href="/help"
+                        href="/#how-it-works"
                         className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
-                        Help
+                        How it works
                     </Link>
                     <Link
-                        href="/privacy-policy"
+                        href="/pricing"
                         className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
-                        Privacy policy
+                        Pricing
+                    </Link>
+                    <Link
+                        href="/contact"
+                        className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        Contact
                     </Link>
 
                     {isLoggedIn ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={session?.user?.image} alt={session?.user?.name} />
-                                    <AvatarFallback className="rounded-lg bg-background">{session?.user?.name[0]?.toLocaleUpperCase() || "U"}</AvatarFallback>
-                                </Avatar>
-                            </DropdownMenuTrigger>
-                            <UserMenu userEmail={session.user.email} userImage={session.user.image} userName={session.user.name} isMobile={true} />
-                        </DropdownMenu>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-2 rounded-full"
+                            asChild
+                        >
+                            <Link href={dashboardLink} className="flex items-center gap-2">
+                                Dashboard
+                            </Link>
+                        </Button>
+
                     ) : (
-                        <Button variant="ghost" size="sm" className="gap-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-2"
+                            asChild
+                        >
                             <Link href="/login" className="flex items-center gap-2">
                                 <UserIcon className="h-4 w-4" />
                                 Login

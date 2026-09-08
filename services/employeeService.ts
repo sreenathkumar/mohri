@@ -1,0 +1,214 @@
+import { prisma } from "@/lib/prisma";
+
+export interface MutateEmployeeParams {
+    id: string; // The User ID or Member ID depending on target
+    organizationId: string;
+    data: {
+        name?: string;
+        email?: string;
+        role?: "owner" | "manager" | "driver";
+    };
+}
+
+/**
+ * Fetch all employees belonging to a specific organization
+ * @param organizationId - The ID of the organization
+ * @returns Array of employees with their user details
+ */
+export async function fetchEmployees({ organizationId }: { organizationId: string }) {
+    if (!organizationId) return [];
+
+    const members = await prisma.member.findMany({
+        where: {
+            organizationId,
+        },
+        select: {
+            id: true,
+            role: true,
+            userId: true,
+            user: {
+                select: {
+                    name: true,
+                    image: true,
+                    email: true,
+                },
+            },
+        },
+    });
+
+    return members.map((member) => ({
+        id: member.id,
+        userId: member.userId,
+        name: member.user.name,
+        image: member.user.image,
+        email: member.user.email,
+        role: member.role,
+    }));
+}
+
+/**
+ * Get the single employee details by user ID and organization ID
+ */
+export async function fetchSingleEmployee({ id, organizationId }: { id: string, organizationId: string }) {
+    if (!id || !organizationId) {
+        throw new Error("User ID and organization ID are required to fetch employee details.");
+    }
+
+    const member = await prisma.member.findFirst({
+        where: {
+            userId: id,
+            organizationId,
+        },
+        select: {
+            role: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    email: true,
+                    address: true,
+                    phone: true,
+                    createdAt: true,
+                },
+            },
+            organization: true,
+        },
+    });
+
+    if (!member) {
+        return null; // Employee not found
+    }
+
+    return {
+        role: member.role,
+        ...member.user,
+        organizationName: member.organization.name,
+    };
+}
+
+/**
+ * Fetch all drivers belonging to a specific organization
+ */
+export async function fetchDrivers({ organizationId }: { organizationId: string }) {
+    if (!organizationId) return [];
+
+    const members = await prisma.member.findMany({
+        where: {
+            organizationId,
+            role: "driver",
+        },
+        select: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    email: true,
+                },
+            },
+        },
+    });
+
+    return members.map((member) => member.user);
+}
+
+/**
+ * check if an employee with the given email exists in the specified organization
+ */
+export async function checkEmployeeExists({ email, organizationId }: { email: string, organizationId: string }) {
+    if (!email || !organizationId) {
+        throw new Error("Email and organizationId are required to check employee existence.");
+    }
+
+    const member = await prisma.member.findFirst({
+        where: {
+            organizationId,
+            user: {
+                email,
+            },
+        },
+        select: {
+            id: true,
+            user: true,
+            organizationId: true,
+            role: true,
+        }
+    });
+
+    return member !== null;
+}
+
+/**
+ * Update user details and organization member role
+ */
+export async function mutateEmployee({ id, organizationId, data }: MutateEmployeeParams) {
+    if (!id || !organizationId) {
+        return null
+    }
+
+    const { role, name, email } = data;
+
+    //Update User Profile details (name/email) if provided
+    if (name || email) {
+        await prisma.user.update({
+            where: { id },
+            data: {
+                ...(name && { name }),
+                ...(email && { email }),
+            },
+        });
+    }
+
+    // Update Member Role within the specific Organization
+    if (role) {
+        await prisma.member.updateMany({
+            where: {
+                userId: id,
+                organizationId,
+            },
+            data: {
+                role,
+            },
+        });
+    }
+    return null
+}
+
+
+/**
+ * get the public information about an employee invitation using the invitation ID
+ */
+export async function fetchInvitation({ invitationId, email }: { invitationId?: string, email?: string }) {
+    if (!invitationId && !email) {
+        throw new Error("Either invitationId or email must be provided to fetch invitation details.");
+    }
+    const invitation = await prisma.invitation.findFirst({
+        where: {
+            status: 'pending',
+            ...(invitationId ? { id: invitationId } : { email })
+        },
+        select: {
+            id: true,
+            email: true,
+            role: true,
+            organization: {
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                }
+            },
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                }
+            },
+            createdAt: true,
+            expiresAt: true,
+        },
+    });
+
+    return invitation;
+}

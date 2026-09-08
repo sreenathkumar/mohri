@@ -8,15 +8,20 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator
 } from "@/components/shadcn/dropdown-menu";
-import {
-    BadgeCheck,
-    LogOut
-} from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/auth-client";
+import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: string, userEmail: string, userImage: string | undefined, isMobile?: boolean }) {
+interface UserMenuProps {
+    userName: string;
+    userEmail: string;
+    userImage: string | undefined | null;
+    isMobile?: boolean;
+    userRole?: string;
+}
+
+function UserMenu({ userName, userEmail, userImage, userRole, isMobile }: UserMenuProps) {
     const router = useRouter();
 
     const logout = async () => {
@@ -29,7 +34,7 @@ function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: stri
     }
     return (
         <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-popover"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg bg-popover"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -37,7 +42,7 @@ function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: stri
             <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={userImage} alt={userName} />
+                        {userImage && <AvatarImage src={userImage} alt={userName} />}
                         <AvatarFallback className="rounded-lg bg-background">{userName[0].toLocaleUpperCase() || "U"}</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
@@ -48,9 +53,15 @@ function UserMenu({ userName, userEmail, userImage, isMobile }: { userName: stri
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-                <Link href="/profile">
+                <Link href={userRole === 'driver' ? './driver/dashboard' : './dashboard'}>
                     <DropdownMenuItem >
-                        <BadgeCheck />
+                        <LayoutDashboard />
+                        Dashboard
+                    </DropdownMenuItem>
+                </Link>
+                <Link href={userRole === 'driver' ? './driver/profile' : './profile'}>
+                    <DropdownMenuItem >
+                        <UserRound />
                         Account
                     </DropdownMenuItem>
                 </Link>

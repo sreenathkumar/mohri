@@ -13,7 +13,7 @@ import {
 
 import UserMenu from "./UserMenu";
 import { ChevronsUpDown } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 function User() {
     const { isMobile } = useSidebar();
@@ -35,7 +35,7 @@ function User() {
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=closed]:p-2"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={userImage} alt={userName} />
+                                {userImage && <AvatarImage src={userImage} alt={userName} />}
                                 <AvatarFallback className="rounded-lg bg-background">{userName[0]?.toLocaleUpperCase() || "U"}</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">

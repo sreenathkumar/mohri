@@ -1,86 +1,47 @@
 'use server'
 
-import dbConnect from "@/dbConnect";
-import Shop from "@/models/shopModel";
-import { revalidatePath } from "next/cache";
+import { getRequiredSessionContext } from "@/lib/auth-context";
+import { fetchShops, mutateShop, UpdateShopInput } from "@/services/shopService";
 
-interface UpdateData {
-    name?: string;
-    accessToken?: string;
-    platform?: string;
+/**
+ * get all the shops under the user active organization
+ * @returns  list of shops
+ */
+export async function getShops() {
+    try {
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ["owner", "manager"],
+        });
+
+        return await fetchShops({ organizationId });
+    } catch (error: any) {
+        console.error('[getShops] Error fetching shops: ', error.message);
+        return [];
+    }
 }
 
-export async function updateShop(domain: string, data: UpdateData) {
+/**
+ * update a shop's details scoped to an organization
+ * @param domain  domain of the shop to be updated
+ * @param data    updated shop details
+ * @returns       success status and message
+ */
+export async function updateShop(domain: string, data: UpdateShopInput) {
     if (!domain || !data) {
-        return { success: false, message: "Domain or updated data is missing." };
-    }
-    try {
-        //connect to the database
-        await dbConnect();
-
-        //find the shop by domain and update the name
-        const result = await Shop.findOneAndUpdate({ domain }, { $set: data });
-
-        if (!result) {
-            return { success: false, message: "Update Shop failed. No shop found with the provided domain." };
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        console.log("Error updating shop:", error.message);
-        return { success: false, message: error.message };
-    }
-
-    return { success: true, message: "Shop updated successfully." };
-}
-
-export async function getShops(user: string) {
-    if (!user) {
-        console.log("User Id is required to get the connected shops.");
-        return [];
+        throw new Error("Domain and data are required to update the shop.");
     }
 
     try {
-        await dbConnect();
+        const { organizationId } = await getRequiredSessionContext({
+            allowedRoles: ["owner", "manager"],
+        });
 
-        // Fetch shops associated with the user
-        const shops = await Shop.find({ user });
+        await mutateShop({ domain, organizationId, data });
 
-        if (shops.length === 0) {
-            console.log("No shops found for the user.");
-            return [];
-        }
+        return { success: true, message: "Shop updated successfully." };
 
-        return shops;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        console.error("Error fetching shops:", error.message);
-        return [];
-    }
-}
-
-export async function deleteShop(domain: string) {
-    if (!domain) {
-        return { success: false, message: "Domain is required to delete the shop." };
-    }
-
-    try {
-        await dbConnect();
-
-        const result = await Shop.findOneAndDelete({ domain });
-
-        if (!result) {
-            return { success: false, message: "Delete Shop failed. No shop found with the provided domain." };
-        }
-
-        revalidatePath('/stores');
-
-        return { success: true, message: "Shop deleted successfully." };
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        console.error("Error deleting shop:", error.message);
+        console.error("[updateShop] Error updating shop:", error.message);
         return { success: false, message: error.message };
     }
 }

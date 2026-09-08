@@ -21,7 +21,7 @@ jobs:
 
       - name: Write .env.production with secrets
         run: |
-          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env.production
+          echo "NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}" >> .env.production
           echo "DB_URI=${{ secrets.DB_URI }}" >> .env.production
           echo "UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}" >> .env.production
           echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env.production
@@ -43,7 +43,7 @@ jobs:
       - name: Build Next.js app with standalone output
         run: pnpm build
         env:
-          BASE_URL: ${{ secrets.BASE_URL }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
           DB_URI: ${{ secrets.DB_URI }}
           UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_TOKEN }}
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}

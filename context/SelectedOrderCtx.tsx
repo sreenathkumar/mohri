@@ -4,8 +4,8 @@ import { createContext, useContext, useState } from "react";
 
 // Define the type for the context value
 interface SelectedOrderContextType {
-    selectedOrder: number[];
-    setSelectedOrder: React.Dispatch<React.SetStateAction<number[]>>;
+    selectedOrder: string[];
+    setSelectedOrder: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 // context which will provide the selected order for actions (i.e, update, delete)
@@ -13,7 +13,7 @@ const SelectedOrderCtx = createContext<SelectedOrderContextType | undefined>(und
 
 //const provider for SelectedOrderCtx 
 const SelectedOrderProvider = ({ children }: { children: React.ReactNode }) => {
-    const [selectedOrder, setSelectedOrder] = useState<number[] | []>([]);
+    const [selectedOrder, setSelectedOrder] = useState<string[] | []>([]);
 
     return (
         <SelectedOrderCtx.Provider value={{ selectedOrder, setSelectedOrder }}>

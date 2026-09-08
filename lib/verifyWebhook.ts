@@ -1,34 +1,39 @@
-import crypto from "crypto";
+import { NextRequest } from "next/server";
+import crypto from 'crypto'
 
-async function verifySignature(req: Request, secret?: string
-): Promise<boolean> {
-    const signature = req?.headers?.get('X-WC-Webhook-Signature') || '';
+async function verifyWebhook(req: NextRequest) {
+    if (!process.env.SHOPIFY_WEBHOOK_SECRET) {
+        console.log('not env var')
+        return { valid: false }
+    }
+
+    const signature = req.headers.get('X-Signature');
+    const rawbody = await req.text();
 
     if (!signature) {
-        console.log('No signature provided');
-        return false;
+        console.log('no signature')
+        return { valid: false }
     }
-
-    if (!secret) {
-        console.log('Webhook secret is not defined');
-        return false;
-    }
-
-    const cloned = req.clone();
-    const rawBody = await cloned.text();
-
-    const expectedSignature = crypto
-        .createHmac('sha256', secret)
-        .update(rawBody, 'utf8')
-        .digest('base64');
-
-    // Check if the signature is valid
-    const isValid = crypto.timingSafeEqual(
-        Buffer.from(signature, 'base64'),
-        Buffer.from(expectedSignature, 'base64')
+    const expected = crypto.createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET).update(rawbody).digest('hex');
+    const isValidSignature = crypto.timingSafeEqual(
+        Buffer.from(expected),
+        Buffer.from(signature)
     );
 
-    return isValid;
+    if (!isValidSignature) {
+        console.log('not valid signature')
+        return { valid: false }
+    }
+
+    //extract the data 
+    const { topic, shop, payload } = JSON.parse(rawbody);
+
+    return {
+        valid: true,
+        topic,
+        shopDomain: shop,
+        data: payload
+    }
 }
 
-export default verifySignature;
+export default verifyWebhook;
